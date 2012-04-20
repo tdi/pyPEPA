@@ -18,11 +18,11 @@ class Port(object):
         self.pname = val
 
     @property
-    def port(self):
+    def other(self):
         return self.port_con
 
-    @port.setter
-    def port(self, val):
+    @other.setter
+    def other(self, val):
         self.port_con = val
   
     @property
@@ -36,7 +36,7 @@ class Port(object):
     def __str__(self):
         return self.pname
 
-class Element:
+class Element(object):
     
     def __init__(self):
         self.ports = []
@@ -47,3 +47,9 @@ class Element:
     def get_ports(self):
         return self.ports
 
+    def get_connections(self):
+        connections = []
+        for port in self.ports:
+            connections.append(port.other.parent)
+        return connections 
+            
