@@ -1,45 +1,16 @@
 
-class Port(object):
-    def __init__(self):
-        self.port_con = None
-        self.archparent = None
-
-    def __init__(self, name):
-        self.port_con = None
-        self.pname = name
-        self.archparent = None
-    
-    @property
-    def name(self):
-        return self.pname
-    
-    @name.setter
-    def name(self, val):
-        self.pname = val
-
-    @property
-    def other(self):
-        return self.port_con
-
-    @other.setter
-    def other(self, val):
-        self.port_con = val
-  
-    @property
-    def parent(self):
-        return self.archparent
-
-    @parent.setter
-    def parent(self, val):
-        self.archparent = val
-
-    def __str__(self):
-        return self.pname
-
 class Element(object):
     
     def __init__(self):
         self.ports = []
+        self.beh = None
+        self.bindings = {}
+
+    def bind(self, port, action):
+        self.bindings[port] = action
+
+    def get_bindings(self):
+        return self.bindings
 
     def add_port(self, port):
         self.ports.append(port)
@@ -48,8 +19,8 @@ class Element(object):
         return self.ports
 
     def get_connections(self):
-        connections = []
+        connections = {}
         for port in self.ports:
-            connections.append(port.other.parent)
-        return connections 
+            connections[port.other.parent]=port
+        return connections
             

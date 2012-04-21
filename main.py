@@ -1,17 +1,21 @@
 
 import sys
 import getopt
+import pprint
+import pickle
 from comp import Component
 from link import Link
-from elem import Port
-from utils import printcol
+from port import Port
+from model import Model
 
 #
 #  Client(send) --- Channel(recv)*Channel(se) --- Server(recv)
 #        (send2) --- Channel2
 
 def main():
+    m = Model()
     client = Component("client", "Client")
+    client.beh = "Client:=wait->send->Client + wait->send2.Client;"
     send = Port("send")
     send2 = Port("send2")
     client.add_port(send)
@@ -47,44 +51,53 @@ def main():
     se2.parent = channel2
    
     
-    # Port connecting
+    m.components.append(client)
+    m.components.append(server)
+    m.components.append(server2)
+    m.components.append(channel)
+    m.components.append(channel2)
     
-    send.other = rec
-    rec.other = send
+    m.connect_ports(send, rec)
+    m.connect_ports(send2, rec2)
+    m.connect_ports(se, recv)
+    m.connect_ports(se2, recv2)
 
-    send2.other = rec2
-    rec2.other = send2
-
-    se.other = recv
-    recv.other = se
-
-    se2.other = recv2
-    recv2.other = se2
-
+    
 
     #DFS
-
+def sraka():
     explored = []
     nastos = []
     def dfs_visit(vert):
-        print("Visitłem", vert.name)
+        if vert.beh is not None:
+            print(vert.beh)
+        print(vert.name,end="")
         nastos.append(vert)
         explored.append(vert.name)
-        for con in vert.get_connections():
+        connections = vert.get_connections()
+        for con in connections.keys():
             if con.name not in explored:
+                print("<"+connections[con].name+""+connections[con].other.name+">", end="")
                 dfs_visit(con)
          
 
     dfs_visit(client)
+    
 
+    first = 1
+    last = 0
     for element in nastos:
-        first = 1
-        last = 0
         if (element.__class__.__name__ == "Component"):
             if (first == 1):
-                print("("+element.name,end="")
+#                print("("+element.name,end="")
+                first = 0
             else:
-                print(
+ #               print(element.name+")",end="")
+                pass
+        else:
+ #           print("<>"+element.name+"<>", end="")
+            pass
+    print() 
 
 
 
