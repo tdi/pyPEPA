@@ -9,7 +9,6 @@ from example import daj
 
 """  Client(send) --- Channel(recv)*Channel(se) --- Server(recv)
         (send2) --- Channel2                                """
-
 def main():
 
    #DFS
