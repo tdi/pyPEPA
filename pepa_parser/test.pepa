@@ -1,0 +1,10 @@
+
+n = 1;
+b = 333;
+c = tau;
+
+Client = (do, r1).Client1;
+Client1 = (done,r2).Client;
+//OOOOOO
+
+Client <a,v> Client
