@@ -1,0 +1,28 @@
+//Rates
+rateReadInfo = 1.0;
+rateLoanRequest = 1.0;
+rateReset = 1.0;
+rateReliabilityCheck = 1.0;
+rateNotReliableMessage = 1.0;
+rateUnreliabilityCheck = 1.0;
+rateAskManager = 1.0;
+rateGoodOffer = 1.0; 
+rateBadOffer = 1.0;
+
+//Definitions
+Idle = (readInformation,rateReadInfo).Informed;
+Informed = (createLoanRequest,rateLoanRequest).WaitingBankResponse;
+WaitingBankResponse = (getNotReliableMessage,infty).Informed + (goodOffer,infty).OfferReceived;
+OfferReceived = (reset,rateReset).Idle;
+
+WaitingForCustomer = (createLoanRequest,infty).RequestReceived;
+RequestReceived = (checkReliability,rateReliabilityCheck).CustomerNotReliable + (checkReliability,rateUnreliabilityCheck).CustomerReliable;
+CustomerNotReliable = (getNotReliableMessage,rateNotReliableMessage).WaitingForCustomer;
+CustomerReliable = (askManager,rateAskManager).WaitingManagerResponse;
+WaitingManagerResponse = (goodOffer, infty).WaitingForCustomer + (badOffer,infty).RequestReceived;
+
+WaitingForEmployee = (askManager,infty).EvaluatingOffer;
+EvaluatingOffer = (goodOffer,rateGoodOffer).WaitingForEmployee + (badOffer,rateBadOffer).WaitingForEmployee;
+
+//System Equation
+(Idle <createLoanRequest,getNotReliableMessage,goodOffer> WaitingForCustomer) <askManager,badOffer,goodOffer> WaitingForEmployee
