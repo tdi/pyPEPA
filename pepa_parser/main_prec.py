@@ -1,5 +1,4 @@
-from pyparsing import Word, alphas, ParseException, Literal \
-, Combine, Optional, nums, Or, Forward, ZeroOrMore, OneOrMore, StringEnd, alphanums, alphas, ZeroOrMore, restOfLine
+from pyparsing import *
 import math
 
 class Node():
@@ -25,27 +24,19 @@ class PTree():
 class Model():
     processes = []
     PTree = PTree()
-    costam = ""
 
 model = Model()
 
 logging = False
 
-def createActivity(tokens):
-    print("ACT",tokens[0])
-    model.costam += " ACT "
 
 def createConstant(tokens):
-    print("RMDEF",tokens[0])
-    model.costam += " = "+tokens[0]
+    print(tokens[0])
+    print("RMDEF") 
 
 def createPrefix(tokens):
-    print("PREFIX",tokens[3])
-    model.costam += " DOT "+tokens[3]
-
-def createChoice(tokens):
-    print("CHOICE", tokens)
-    model.costam += " + "+tokens[1]
+    print(tokens[3])
+    print("PREFIX") 
 
 def log(string, msg="",prepend="log"):
     if logging:  print(prepend,msg,string)
@@ -88,33 +79,20 @@ peparate_indef = floatnumber | internalrate | passiverate
 sync = Word('<').suppress() + ident + ZeroOrMore(col + ident) + Word('>').suppress()
 coop_op = parallel | sync
 
+hiop = coop_op | prefix_op
 ## RATES Definitions
-ratedef = (ident + define + peparate_indef).setParseAction(assignVar) + semicol
 
 ## PEPA Grammar 
-expression = Forward()
-activity = (ident + col + peparate).setParseAction(createActivity)
-process = lpar + activity + rpar | ident | lpar + expression + rpar
-prefix = (process + ZeroOrMore(prefix_op + process)).setParseAction(createPrefix)
-choice = (prefix + ZeroOrMore(choice_op + prefix)).setParseAction(createChoice)
-expression << choice + ZeroOrMore(coop_op + choice)
-rmdef = (ident + define + expression + semicol).setParseAction(createConstant)
+#expression = Forward()
+activity = 
+operand = ident | lpar + activity + rpar  
+expression = operatorPrecedence( operand,
+     (hiop, 2, opAssoc.LEFT),
+     (choice_op, 2, opAssoc.LEFT),]
+)
+        
 
-expr = Forward()
-atom_proc = lpar + expr + rpar | ident
-expr << atom_proc + ZeroOrMore(coop_op + atom_proc)
-system_eq =  expr 
-
-pepa = ZeroOrMore(ratedef) + ZeroOrMore(rmdef) + system_eq
-
-pepacomment = '//' + restOfLine
-pepa.ignore(pepacomment)
 
 if __name__=="__main__":
-    with open("simple.pepa","r") as f: 
-         try:
-             tokens = pepa.parseString(f.read())
-             print(tokens)
-             print(model.costam)
-         except ParseException as e:
-            error(e)
+    tokens = expression.parseString("Z=(P.C)+E+D+E<a,b>D")
+    print(tokens)

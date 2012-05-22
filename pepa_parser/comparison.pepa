@@ -1,0 +1,21 @@
+// Comparison model 48 states
+%l1 = 10;
+%g  = 10;
+%p  = 0.75;
+%g_times_p = 7.5;
+%g_times_1_minus_p = 2.5;
+%m1 = 10;
+%m2 = 5;
+%r  = 10;
+%n1 = 10;
+%n2 = 10;
+
+#P  = (think, l1).( (getm1,g_times_p).(use, m1).(relm1,r).P1 + 
+                    (getm2,g_times_1_minus_p).(use, m2).(relm2,r).P2);
+#P1 = (update, n1).P;
+#P2 = (update, n2).P;
+#M1 = (getm1, infty).(relm1,infty).M1;
+#M2 = (getm2, infty).(relm2,infty).M2;
+#Bus = (getm1, infty).(relm1,infty).Bus + (getm2, infty).(relm2,infty).Bus;
+
+(P <> P)  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)

@@ -1,0 +1,28 @@
+def = 1.0;
+retry = 1.0;
+loss = 1.0;
+
+# S0 = (gm, def).(send0, def).S1;
+# S1 = (gm, def).S2 + (time0, retry).S3 + (ack0, infty).S5 + (ack1, infty).S1;
+# S2 = (time0, retry).S4 + (ack0, infty).S6 + (ack1, infty).S2;
+# S3 = (send0, def).S1;
+# S4 = (send0, def).S2;
+# S5 = (gm, def).(send1, def).S7;
+# S6 = (send1, def).S7;
+# S7 = (gm, def).S8 + (time1, retry).S6 + (ack0, infty).S7 + (ack1, infty).S0;
+# S8 = (time1, retry).S9 + (ack0, infty).S8 + (ack1, infty).S3;
+# S9 = (send1, def).S8;
+
+# R0 = (recv0, infty).(cm, def).(a0, def).R1;
+# R1 = (recv0, infty).(a0, def).R1 + (recv1, infty).R2;
+# R2 = (cm, def).(a1, def).R3;
+# R3 = (recv1, infty).(a1, def).R3 + (recv0, infty).R4;
+# R4 = (cm, def).(a0, def).R1;
+
+# M0 = (send0, infty).M1 + (send1, infty).M2 + (a0, infty).M3 + (a1, infty).M4;
+# M1 = (drop, loss).M0 + (recv0, def).M0;
+# M2 = (drop, loss).M0 + (recv1, def).M0;
+# M3 = (drop, loss).M0 + (ack0, def).M0;
+# M4 = (drop, loss).M0 + (ack1, def).M0;
+
+ (S0[2] <send0, send1, ack0, ack1> M0[2]) <recv0, recv1, a0, a1> R0[2]

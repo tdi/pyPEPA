@@ -1,0 +1,8 @@
+P = P1 || P2 || R;
+R = (a,1).Sys;
+P1 = (a,1).P2;
+P2 = (b,2).P1;
+Q1 = (c,3).Q1;
+Sys = P || Q1 || P;
+Sys2 = Sys;
+Sys2

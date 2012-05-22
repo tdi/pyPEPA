@@ -1,0 +1,33 @@
+// Choose one of the following:
+
+rA = 1.0;
+rB = 1.0;
+rc = 1.0;
+rq = 1.0;
+rp = 1.0;
+ru = 0.03;
+
+KDC = (request, T) . KDC + (response, rp) . KDC ;
+// KDC = (request, _) . (response, rq) . KDC ;
+
+// So then alice and bob combined into a single sequential component
+AliceBob0 = (request, rq) . AliceBob1 ;
+AliceBob1 = (response, T) . AliceBob2 ;
+AliceBob2 = (sendBob, rB) . AliceBob3 ;
+AliceBob3 = (sendAlice, rA) . AliceBob4 ;
+AliceBob4 = (confirm, rc) . AliceBob5 ;
+AliceBob5 = (usekey, ru) . AliceBob0 ;
+
+
+// A probed alice and bob:
+
+AliceBobProbe0 = (request, rq) . AliceBobProbe1 ;
+AliceBobProbe1 = (response, T) . AliceBobProbe2 ;
+AliceBobProbe2 = (sendBob, rB) . AliceBobProbe3 ;
+AliceBobProbe3 = (sendAlice, rA) . AliceBobProbe4 ;
+AliceBobProbe4 = (confirm, rc) . AliceBobProbe5 ;
+AliceBobProbe5 = (usekeyProbe, ru) . AliceBobProbe0 ;
+
+
+// The system equation
+KDC < request, response > AliceBob0
