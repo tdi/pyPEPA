@@ -1,57 +1,104 @@
-from pyparsing import Word, alphas, ParseException, Literal \
-, Combine, Optional, nums, Or, Forward, ZeroOrMore, OneOrMore, StringEnd, alphanums, alphas, ZeroOrMore, restOfLine
-import math
-
-class Node():
-    left, right, data = None, None, 0
-
-    def __init__(self,data):
-        self.right = None
-        self.left = None
-        self.data = data
-
-class PTree():
-    nodes = []
-    root = Node("MODEL")
-    last_node = None
-    
-    def __init__(self):
-        self.nodes.append(self.root)
-
-    def add_node(self,node):
-        self.last_node = node 
-        self.nodes.append(node)
-
-class Model():
-    processes = []
-    PTree = PTree()
-    costam = ""
+from pyparsing import *
+from CSPAst import *
+import sys
 
 model = Model()
-
 logging = False
+logging_pa = True
 
-def createActivity(tokens):
-    print("ACT",tokens[0])
-    model.costam += " ACT "
-
-def createConstant(tokens):
-    print("RMDEF",tokens[0])
-    model.costam += " = "+tokens[0]
-
-def createPrefix(tokens):
-    print("PREFIX",tokens[3])
-    model.costam += " DOT "+tokens[3]
-
-def createChoice(tokens):
-    print("CHOICE", tokens)
-    model.costam += " + "+tokens[1]
+def log_pa(string, msg="",prepend="[PARSEACT]"):
+    fname = sys._getframe(1).f_code.co_name
+    if logging_pa:  print(prepend+"["+fname+"]",msg,string)
 
 def log(string, msg="",prepend="log"):
     if logging:  print(prepend,msg,string)
 
 def error(string):
-    print("ERROR: ", string)
+    print("SYNTAX ERROR: ", string)
+
+
+def createActivity(str,loc,tok):
+    log_pa("Token: "+tok[0])
+    n = Node("act("+tok[0]+","+tok[1]+")", "activity")
+    return n
+
+def createProcdef(str,loc,tok):
+    log_pa("Token: "+tok[0])
+    n = Node(tok[0], "procdef")
+    return n
+
+def createDefinition(str,loc, tok):
+    log_pa("Start")
+    log_pa("Left token: "+tok[0].data)
+    log_pa("Right token: "+tok[2].data)
+    n = Node("=", "definition")
+    n.left = tok[0]
+    n.right = tok[2]
+    n.lhs = tok[0].data
+    for key in model.processes.keys():
+        if model.processes[key].lhs == tok[0].data:
+            error("Process "+tok[0].data+" already defined")
+            exit(1)
+    model.processes[tok[0]] = n
+    return n
+
+def createPrefix(string, loc, tok):
+    log_pa("Start<<<")
+    log_pa("Tokens: "+str( len(tok) ))
+    if len(tok) > 1:
+        log_pa("Left token: "+tok[0].data)
+        log_pa("Right token: "+tok[2].data)
+        n = Node(".", "prefix")
+        lhs = tok[0]
+        rhs = tok[2]
+        n.left = lhs
+        n.right = rhs
+#        print("Robie prefixa: lhs.rhs")
+        return n
+    else:
+        log_pa("Token: "+tok[0].data)
+        return tok[0]
+
+def createChoice(string,loc,tok):
+    log_pa("Start")
+    log_pa("Tokens: "+str( len(tok) ))
+    if not tok[0] is None:
+        if len(tok) <3:
+            log_pa("Token: "+tok[0].data)
+            return tok[0]
+        else:
+            log_pa("Left token: "+tok[0].data)
+            log_pa("Right token: "+tok[2].data)
+            n = Node("+", "choice")
+            n.left = tok[0]
+            n.right = tok[2]
+            return n
+
+
+def createCoop(string, loc, tok):
+    if not tok[0] is None:
+        if len(tok) <3:
+            log_pa("Token: "+tok[0].data)
+            return tok[0]
+        else:
+            log_pa("Left token: "+tok[0].data)
+            log_pa("Right token: "+tok[2].data)
+            n = Node("<>", "coop")
+            n.left = tok[0]
+            n.right= tok[2]
+            return n
+
+def createProcess(str, loc, tok):
+    log_pa("Start")
+    if tok[0].left is not None or tok[0].right is not None:
+        log_pa("Token: "+tok[0].data)
+        log_pa("Non terminal - passing")
+        return tok[0]
+    else:
+        n = Node(tok[0].data, "process")
+        log_pa("Terminal - creating Node")
+        log_pa("Token: "+tok[0].data)
+    return n
 
 varStack = {}
 
@@ -65,14 +112,16 @@ def checkVar(toks):
             varStack[toks[0]]
     except:
         error(toks[0]+" Rate not defined")
-        exit()
+        exit(1)
+
 
 ## Tokens
 point = Literal('.')
 prefix_op = Literal('.')
 choice_op = Literal('+')
 parallel = Literal("||")
-ident = Word(alphas, alphanums+'_')
+#ident = Word(alphas, alphanums+'_')
+ratename = Word(alphas.lower())
 lpar = Literal('(').suppress()
 rpar = Literal(')').suppress()
 define = Literal('=')
@@ -83,29 +132,38 @@ integer = number
 floatnumber = Combine( integer + Optional( point + Optional(number)))
 passiverate = Word('infty') | Word('T')
 internalrate = Word('tau')
-peparate = (floatnumber | internalrate | passiverate | ident).setParseAction(checkVar)
-peparate_indef = floatnumber | internalrate | passiverate 
-sync = Word('<').suppress() + ident + ZeroOrMore(col + ident) + Word('>').suppress()
+peparate = (floatnumber | internalrate | passiverate | ratename).setParseAction(checkVar)
+peparate_indef = floatnumber | internalrate | passiverate
+sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
 coop_op = parallel | sync
-
+activity = (ratename + col + peparate).setParseAction(createActivity)
+procdef = Word(alphas.upper(), alphanums+"_").setParseAction(createProcdef)
 ## RATES Definitions
-ratedef = (ident + define + peparate_indef).setParseAction(assignVar) + semicol
+ratedef = (ratename + define + peparate_indef).setParseAction(assignVar) + semicol
 
 ## PEPA Grammar 
 expression = Forward()
-activity = (ident + col + peparate).setParseAction(createActivity)
-process = lpar + activity + rpar | ident | lpar + expression + rpar
-prefix = (process + ZeroOrMore(prefix_op + process)).setParseAction(createPrefix)
-choice = (prefix + ZeroOrMore(choice_op + prefix)).setParseAction(createChoice)
-expression << choice + ZeroOrMore(coop_op + choice)
-rmdef = (ident + define + expression + semicol).setParseAction(createConstant)
+prefix = Forward()
+choice = Forward()
+coop = Forward()
 
-expr = Forward()
-atom_proc = lpar + expr + rpar | ident
-expr << atom_proc + ZeroOrMore(coop_op + atom_proc)
-system_eq =  expr 
+process = ( activity
+         | procdef
+         | lpar + coop + rpar
+        ).setParseAction(createProcess)
+prefix  << (process + ZeroOrMore(prefix_op + prefix)).setParseAction(createPrefix)
+choice << (prefix + ZeroOrMore(choice_op + choice)).setParseAction(createChoice)
+coop << (choice + ZeroOrMore(coop_op + coop)).setParseAction(createCoop)
+rmdef = (procdef + define + coop + semicol).setParseAction(createDefinition)
 
-pepa = ZeroOrMore(ratedef) + ZeroOrMore(rmdef) + system_eq
+
+# expr = Forward()
+# atom_proc = lpar + expr + rpar | ident
+# expr << atom_proc + ZeroOrMore(coop_op + atom_proc)
+# system_eq =  expr
+# 
+pepa = ZeroOrMore(ratedef) + ZeroOrMore(rmdef) 
+        #+ system_eq
 
 pepacomment = '//' + restOfLine
 pepa.ignore(pepacomment)
@@ -114,7 +172,10 @@ if __name__=="__main__":
     with open("simple.pepa","r") as f: 
          try:
              tokens = pepa.parseString(f.read())
-             print(tokens)
-             print(model.costam)
+             print("============= >> TREE << ===============")
+             for key in model.processes.keys():
+                 tree_walker(model.processes[key])
+#             print(tokens)
+#             print(model.costam)
          except ParseException as e:
             error(e)
