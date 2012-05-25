@@ -1,2 +1,6 @@
-P = c.P + d.P;
-P1 = d.E + eeee.E;
+//E = a.b.c.P;
+//P = c.(c.P + e.f.g.E);
+P = c.(P + E) || e.E;
+//P1 = d.E + eeee.E + u.E; // ok ?
+//P1 = a.(b.c).P; // ogolnie zle, tak nie wolno
+// P = a.b.c.P; // ok
