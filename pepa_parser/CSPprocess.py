@@ -1,5 +1,5 @@
 class CSPProcess(object):
-    states = []
+H    states = []
     startstate = None
 
 class State(object):

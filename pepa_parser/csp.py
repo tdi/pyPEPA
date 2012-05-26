@@ -125,7 +125,6 @@ procdef = Word(alphanums.upper()).setParseAction(createProcdef)
 coop = Forward()
 choice = Forward()
 prefix = Forward()
-#process = Forward()
 prefix = Forward()
 
 
