@@ -1,9 +1,11 @@
 class Model():
     processes = {}
+    systemeq = None
+    rates = None
     costam = ""
 
 class Node():
-    left, right, data, asttype = None, None, 0, None
+    left, right, data, asttype, actions = None, None, 0, None, None
 
     def __init__(self,data,asttype):
         self.right = None
@@ -11,6 +13,7 @@ class Node():
         self.data = data
         self.asttype = asttype
         self.lhs = ""
+        actions = None
 
     def __str__(self):
         print(self.asttype)

@@ -4,4 +4,4 @@
 Q1 = (a, infty).(Q2 + (o, infty).Q2);
 //Q2 = (c, infty).Q1;
 
-//Q1
+Q1
