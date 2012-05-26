@@ -1,3 +1,9 @@
+# PEPA Parser 
+# Version: 0.1
+# Date: 26.05.2012
+# Author: Dariusz Dwornikowski dariusz.dwornikowski@cs.put.poznan.pl
+# Licence: Poznań University of Technology
+
 from pyparsing import *
 from CSPAst import *
 import sys
@@ -129,15 +135,15 @@ def createRates(string, loc, tok):
 varStack = {}
 
 def assignVar(toks):
-    log(toks, "VAR")
+    log_pa("VAR"+toks[0])
     varStack[toks[0]] = toks[2]
 
-def checkVar(toks):
+def checkVar(str,loc,tok):
     try:
-        if toks[0] not in ("infty", "T", "tau"):
-            varStack[toks[0]]
+        if tok[0] not in ("infty", "T", "tau"):
+            varStack[tok[0]]
     except:
-        error(toks[0]+" Rate not defined")
+        error(tok[0]+" Rate not defined")
         exit(1)
 
 
@@ -147,7 +153,7 @@ prefix_op = Literal('.')
 choice_op = Literal('+')
 parallel = Literal("||") | Literal("<>")
 #ident = Word(alphas, alphanums+'_')
-ratename = Word(alphas.lower(),alphanums.lower())
+ratename = Word(alphas.lower(),alphanums.lower()+"_")
 lpar = Literal('(').suppress()
 rpar = Literal(')').suppress()
 define = Literal('=')
@@ -159,14 +165,15 @@ floatnumber = Combine( integer + Optional( point + Optional(number)))
 passiverate = Word('infty') | Word('T')
 internalrate = Word('tau')
 pound = Literal('#').suppress()
-peparate = (floatnumber | internalrate | passiverate | ratename).setParseAction(checkVar)
+percent = Literal('%').suppress()
+peparate = (ratename | floatnumber | internalrate | passiverate).setParseAction(checkVar)
 peparate_indef = floatnumber | internalrate | passiverate
 sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
 coop_op = (parallel | sync).setParseAction(createSyncSet)
 activity = (ratename + col + peparate).setParseAction(createActivity)
 procdef = Word(alphas.upper(), alphanums+"_").setParseAction(createProcdef)
 ## RATES Definitions
-ratedef = (ratename + define + peparate_indef).setParseAction(assignVar) + semicol
+ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(assignVar) + semicol
 
 expression = Forward()
 prefix = Forward()
@@ -199,7 +206,7 @@ def PEPAparse(string):
 
 
 if __name__=="__main__":
-   with open("lan4.pepa","r") as f: 
+   with open("test_files/comparison.pepa","r") as f: 
          try:
              tokens = pepa.parseString(f.read())
              print("============= >> SEQ Procs TREE << ===============")
@@ -208,5 +215,4 @@ if __name__=="__main__":
              print("============= >> System EQ TREE << ===============")
              tree_walker(model.systemeq)
          except ParseException as e:
-            print("LLALLAAA")
             error(e)
