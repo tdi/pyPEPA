@@ -1,4 +1,4 @@
-# PEPA Parser 
+# PEPA Parser
 # Version: 0.1
 # Date: 26.05.2012
 # Author: Dariusz Dwornikowski dariusz.dwornikowski@cs.put.poznan.pl
@@ -11,7 +11,6 @@ import sys
 
 class PEPAParser(object):
 
-    #model = Model()
     logging = False
     logging_pa = False
     varStack = {}
@@ -33,7 +32,9 @@ class PEPAParser(object):
 
     def createActivity(self,str,loc,tok):
         self.log_pa("Token: "+tok[0])
-        n = Node("act("+tok[0]+","+tok[1]+")", "activity")
+        n = Node( "("+tok[0]+","+tok[1]+")", "activity")
+        n.activity = tok[0]
+        n.rate = tok[1]
         return n
 
     def createProcdef(self,str,loc,tok):
@@ -45,7 +46,7 @@ class PEPAParser(object):
         self.log_pa("Start")
         self.log_pa("Left token: "+tok[0].data)
         self.log_pa("Right token: "+tok[2].data)
-        n = Node("=", "definition")
+        n = DefNode("=", "definition")
         n.left = tok[0]
         n.right = tok[2]
         n.lhs = tok[0].data
@@ -62,7 +63,7 @@ class PEPAParser(object):
         if len(tok) > 1:
             self.log_pa("Left token: "+tok[0].data)
             self.log_pa("Right token: "+tok[2].data)
-            n = Node(".", "prefix")
+            n = PrefixNode(".", "prefix")
             lhs = tok[0]
             rhs = tok[2]
             n.left = lhs
@@ -83,7 +84,7 @@ class PEPAParser(object):
                 self.log_pa("Left token: "+tok[0].data)
                 self.log_pa("Right token: "+tok[2].data)
 
-                n = Node("+", "choice")
+                n = ChoiceNode("+", "choice")
                 n.left = tok[0]
                 n.right = tok[2]
                 return n
@@ -126,7 +127,7 @@ class PEPAParser(object):
             self.log_pa("Non terminal - passing")
             return tok[0]
         else:
-            n = Node(tok[0].data, "process")
+            n = Node(tok[0].data, tok[0].asttype)
             self.log_pa("Terminal - creating Node")
             self.log_pa("Token: "+tok[0].data)
         return n
@@ -209,12 +210,12 @@ class PEPAParser(object):
 
     def PEPAparse(self,string):
             self.gramma().parseString(string)
-            return self.model 
+            return self.model
 
 
 
 if __name__=="__main__":
-   with open("test_files/comparison.pepa","r") as f: 
+   with open("test_files/comparison.pepa","r") as f:
          try:
              tokens = pepa.parseString(f.read())
              print("============= >> SEQ Procs TREE << ===============")

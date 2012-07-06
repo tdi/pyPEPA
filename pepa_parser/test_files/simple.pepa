@@ -1,7 +1,22 @@
 //r = 1.0;
 //s = 2.0;
 
-Q1 = (a, infty).(Q2 + (o, infty).Q2);
-//Q2 = (c, infty).Q1;
+//      =
+//    /   \
+//  Q2     .
+//        / \
+//       c   Q2
 
+//      +
+//    /   \
+//   .     .
+//  / \   / \
+// a   Q b   R
+
+//Q1 = (a, infty).(Q2 + (o, infty).Q2);
+//Q = (c, infty).R; // prosty przypadek
+//Q2 = (a, infty).((b,infty).(c,infty).Q1 + (d,infty).Q3); // trudny przypadek
+//P = (a, infty).Q + (b,infty).R;
+P = (p, infty).((a, infty).Q + (b,infty).R);
+//P = (p, infty).(r,infty).Q;
 Q1
