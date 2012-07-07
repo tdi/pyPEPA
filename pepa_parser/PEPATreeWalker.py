@@ -1,4 +1,4 @@
-from CSPAst import *
+from PEPAAst import *
 
 class PEPATreeWalker():
     """ Various AST Tree methods to generate state spaces
