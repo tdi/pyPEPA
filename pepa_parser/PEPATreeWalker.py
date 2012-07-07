@@ -5,18 +5,26 @@ class PEPATreeWalker():
     """
     def __init__(self):
         self._visitstack= []
+        self.dotstack  = ""
         self.logging = False
 
     def log(self,string, msg="",prepend="log"):
         if self.logging:  print(prepend,msg,string)
 
+    def deriveDot(self, node):
+        self.dotstack = "digraph test {\n"
+        node = self._visit_tree1(node)
+        self._visitstack = []
+        self._visit_tree2(node)
+        self.dotstack += "\n}"
+
     def deriveStateSpace(self, node):
         """ Takes node returns state space of a singl
             component
         """
-        node = self.visit_tree1(node)
+        node = self._visit_tree1(node)
         self._visitstack = []
-        self.visit_tree2(node)
+        self._visit_tree2(node)
 
     def _name_subtree(self,node):
         """ Names the subtree
@@ -31,7 +39,7 @@ class PEPATreeWalker():
         current = lcurrent + node.data + rcurrent
         return current
 
-    def visit_tree1(self,node):
+    def _visit_tree1(self,node):
         if node.data == "=":
             node.process = node.left.data
             node.resolved = self._name_subtree(node.right)
@@ -52,32 +60,27 @@ class PEPATreeWalker():
         elif node.asttype == "activity":
             pass
         if node.left is not None:
-            self.visit_tree1(node.left)
+            self._visit_tree1(node.left)
         if node.right is not None:
-            self.visit_tree1(node.right)
+            self._visit_tree1(node.right)
         return node
 
-    def visit_tree2(self,node):
-#        global visitstack
-#        global graph
+    def _visit_tree2(self,node):
         if node.data == "=":
-            graph = ProcessGraph(node.process)
             print("append(NS) " + node.process + " =" + node.resolved)
             self._visitstack.append(node.resolved)
         elif node.data == ".":
             print("trans from " + self._visitstack[-1] + " do " + node.resolved)
             print("append(NS) "  + node.resolved)
+            self.dotstack += "\"" + self._visitstack[-1] + "\" -> \"" + node.resolved + "\"\n"
             self._visitstack.append(node.resolved)
         elif node.data == "+":
-    #        print("JESTEM W "+node.resolved)
             pass
         if node.left is not None:
-            self.visit_tree2(node.left)
+            self._visit_tree2(node.left)
         if node.right is not None:
-            self.visit_tree2(node.right)
+            self._visit_tree2(node.right)
         if node.data != "=":
             self._visitstack.pop()
-
-
 
 

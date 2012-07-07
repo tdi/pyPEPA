@@ -1,31 +1,13 @@
+#!/usr/bin/env python
+"""
+Module with classes for PEPA model.
+
+"""
+
 class Model():
     processes = {}
     systemeq = None
     rates = None
-    costam = ""
-
-
-class SSNode():
-    succ = []
-    data = ""
-
-    def __init__(self, data):
-        self.data = data
-
-class ProcessGraph():
-    firstnode = None
-    vertices = []
-
-    def __init__(self,name):
-        self.name = name
-
-
-class Transition():
-    action = ""
-    rate = ""
-
-class GraphNode():
-    succ = []
 
 
 class Node():
@@ -80,5 +62,21 @@ class DefNode(BaseNode):
     def __init__(self, data, asttype):
         super().__init__(data, asttype)
 
+class ActivityNode(BaseNode):
+    action, rate = None, None
 
+    def __init__(self, data, asttype):
+        super().__init__(data, asttype)
+
+class ProcdefNode(BaseNode):
+    name  = None
+
+    def __init__(self, data, asttype):
+        super().__init__(data, asttype)
+
+class CoopNode(BaseNode):
+    cooptype, actionset = None, None
+
+    def __init__(self, data, asttype):
+        super().__init__(data, asttype)
 
