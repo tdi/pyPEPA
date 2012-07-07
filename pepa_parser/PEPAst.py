@@ -12,6 +12,21 @@ class SSNode():
     def __init__(self, data):
         self.data = data
 
+class ProcessGraph():
+    firstnode = None
+    vertices = []
+
+    def __init__(self,name):
+        self.name = name
+
+
+class Transition():
+    action = ""
+    rate = ""
+
+class GraphNode():
+    succ = []
+
 
 class Node():
     left, right, data, asttype, actions, visited = None, None, 0, None, None, 0
@@ -67,18 +82,3 @@ class DefNode(BaseNode):
 
 
 
-
-# def visit_tree(node):
-#     print(node.data,end="")
-#     if node.left is not None:
-#         print("(", end="")
-#         visit_tree(node.left)
-#         print(" ",end="")
-#     if node.right is not None:
-#         visit_tree(node.right)
-#         print(")", end="")
-#
-
-def tree_walker(node):
-    visit_tree(node)
-    print("")
