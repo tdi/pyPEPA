@@ -1,8 +1,11 @@
-# PEPA Parser
-# Version: 0.1
-# Date: 26.05.2012
-# Author: Dariusz Dwornikowski dariusz.dwornikowski@cs.put.poznan.pl
-# Licence: Poznań University of Technology
+#!/usr/bin/env python
+"""
+PEPA Parser
+Known limitations:
+    - no handling of <> yet and no handling of hiding operator
+    - no error handling
+    - no handling systemEQ
+"""
 
 from pyparsing import *
 from PEPAAst import *
@@ -32,14 +35,15 @@ class PEPAParser(object):
 
     def createActivity(self,str,loc,tok):
         self.log_pa("Token: "+tok[0])
-        n = Node( "("+tok[0]+","+tok[1]+")", "activity")
-        n.activity = tok[0]
+        n = ActivityNode( "("+tok[0]+","+tok[1]+")", "activity")
+        n.action = tok[0]
         n.rate = tok[1]
         return n
 
     def createProcdef(self,str,loc,tok):
         self.log_pa("Token: "+tok[0])
-        n = Node(tok[0], "procdef")
+        n = ProcdefNode(tok[0], "procdef")
+        n.name = tok[0]
         return n
 
     def createDefinition(self,str,loc, tok):
@@ -96,11 +100,13 @@ class PEPAParser(object):
                 self.log_pa("Token: "+tok[0].data)
                 return tok[0]
             else:
+                self.log_pa("Number of tokens" + str(len(tok)))
                 self.log_pa("Left token: "+tok[0].data)
                 if tok[1].actions is not None:
-                    n = Node("<"+str(tok[1].actions)+">", "coop")
+                    n = CoopNode("<"+str(tok[1].actions)+">", "coop")
+                    n.actionset = tok[1].actions
                 else:
-                    n = Node("||", "coop")
+                    n = CoopNode("||", "coop")
                 if type(tok[2]).__name__ == "str":
                     self.log_pa("String: "+tok[2])
                 else:
@@ -110,7 +116,7 @@ class PEPAParser(object):
                 return n
 
     def createSyncSet(self,string, loc, tok):
-        if len(tok) >1:
+        if tok[0] != "||":
             self.log_pa("Non empty synset: "+str(tok))
             n = Node(tok, "syncset")
             n.actions = tok
