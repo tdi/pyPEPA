@@ -5,7 +5,7 @@
 # Licence: Poznań University of Technology
 
 from pyparsing import *
-from CSPAst import *
+from PEPAAst import *
 import sys
 
 
