@@ -1,4 +1,6 @@
 from PEPAAst import *
+import logging
+from ComponentSSGraph import *
 
 class PEPATreeWalker():
     """ Various AST Tree methods to generate state spaces
@@ -6,12 +8,11 @@ class PEPATreeWalker():
     def __init__(self):
         self._visitstack= []
         self.dotstack  = ""
-        self.logging = False
-
-    def log(self,string, msg="",prepend="log"):
-        if self.logging:  print(prepend,msg,string)
+        self.graph = None
+        self.log = logging.getLogger(__name__)
 
     def deriveDot(self, node):
+        self.log.debug('Starting')
         self.dotstack = "digraph test {\n"
         node = self._visit_tree1(node)
         self._visitstack = []
@@ -24,7 +25,12 @@ class PEPATreeWalker():
         """
         node = self._visit_tree1(node)
         self._visitstack = []
+        # creating SS graph fo the component
+        self.graph = ComponnetSSGraph()
+        # assign name from the first node, which is DefNode with field name
+        self.graph.name = node.process
         self._visit_tree2(node)
+        return self.graph
 
     def _name_subtree(self,node):
         """ Names the subtree
@@ -33,7 +39,7 @@ class PEPATreeWalker():
         lcurrent,rcurrent = "",""
 
         if node.left is not None:
-            lcurrent+=self._name_subtree(node.left)
+            lcurrent +=  self._name_subtree(node.left)
         if node.right is not None:
             rcurrent+=self._name_subtree(node.right)
         current = lcurrent + node.data + rcurrent
@@ -67,13 +73,30 @@ class PEPATreeWalker():
 
     def _visit_tree2(self,node):
         if node.data == "=":
-            print("append(NS) " + node.process + " =" + node.resolved)
-            self._visitstack.append(node.resolved)
+            # create new node, we are in the first node of AST
+            compnode = ComponentState()
+            compnode.name = node.process
+            compnode.resolved = node.resolved
+            # adding to ss dict
+            self.graph.ss[node.process] = compnode
+            self.graph.firstnode = node.process
+            # first node for sure
+            self.log.debug("append(NS) " + node.process + " =" + node.resolved)
+            self._visitstack.append(compnode)
         elif node.data == ".":
-            print("trans from " + self._visitstack[-1] + " do " + node.resolved)
-            print("append(NS) "  + node.resolved)
-            self.dotstack += "\"" + self._visitstack[-1] + "\" -> \"" + node.resolved + "\"\n"
-            self._visitstack.append(node.resolved)
+            trans = Transition(node.action, node.action, node.resolved)
+            # add transition to the last state (in the graph)
+            if self._visitstack[-1].name is not None:
+                self.graph.ss[self._visitstack[-1].name].transitions = trans
+            else:
+                self.graph.ss[self._visitstack[-1].resolved].transitions = trans
+            self.log.debug("trans from " + self._visitstack[-1].resolved + " do " + node.resolved)
+            self.log.debug("append(NS) "  + node.resolved)
+            # new state again
+            compnode = ComponentState()
+            compnode.resolved = node.resolved
+            self.graph.ss[node.resolved] = compnode
+            self._visitstack.append(compnode)
         elif node.data == "+":
             pass
         if node.left is not None:
@@ -81,6 +104,7 @@ class PEPATreeWalker():
         if node.right is not None:
             self._visit_tree2(node.right)
         if node.data != "=":
+            # if in = again, do not pop
             self._visitstack.pop()
 
 

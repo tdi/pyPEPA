@@ -9,6 +9,7 @@ Known limitations:
 
 from pyparsing import *
 from PEPAAst import *
+from PEPAModel import PEPAModel
 import sys
 
 
@@ -19,7 +20,7 @@ class PEPAParser(object):
     varStack = {}
 
     def __init__(self, logging_pa = False):
-        self.model = Model()
+        self.model = PEPAModel()
         self.logging_pa = logging_pa
 
     def log_pa(self,string, msg="",prepend="[PARSEACT]"):
@@ -53,9 +54,9 @@ class PEPAParser(object):
         n = DefNode("=", "definition")
         n.left = tok[0]
         n.right = tok[2]
-        n.lhs = tok[0].data
+        n.process = tok[0].data
         for key in self.model.processes.keys():
-            if self.model.processes[key].lhs == tok[0].data:
+            if self.model.processes[key].process == tok[0].data:
                 self.error("Process "+tok[0].data+" already defined")
                 exit(1)
         self.model.processes[tok[0]] = n
@@ -102,9 +103,9 @@ class PEPAParser(object):
             else:
                 self.log_pa("Number of tokens" + str(len(tok)))
                 self.log_pa("Left token: "+tok[0].data)
-                if tok[1].actions is not None:
-                    n = CoopNode("<"+str(tok[1].actions)+">", "coop")
-                    n.actionset = tok[1].actions
+                if tok[1].actionset is not None:
+                    n = CoopNode("<"+str(tok[1].actionset)+">", "coop")
+                    n.actionset = tok[1].actionset
                 else:
                     n = CoopNode("||", "coop")
                 if type(tok[2]).__name__ == "str":
@@ -118,11 +119,12 @@ class PEPAParser(object):
     def createSyncSet(self,string, loc, tok):
         if tok[0] != "||":
             self.log_pa("Non empty synset: "+str(tok))
-            n = Node(tok, "syncset")
-            n.actions = tok
+            n = SyncsetNode("<>", "syncset")
+            n.actionset = tok
         else:
             self.log_pa("Parallel")
-            n = Node("||", "syncset")
+            n = SyncsetNode("||", "syncset")
+            n.actionset = None
         return n
 
 
@@ -133,8 +135,13 @@ class PEPAParser(object):
             self.log_pa("Non terminal - passing")
             return tok[0]
         else:
-            n = Node(tok[0].data, tok[0].asttype)
-            self.log_pa("Terminal - creating Node")
+            if tok[0].asttype == "procdef":
+                n = ProcdefNode(tok[0].data, tok[0].asttype)
+            elif tok[0].asttype == "activity":
+                n = ActivityNode(tok[0].data, tok[0].asttype)
+            else:
+                self.log_pa("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROR")
+            self.log_pa("Terminal - creating Node ->" + tok[0].asttype)
             self.log_pa("Token: "+tok[0].data)
         return n
 

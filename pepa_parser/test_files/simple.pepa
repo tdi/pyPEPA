@@ -13,10 +13,11 @@
 //  / \   / \
 // a   Q b   R
 
-//Q1 = (a, infty).(Q2 + (o, infty).Q2);
+//P = (a,infty).P;
+//Q1 = (a, infty).(Q2 + (o, infty).Q2); // zle
 //Q = (c, infty).R; // prosty przypadek
-Q2 = (a, infty).((b,infty).(c,infty).Q1 + (d,infty).Q3); // trudny przypadek
-//P = (a, infty).Q + (b,infty).R;
+//Q2 = (a, infty).((b,infty).(c,infty).Q1 + (d,infty).Q3); // trudny przypadek
+P = (a, infty).Q + (b,infty).R;
 //P  = P <anna> Q;
 //P = (p, infty).((a, infty).Q + (b,infty).R);
 //P = (p, infty).(r,infty).Q;
