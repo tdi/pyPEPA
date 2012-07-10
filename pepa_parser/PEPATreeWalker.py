@@ -39,19 +39,19 @@ class PEPATreeWalker():
             # if in = again, do not pop
             self._visitstack.pop()
 
-    def derive_whole_ss(self):
-        ss = self.graph.ss
-        for first in self.graph.firstnodes:
-            self._walk_comp_ss(first)
+    # def derive_whole_ss(self):
+    #     ss = self.graph.ss
+    #     for first in self.graph.firstnodes:
+    #         self._walk_comp_ss(first)
 
-    def _walk_comp_ss(self, node):
-        if self.graph.ss[node].name is not None:
-            self.log.debug("State " + self.graph.ss[node].name)
-        else:
-            self.log.debug("State " + self.graph.ss[node].resolved)
-        # for tran in self.graph.ss[node].transitions:
-        #     self.log.debug("-> " + tran.to)
-        #     self._walk_comp_ss(tran.to)
+    # def _walk_comp_ss(self, node):
+    #     if self.graph.ss[node].name is not None:
+    #         self.log.debug("State " + self.graph.ss[node].name)
+    #     else:
+    #         self.log.debug("State " + self.graph.ss[node].resolved)
+    #     # for tran in self.graph.ss[node].transitions:
+    #     #     self.log.debug("-> " + tran.to)
+    #     #     self._walk_comp_ss(tran.to)
 
     def derive_processes_ss(self, node):
         """ Takes node returns state space of a single
@@ -65,6 +65,7 @@ class PEPATreeWalker():
         # assign name from the first node, which is DefNode with field name
         # to be changed
         self.graph.name = node.process
+        self.log.debug("Deriving " + node.process)
         self._visit_tree2(node)
         return self.graph
 

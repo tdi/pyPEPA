@@ -8,8 +8,5 @@ if __name__=="__main__":
     logging.info('zaczyna sie')
 #    pm = PEPAModel("test_files/simple_prop.pepa")
     pm = PEPAModel("test_files/passive.pepa")
-    proc = pm.seq_processes
-    for v in proc.keys():
-        print(v)
 
 
