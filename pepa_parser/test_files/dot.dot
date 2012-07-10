@@ -1,0 +1,11 @@
+digraph test {
+  "(a,infty).(b,infty).(c,infty).Q1+(d,infty).Q3" ->
+  "(b,infty).(c,infty).Q1+(d,infty).Q3"
+  "(b,infty).(c,infty).Q1+(d,infty).Q3" -> "(c,infty).Q1"
+  "(c,infty).Q1" -> "Q1"
+  "(b,infty).(c,infty).Q1+(d,infty).Q3" -> "Q3"
+
+}
+
+
+

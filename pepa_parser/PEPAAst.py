@@ -24,7 +24,7 @@ class ChoiceNode(BaseNode):
         super().__init__(data, asttype)
 
 class PrefixNode(BaseNode):
-    action, resolved = None, None
+    action, resolved,rate = None, None, None
 
     def __init__(self, data, asttype):
         super().__init__(data, asttype)
@@ -36,7 +36,8 @@ class DefNode(BaseNode):
         super().__init__(data, asttype)
 
 class ActivityNode(BaseNode):
-    action, rate = None, None
+
+    action, rate = "", ""
 
     def __init__(self, data, asttype):
         super().__init__(data, asttype)
