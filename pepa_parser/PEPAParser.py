@@ -9,18 +9,22 @@ Known limitations:
 
 from pyparsing import *
 from PEPAAst import *
-from PEPAModel import PEPAModel
 import sys
 
 
 class PEPAParser(object):
+    """
+    TODO: change all to private fields...
+    """
 
     logging = False
     logging_pa = False
     varStack = {}
+    processes = {}
+    rates = {}
+    systemeq = None
 
     def __init__(self, logging_pa = False):
-        self.model = PEPAModel()
         self.logging_pa = logging_pa
 
     def log_pa(self,string, msg="",prepend="[PARSEACT]"):
@@ -34,9 +38,9 @@ class PEPAParser(object):
         print("SYNTAX ERROR: ", string)
 
 
-    def createActivity(self,str,loc,tok):
+    def _createActivity(self,str,loc,tok):
         self.log_pa("Token: "+tok[0])
-        n = ActivityNode( "("+tok[0]+","+tok[1]+")", "activity")
+        n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
         n.action = tok[0]
         n.rate = tok[1]
         return n
@@ -48,22 +52,20 @@ class PEPAParser(object):
         return n
 
     def createDefinition(self,str,loc, tok):
-        self.log_pa("Start")
         self.log_pa("Left token: "+tok[0].data)
         self.log_pa("Right token: "+tok[2].data)
         n = DefNode("=", "definition")
         n.left = tok[0]
         n.right = tok[2]
         n.process = tok[0].data
-        for key in self.model.processes.keys():
-            if self.model.processes[key].process == tok[0].data:
+        for key in self.processes.keys():
+            if self.processes[key].process == tok[0].data:
                 self.error("Process "+tok[0].data+" already defined")
                 exit(1)
-        self.model.processes[tok[0]] = n
+        self.processes[tok[0]] = n
         return n
 
     def createPrefix(self,string, loc, tok):
-        self.log_pa("Start<<<")
         self.log_pa("Tokens: "+str( len(tok) ))
         if len(tok) > 1:
             self.log_pa("Left token: "+tok[0].data)
@@ -106,6 +108,7 @@ class PEPAParser(object):
                 if tok[1].actionset is not None:
                     n = CoopNode("<"+str(tok[1].actionset)+">", "coop")
                     n.actionset = tok[1].actionset
+                    self.log_pa(n.actionset)
                 else:
                     n = CoopNode("||", "coop")
                 if type(tok[2]).__name__ == "str":
@@ -118,7 +121,7 @@ class PEPAParser(object):
 
     def createSyncSet(self,string, loc, tok):
         if tok[0] != "||":
-            self.log_pa("Non empty synset: "+str(tok))
+            self.log_pa("Non empty synset: " + str(tok))
             n = SyncsetNode("<>", "syncset")
             n.actionset = tok
         else:
@@ -139,6 +142,8 @@ class PEPAParser(object):
                 n = ProcdefNode(tok[0].data, tok[0].asttype)
             elif tok[0].asttype == "activity":
                 n = ActivityNode(tok[0].data, tok[0].asttype)
+                n.rate = tok[0].rate
+                n.action = tok[0].action
             else:
                 self.log_pa("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROR")
             self.log_pa("Terminal - creating Node ->" + tok[0].asttype)
@@ -148,24 +153,29 @@ class PEPAParser(object):
 
     def createSystemEQ(self, string, loc, tok):
         self.log_pa("Creating system EQ")
-        self.model.systemeq = tok[0]
+        self.systemeq = tok[0]
 
 
     def createRates(self,string, loc, tok):
-        self.model.rates = self.varStack
+        """ TODO: redundant
+        """
+        self.rates = self.varStack
 
 
     def assignVar(self,toks):
-        self.log_pa("VAR"+toks[0])
         self.varStack[toks[0]] = toks[2]
 
     def checkVar(self,str,loc,tok):
         try:
-            if tok[0] not in ("infty", "T", "tau"):
-                self.varStack[tok[0]]
+            # just a number
+            float(tok[0])
         except:
-            self.error(tok[0]+" Rate not defined")
-            exit(1)
+            try:
+                if tok[0] not in ("infty", "T", "tau"):
+                    self.varStack[tok[0]]
+            except:
+                self.error(tok[0]+" Rate not defined")
+                exit(1)
 
     def gramma(self):
 ## Tokens
@@ -191,7 +201,7 @@ class PEPAParser(object):
         peparate_indef = floatnumber | internalrate | passiverate
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self.createSyncSet)
-        activity = (ratename + col + peparate).setParseAction(self.createActivity)
+        activity = (ratename + col + peparate).setParseAction(self._createActivity)
         procdef = Word(alphas.upper(), alphanums+"_").setParseAction(self.createProcdef)
 ## RATES Definitions
         ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self.assignVar) + semicol
@@ -221,9 +231,9 @@ class PEPAParser(object):
         pepa.ignore(pepacomment)
         return pepa
 
-    def PEPAparse(self,string):
+    def parse(self,string):
             self.gramma().parseString(string)
-            return self.model
+            return (self.processes, self.rates, self.systemeq)
 
 
 

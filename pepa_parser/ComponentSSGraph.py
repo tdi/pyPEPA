@@ -16,16 +16,20 @@ class Transition():
         self.to = to
 
 
+class SystemEquation():
+
+    def __init__(self):
+        self.processes = {}
+
 class ComponnetSSGraph():
     """
     self.ss is a hash table, the keys are state names e.g. P1 or resolved where not possible -> ComponenStates
 
     """
-
     def __init__(self):
         self.name = ""
         self.ss = {}
-        self.firstnode = None
+        self.firstnodes = []
         self.dotrepr = ""
 
 
