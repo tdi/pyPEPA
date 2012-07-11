@@ -237,14 +237,3 @@ class PEPAParser(object):
 
 
 
-if __name__=="__main__":
-   with open("test_files/comparison.pepa","r") as f:
-         try:
-             tokens = pepa.parseString(f.read())
-             print("============= >> SEQ Procs TREE << ===============")
-             for key in model.processes.keys():
-                 tree_walker(model.processes[key])
-             print("============= >> System EQ TREE << ===============")
-             tree_walker(model.systemeq)
-         except ParseException as e:
-            error(e)

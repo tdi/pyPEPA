@@ -21,7 +21,20 @@ class SystemEquation():
     def __init__(self):
         self.processes = {}
 
-class ComponnetSSGraph():
+
+class ComponentSSGraph():
+
+    def __init__(self, name=""):
+        self.name = name
+        self.ss = {}
+        self.activities = []
+        self.shared = []
+
+    def __str__(self):
+        return "Component " + self.name + " " + len(self.ss.keys())
+
+
+class ModelSSGraph():
     """
     self.ss is a hash table, the keys are state names e.g. P1 or resolved where not possible -> ComponenStates
 
@@ -31,5 +44,6 @@ class ComponnetSSGraph():
         self.ss = {}
         self.firstnodes = []
         self.dotrepr = ""
+        self.shared_actions = None
 
 

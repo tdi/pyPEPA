@@ -1,0 +1,4 @@
+digraph P1{
+"P1" -> "P2" [label="(a,a)"]
+"P2" -> "P1" [label="(b,b)"]
+}
