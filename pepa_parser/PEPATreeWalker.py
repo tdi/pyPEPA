@@ -9,49 +9,11 @@ class PEPATreeWalker():
     """
     def __init__(self):
         self._visitstack= []
-        self.dotstack  = ""
-        self.graph = ComponnetSSGraph()
+        self.graph = ModelSSGraph()
         self.log = logging.getLogger(__name__)
         self._after_1_visit = None
         self.seq_components = {}
-
-    def derive_dot(self, node):
-        self.dotstack = "digraph " + node.process + " {\n"
-        node = self._visit_tree1(node)
-        self._visitstack = []
-        self._visit_fordot(node)
-        self.dotstack += "\n}"
-        return self.dotstack
-
-    def _visit_fordot(self,node):
-        if node.data == "=":
-            self._visitstack.append(node.process)
-        elif node.data == ".":
-            self.dotstack += "\"" + self._visitstack[-1] + "\" ->" + "\"" + node.resolved + "\" [label=" + node.action +"]\n"
-            self._visitstack.append(node.resolved)
-        elif node.data == "+":
-            pass
-        if node.left is not None:
-            self._visit_fordot(node.left)
-        if node.right is not None:
-            self._visit_fordot(node.right)
-        if node.data != "=":
-            # if in = again, do not pop
-            self._visitstack.pop()
-
-    # def derive_whole_ss(self):
-    #     ss = self.graph.ss
-    #     for first in self.graph.firstnodes:
-    #         self._walk_comp_ss(first)
-
-    # def _walk_comp_ss(self, node):
-    #     if self.graph.ss[node].name is not None:
-    #         self.log.debug("State " + self.graph.ss[node].name)
-    #     else:
-    #         self.log.debug("State " + self.graph.ss[node].resolved)
-    #     # for tran in self.graph.ss[node].transitions:
-    #     #     self.log.debug("-> " + tran.to)
-    #     #     self._walk_comp_ss(tran.to)
+        self.shared_actions = {}
 
     def derive_processes_ss(self, node):
         """ Takes node returns state space of a single
@@ -60,10 +22,6 @@ class PEPATreeWalker():
         node = self._visit_tree1(node)
         self._after_1_visit = node
         self._visitstack = []
-        # creating SS graph for all bedzie
-        ### self.graph = ComponnetSSGraph()
-        # assign name from the first node, which is DefNode with field name
-        # to be changed
         self.graph.name = node.process
         self.log.debug("Deriving " + node.process)
         self._visit_tree2(node)
@@ -84,12 +42,16 @@ class PEPATreeWalker():
 
 
     def derive_systemeq(self, node):
+        """ API function for generating state space of a process (node)"""
         self._visit_systemeq(node)
+        self.graph.shared_actions = self.shared_actions
         return self.seq_components
 
     def _visit_systemeq(self, node):
         if node.asttype == "coop":
-            pass
+            for action in node.actionset:
+                if action != "<>":
+                    self.shared_actions[action]=""
         elif node.asttype == "procdef":
             self.seq_components[node.data] = ""
         if node.left is not None:
@@ -100,6 +62,10 @@ class PEPATreeWalker():
 
 
     def _visit_tree1(self,node):
+        """
+        Walk the AST tree for the first time to reduce the tree.
+        TODO: merge with _visit_tree2
+        """
         if node.data == "=":
             node.process = node.left.data
             node.resolved = self._name_subtree(node.right)
@@ -142,9 +108,8 @@ class PEPATreeWalker():
             self.log.debug("(NS) " + node.process + " = " + node.resolved)
             self._visitstack.append(node.process)
         elif node.data == ".":
-            trans = Transition(node.action, node.action, node.resolved)
+            trans = Transition(node.action, node.rate, node.resolved)
             # add transition to the last state (in the graph)
-            self.log.debug("Appending1 name " + self._visitstack[-1])
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
             self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...

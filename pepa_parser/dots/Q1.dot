@@ -1,0 +1,4 @@
+digraph Q1{
+"Q1" -> "Q2" [label="(a,a)"]
+"Q2" -> "Q1" [label="(b,b)"]
+}
