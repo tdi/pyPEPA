@@ -53,7 +53,10 @@ class PEPATreeWalker():
                 if action != "<>":
                     self.shared_actions[action]=""
         elif node.asttype == "procdef":
-            self.seq_components[node.data] = ""
+            if node.data in self.seq_components:
+                self.seq_components[node.data] += 1
+            else:
+                self.seq_components[node.data] = 1
         if node.left is not None:
             self._visit_systemeq(node.left)
         if node.right is not None:
@@ -117,7 +120,7 @@ class PEPATreeWalker():
             compnode = ComponentState()
             compnode.resolved = node.resolved
             if node.resolved not in self.graph.ss:
-                self.log.debug("New state, not yet in there" + node.resolved)
+            #    self.log.debug("New state, not yet in there" + node.resolved)
                 self.graph.ss[node.resolved] = compnode
             self._visitstack.append(node.resolved)
         elif node.data == "+":
