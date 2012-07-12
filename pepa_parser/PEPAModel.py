@@ -63,13 +63,19 @@ class ComponentStateVisitor():
                 self._visit_dot(tran.to)
 
 
-
-
 class PEPAModel():
     """
-        param modelfile is a path to a file with pepa model
+        Representation of a final PEPA model, everything needed to derive CTMC
+        - state spaces of components that are present in a system equation
+        - rate definitions
+        - system equation
     """
     def __init__(self, modelfile):
+        """ Create PEPA model instance and fill the fields
+
+        Keyword arguments:
+        modelfile --- path to the model file
+        """
         self.processes = {}
         self.systemeq = None
         self.rate_definitions = {}
@@ -87,7 +93,6 @@ class PEPAModel():
         for comp in self.seq_processes.keys():
             self.components[comp] = ComponentSSGraph(comp)
             self.log.debug("GC Deriving for component: " + comp)
-#            visitor.visit_print(comp)
             self.components[comp] = visitor.generate_ss(comp, self.components[comp])
 
     def _prepare_systemeq(self):
@@ -96,14 +101,13 @@ class PEPAModel():
 
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it.
-            In case of the parse error, an exception is risen
         """
         with open(modelfile, "r") as f:
             modelfile = f.read()
         try:
             parser = PEPAParser(False)
             (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
-        except ParseException as e:
+        except Exception as e:
             self.log.debug(e)
             print("Parsing error : " + e.msg )
             sys.exit(1)
@@ -114,6 +118,10 @@ class PEPAModel():
         for node in self.processes.values():
             self.tw.derive_processes_ss(node)
 
+    def generate_dots(self):
+        visitor = ComponentStateVisitor(self.tw.graph)
+        for comp in self.seq_processes.keys():
+            visitor.get_dot(comp)
 
 
 
