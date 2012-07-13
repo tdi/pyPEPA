@@ -107,10 +107,12 @@ class PEPAParser(object):
                 self.log_pa("Left token: "+tok[0].data)
                 if tok[1].actionset is not None:
                     n = CoopNode("<"+str(tok[1].actionset)+">", "coop")
+                    n.cooptype = "sync"
                     n.actionset = tok[1].actionset
                     self.log_pa(n.actionset)
                 else:
                     n = CoopNode("||", "coop")
+                    n.cooptype = "par"
                 if type(tok[2]).__name__ == "str":
                     self.log_pa("String: "+tok[2])
                 else:
@@ -120,7 +122,7 @@ class PEPAParser(object):
                 return n
 
     def createSyncSet(self,string, loc, tok):
-        if tok[0] != "||":
+        if tok[0] != "||" and tok[0] != "<>":
             self.log_pa("Non empty synset: " + str(tok))
             n = SyncsetNode("<>", "syncset")
             n.actionset = tok
