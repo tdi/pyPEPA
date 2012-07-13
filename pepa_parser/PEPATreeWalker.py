@@ -1,8 +1,10 @@
-from PEPAAst import *
+#!/usr/bin/env python
+
 import logging
-from ComponentSSGraph import *
 import sys
 from pprint import pprint
+from ComponentSSGraph import *
+from PEPAAst import *
 
 class PEPATreeWalker():
     """ Various AST Tree methods to generate state spaces
@@ -34,9 +36,19 @@ class PEPATreeWalker():
         lcurrent,rcurrent = "",""
 
         if node.left is not None:
-            lcurrent +=  self._name_subtree(node.left)
+            if node.left.asttype in ("choice", "prefixx"):
+                lcurrent += "("
+                lcurrent +=  self._name_subtree(node.left)
+                lcurrent += ")"
+            else:
+                lcurrent +=  self._name_subtree(node.left)
         if node.right is not None:
-            rcurrent+=self._name_subtree(node.right)
+            if node.right.asttype in ("choice", "prefixx"):
+                rcurrent += "("
+                rcurrent += self._name_subtree(node.right)
+                rcurrent += ")"
+            else:
+                rcurrent += self._name_subtree(node.right)
         current = lcurrent + node.data + rcurrent
         return current
 
@@ -48,7 +60,8 @@ class PEPATreeWalker():
         return self.seq_components
 
     def _visit_systemeq(self, node):
-        if node.asttype == "coop":
+        print("NIO"+node.data)
+        if node.asttype == "coop" and node.cooptype is not "par":
             for action in node.actionset:
                 if action != "<>":
                     self.shared_actions[action]=""
