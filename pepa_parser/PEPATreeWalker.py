@@ -6,6 +6,7 @@ from pprint import pprint
 from ComponentSSGraph import *
 from PEPAAst import *
 
+
 class PEPATreeWalker():
     """ Various AST Tree methods to generate state spaces
     """
@@ -16,6 +17,7 @@ class PEPATreeWalker():
         self._after_1_visit = None
         self.seq_components = {}
         self.shared_actions = {}
+        self.global_start_state = []
 
     def derive_processes_ss(self, node):
         """ Takes node returns state space of a single
@@ -57,18 +59,20 @@ class PEPATreeWalker():
         """ API function for generating state space of a process (node)"""
         self._visit_systemeq(node)
         self.graph.shared_actions = self.shared_actions
-        return self.seq_components
+        return (self.seq_components, self.global_start_state)
 
     def _visit_systemeq(self, node):
-        print("NIO"+node.data)
+#        print("NIO"+node.data)
         if node.asttype == "coop" and node.cooptype is not "par":
             for action in node.actionset:
                 if action != "<>":
                     self.shared_actions[action]=""
         elif node.asttype == "procdef":
             if node.data in self.seq_components:
+                self.global_start_state.append(node.data)
                 self.seq_components[node.data] += 1
             else:
+                self.global_start_state.append(node.data)
                 self.seq_components[node.data] = 1
         if node.left is not None:
             self._visit_systemeq(node.left)
@@ -112,6 +116,7 @@ class PEPATreeWalker():
         """ Second visiting of the tree, this tree is of elements +.=
             Additionally the function creates graph
         """
+        print(node.data)
         if node.data == "=":
             # create new node, we are in the first node of AST
             compnode = ComponentState()
@@ -122,7 +127,9 @@ class PEPATreeWalker():
             self.graph.firstnodes.append( node.process )
             # first node for sure
             self.log.debug("(NS) " + node.process + " = " + node.resolved)
+            print("Appending = "+node.process)
             self._visitstack.append(node.process)
+            print(self._visitstack)
         elif node.data == ".":
             trans = Transition(node.action, node.rate, node.resolved)
             # add transition to the last state (in the graph)
@@ -130,20 +137,21 @@ class PEPATreeWalker():
             self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
             self.log.debug("(NS) " +  node.resolved)
-            compnode = ComponentState()
-            compnode.resolved = node.resolved
             if node.resolved not in self.graph.ss:
-            #    self.log.debug("New state, not yet in there" + node.resolved)
+                # new state - append
+                compnode = ComponentState()
+                compnode.resolved = node.resolved
                 self.graph.ss[node.resolved] = compnode
             self._visitstack.append(node.resolved)
+            print("Appending "+node.resolved)
+            print(self._visitstack)
         elif node.data == "+":
             pass
         if node.left is not None:
             self._visit_tree2(node.left)
         if node.right is not None:
             self._visit_tree2(node.right)
-        if node.data != "=":
-            # if in = again, do not pop
+        if not self._visitstack:
             self._visitstack.pop()
 
 

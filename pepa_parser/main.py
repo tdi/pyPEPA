@@ -8,9 +8,11 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG)
     logging.info('zaczyna sie')
-#    pm = PEPAModel("test_files/simple_prop.pepa")
+
+#pm = PEPAModel("test_files/simple.pepa")
     pm = PEPAModel("test_files/comparison.pepa")
-    # pm.generate_dots()
+    pprint(pm.global_state_start)
+    pm.generate_dots()
     # print("Seq processes")
     # for proc in pm.seq_processes.keys():
     #     print(proc + " Number in SEQ"+str (pm.seq_processes[proc] ))

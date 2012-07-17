@@ -4,8 +4,4 @@ digraph P{
 "(use,m1).(relm1,r).P1" -> "(relm1,r).P1" [label="(use,m1)" fontsize=10]
 "(relm1,r).P1" -> "P1" [label="(relm1,r)"                 fontsize=10, fontcolor=red]
 "P1" -> "P" [label="(update,n1)" fontsize=10]
-"(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2" -> "(use,m2).(relm2,r).P2" [label="(getm2,g_times_1_minus_p)"                 fontsize=10, fontcolor=red]
-"(use,m2).(relm2,r).P2" -> "(relm2,r).P2" [label="(use,m2)" fontsize=10]
-"(relm2,r).P2" -> "P2" [label="(relm2,r)"                 fontsize=10, fontcolor=red]
-"P2" -> "P" [label="(update,n2)" fontsize=10]
 }
