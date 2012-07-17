@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#/usr/bin/env python
 import logging
 from pprint import pprint
 import sys
@@ -81,23 +81,39 @@ class PEPAModel():
         self.rate_definitions = {}
         self.components = {}
         self.seq_processes = {}
+        self.global_state_start = None
         self.tw = PEPATreeWalker()
         self.log = logging.getLogger(__name__)
         self._parse_read_model(modelfile)
         self._prepare_systemeq()
         self._prepare_trees()
         self._generate_components()
+        self._generate_model_ss()
+
+    def _gs_to_string(self, gs_list):
+        return ','.join( map( str, gs_list ) )
+
+    def _generate_model_ss(self):
+        self.log.debug("First state (" + self._gs_to_string(self.global_state_start) + ")")
 
     def _generate_components(self):
+        """
+        Generates state space graphs for every component
+        in the model into components dict
+        """
         visitor = ComponentStateVisitor(self.tw.graph)
         for comp in self.seq_processes.keys():
             self.components[comp] = ComponentSSGraph(comp)
-            self.log.debug("GC Deriving for component: " + comp)
             self.components[comp] = visitor.generate_ss(comp, self.components[comp])
 
     def _prepare_systemeq(self):
+        """
+        Derives components taking part in processing into dict
+        where key is name, values is number of processes
+        TODO: aggregation should be here
+        """
         self.log.debug("Preparing systemeq")
-        self.seq_processes = self.tw.derive_systemeq(self.systemeq)
+        self.seq_processes, self.global_state_start = self.tw.derive_systemeq(self.systemeq)
 
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it.
