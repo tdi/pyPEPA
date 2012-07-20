@@ -14,7 +14,9 @@
 // a   Q b   R
 
 
-P  = (a, infty).P +(b,infty).P + (c,infty).P;
+P  = (a, infty).P +(u,infty).(b,infty).Q + (c,infty).R;
+//Q =  (q,infty).P;
+//R =  (r,infty).P;
 //P  = (a, infty).(b,infty).(c,infty).P;
 
 //P = (a,infty).P;

@@ -9,8 +9,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logging.info('zaczyna sie')
 
-#pm = PEPAModel("test_files/simple.pepa")
-    pm = PEPAModel("test_files/comparison.pepa")
+#    pm = PEPAModel("test_files/simple.pepa")
+#    pm = PEPAModel("test_files/browser.pepa")
+    pm = PEPAModel("test_files/REG-DB.pepa")
     pprint(pm.global_state_start)
     pm.generate_dots()
     # print("Seq processes")
