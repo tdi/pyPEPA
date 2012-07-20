@@ -17,7 +17,9 @@
 #M2 = (getm2, infty).(relm2,infty).M2;
 #Bus = (getm1, infty).(relm1,infty).Bus + (getm2, infty).(relm2,infty).Bus;
 
-(P || P)  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
+P  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
 
+
+//(P || P)  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
 
 //P  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)

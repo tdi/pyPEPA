@@ -116,7 +116,6 @@ class PEPATreeWalker():
         """ Second visiting of the tree, this tree is of elements +.=
             Additionally the function creates graph
         """
-        print(node.data)
         if node.data == "=":
             # create new node, we are in the first node of AST
             compnode = ComponentState()
@@ -126,32 +125,34 @@ class PEPATreeWalker():
             self.graph.ss[node.process] = compnode
             self.graph.firstnodes.append( node.process )
             # first node for sure
-            self.log.debug("(NS) " + node.process + " = " + node.resolved)
-            print("Appending = "+node.process)
+            self.log.debug("(COMPONENT) " + node.process + " = " + node.resolved)
             self._visitstack.append(node.process)
-            print(self._visitstack)
         elif node.data == ".":
             trans = Transition(node.action, node.rate, node.resolved)
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
             self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
-            self.log.debug("(NS) " +  node.resolved)
+#            self.log.debug("(NS) " +  node.resolved)
             if node.resolved not in self.graph.ss:
                 # new state - append
                 compnode = ComponentState()
                 compnode.resolved = node.resolved
                 self.graph.ss[node.resolved] = compnode
+            print("Appending " + node.resolved)
             self._visitstack.append(node.resolved)
-            print("Appending "+node.resolved)
-            print(self._visitstack)
         elif node.data == "+":
             pass
         if node.left is not None:
             self._visit_tree2(node.left)
         if node.right is not None:
             self._visit_tree2(node.right)
-        if not self._visitstack:
+        if node.data !="+":
             self._visitstack.pop()
+        print("AFTER in " + node.data + " " + node.resolved, end="   ")
+        pprint(self._visitstack)
+        # if empty ..
+#        if not self._visitstack:
+#            self._visitstack.pop()
 
 
