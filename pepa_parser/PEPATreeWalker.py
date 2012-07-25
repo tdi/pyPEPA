@@ -62,7 +62,6 @@ class PEPATreeWalker():
         return (self.seq_components, self.global_start_state)
 
     def _visit_systemeq(self, node):
-#        print("NIO"+node.data)
         if node.asttype == "coop" and node.cooptype is not "par":
             for action in node.actionset:
                 if action != "<>":
@@ -139,7 +138,7 @@ class PEPATreeWalker():
                 compnode = ComponentState()
                 compnode.resolved = node.resolved
                 self.graph.ss[node.resolved] = compnode
-            print("Appending " + node.resolved)
+#            print("Appending " + node.resolved)
             self._visitstack.append(node.resolved)
         elif node.data == "+":
             pass
@@ -149,8 +148,8 @@ class PEPATreeWalker():
             self._visit_tree2(node.right)
         if node.data !="+":
             self._visitstack.pop()
-        print("AFTER in " + node.data + " " + node.resolved, end="   ")
-        pprint(self._visitstack)
+#        print("AFTER in " + node.data + " " + node.resolved, end="   ")
+#        pprint(self._visitstack)
         # if empty ..
 #        if not self._visitstack:
 #            self._visitstack.pop()

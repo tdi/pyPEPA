@@ -12,8 +12,9 @@ if __name__ == "__main__":
 #    pm = PEPAModel("test_files/simple.pepa")
 #    pm = PEPAModel("test_files/browser.pepa")
     pm = PEPAModel("test_files/REG-DB.pepa")
-    pprint(pm.global_state_start)
+#    pm = PEPAModel("test_files/sri.pepa")
     pm.generate_dots()
+
     # print("Seq processes")
     # for proc in pm.seq_processes.keys():
     #     print(proc + " Number in SEQ"+str (pm.seq_processes[proc] ))

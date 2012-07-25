@@ -8,4 +8,5 @@ I = (transmit, beta).I + (miss, kappa).I + (recover, gamma).R;
 R = (clear,epsilon).R;
 Net = (transmit, infty).Net2;
 Net2 = (infect, beta).Net;
-(S[10] || I [2]) <transmit, infect> Net[3]
+//(S[10] || I [2]) <transmit, infect> Net[3]
+(S || I) <transmit, infect> Net

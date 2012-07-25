@@ -94,7 +94,86 @@ class PEPAModel():
         return ','.join( map( str, gs_list ) )
 
     def _generate_model_ss(self):
+        """ Generates global state space work in progress
+        """
+        visit_queue = []
         self.log.debug("First state (" + self._gs_to_string(self.global_state_start) + ")")
+        visit_queue.append(self.global_state_start)
+        veni_vidi_vici = []
+        while(visit_queue):
+            enabled = []
+            shared = []
+            state = visit_queue.pop()
+            print("IN STATE (" + self._gs_to_string(state) + ")")
+            for proc in state:
+                print("Component " + proc)
+                pprint(shared)
+                trans = self.tw.graph.ss[proc].transitions
+                for tr in trans:
+                    ty = " "
+                    if tr.action in self.tw.shared_actions:
+                        ty = " shared"
+                        shared.append( ( tr.action, tr.rate, proc ,tr.to ) )
+                    else:
+                        enabled.append( ( tr.action, tr.rate, proc, tr.to) )
+                    print("\tEnabled " + tr.action + " " + tr.rate +  ty + " to " + tr.to)
+            # deal with independent actions
+            for en in enabled:
+                # we copy array
+                stat = []
+                stat = state[:]
+                loc = stat.index(en[2])
+                stat[loc] = en[3]
+                if stat not in veni_vidi_vici:
+                    visit_queue.append(stat)
+                print("\tNEXT(i) ("+self._gs_to_string(stat) + ") action " + en[0] )
+            # deal with shared actions
+            shared_queue = []
+            shared_transitions = []
+            # TODO: zmienic - IDIOTYZM
+            j = 0
+            print("SHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARED")
+            for sh in shared:
+                stat = []
+                stat = state[:]
+                pprint(stat)
+                if sh[1] != "infty":
+                    # now find matching guys
+                    i = 0
+                    indices = []
+                    print("SH -- " + str(j))
+                    pprint(sh)
+                    for sh2 in shared:
+                        if sh2[0] == sh[0] and i != j:
+                            print("\tznalazl " + str(sh2))
+                            indices.append(i)
+                        i = i + 1
+                    loc = stat.index(sh[2])
+                    stat[loc] = sh[3]
+                    print(shared)
+                    print(indices)
+                    for elem in indices:
+                        loc = stat.index(shared[ elem ][2])
+                        stat[loc] = shared[ elem ][3]
+                        if stat not in veni_vidi_vici:
+                            visit_queue.append(stat)
+                        print("\tNEXT(s) ("+self._gs_to_string(stat) + ")" )
+                j = j + 1
+
+
+
+    def _findall(self, L, test):
+        i=0
+        indices = []
+        while(True):
+            try:
+                nextvalue = filter(test, L[i:])[0]
+                indices.append(L.index(nextvalue, i ))
+                i = indices[-1]+1
+            except IndexError:
+                return indices
+
+
 
     def _generate_components(self):
         """
