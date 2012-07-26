@@ -148,10 +148,5 @@ class PEPATreeWalker():
             self._visit_tree2(node.right)
         if node.data !="+":
             self._visitstack.pop()
-#        print("AFTER in " + node.data + " " + node.resolved, end="   ")
-#        pprint(self._visitstack)
-        # if empty ..
-#        if not self._visitstack:
-#            self._visitstack.pop()
 
 

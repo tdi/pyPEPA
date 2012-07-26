@@ -6,12 +6,12 @@ from PEPAModel import PEPAModel
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.DEBUG)
-    logging.info('zaczyna sie')
+    logging.basicConfig(level=logging.INFO)
 
 #    pm = PEPAModel("test_files/simple.pepa")
 #    pm = PEPAModel("test_files/browser.pepa")
-    pm = PEPAModel("test_files/REG-DB.pepa")
+#    pm = PEPAModel("test_files/REG-DB.pepa")
+    pm = PEPAModel("test_files/REG_simple.pepa")
 #    pm = PEPAModel("test_files/sri.pepa")
     pm.generate_dots()
 

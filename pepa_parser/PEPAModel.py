@@ -88,7 +88,7 @@ class PEPAModel():
         self._prepare_systemeq()
         self._prepare_trees()
         self._generate_components()
-        self._generate_model_ss()
+#        self._generate_model_ss() old bad function
 
     def _gs_to_string(self, gs_list):
         return ','.join( map( str, gs_list ) )
@@ -96,6 +96,7 @@ class PEPAModel():
     def _generate_model_ss(self):
         """ Generates global state space work in progress
         """
+        grafowiec = []
         visit_queue = []
         self.log.debug("First state (" + self._gs_to_string(self.global_state_start) + ")")
         visit_queue.append(self.global_state_start)
@@ -103,11 +104,17 @@ class PEPAModel():
         while(visit_queue):
             enabled = []
             shared = []
-            state = visit_queue.pop()
+            print("VISIT QUEUE")
+            print(visit_queue)
+            # remove the first one
+            state = visit_queue.pop(0)
+            print("START")
+            pprint(visit_queue)
+            pprint(state)
+            veni_vidi_vici.append(state)
             print("IN STATE (" + self._gs_to_string(state) + ")")
             for proc in state:
-                print("Component " + proc)
-                pprint(shared)
+                #print("Component " + proc)
                 trans = self.tw.graph.ss[proc].transitions
                 for tr in trans:
                     ty = " "
@@ -116,7 +123,7 @@ class PEPAModel():
                         shared.append( ( tr.action, tr.rate, proc ,tr.to ) )
                     else:
                         enabled.append( ( tr.action, tr.rate, proc, tr.to) )
-                    print("\tEnabled " + tr.action + " " + tr.rate +  ty + " to " + tr.to)
+                    #print("\tEnabled " + tr.action + " " + tr.rate +  ty + " to " + tr.to)
             # deal with independent actions
             for en in enabled:
                 # we copy array
@@ -126,54 +133,62 @@ class PEPAModel():
                 stat[loc] = en[3]
                 if stat not in veni_vidi_vici:
                     visit_queue.append(stat)
-                print("\tNEXT(i) ("+self._gs_to_string(stat) + ") action " + en[0] )
+                    print("new")
+                    pprint(stat)
+                    print("visit")
+                    pprint(visit_queue)
+
+                dot = "\"" + self._gs_to_string(state) + "\" -> \"" + self._gs_to_string(stat) + "\""
+                if dot not in grafowiec:
+                    grafowiec.append(dot)
+                #print("\tNEXT(i) ("+self._gs_to_string(stat) + ") action " + en[0] )
             # deal with shared actions
             shared_queue = []
             shared_transitions = []
             # TODO: zmienic - IDIOTYZM
             j = 0
-            print("SHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARED")
+            #print("SHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARED")
             for sh in shared:
                 stat = []
                 stat = state[:]
-                pprint(stat)
+#                pprint(stat)
                 if sh[1] != "infty":
                     # now find matching guys
                     i = 0
                     indices = []
-                    print("SH -- " + str(j))
-                    pprint(sh)
+                    #print("SH -- " + str(j))
+                    #pprint(sh)
                     for sh2 in shared:
                         if sh2[0] == sh[0] and i != j:
-                            print("\tznalazl " + str(sh2))
+                            #print("\tznalazl " + str(sh2))
                             indices.append(i)
                         i = i + 1
                     loc = stat.index(sh[2])
                     stat[loc] = sh[3]
-                    print(shared)
-                    print(indices)
+                    #print(shared)
+                    #print(indices)
                     for elem in indices:
                         loc = stat.index(shared[ elem ][2])
                         stat[loc] = shared[ elem ][3]
                         if stat not in veni_vidi_vici:
                             visit_queue.append(stat)
-                        print("\tNEXT(s) ("+self._gs_to_string(stat) + ")" )
+                            print("newshared")
+                            pprint(stat)
+                            print("visit")
+                            pprint(visit_queue)
+
+                        dot = "\"" + self._gs_to_string(state) + "\" -> \"" + self._gs_to_string(stat) + "\""
+                        if dot not in grafowiec:
+                            grafowiec.append(dot)
+                        #print("\tNEXT(s) ("+self._gs_to_string(stat) + ")" )
                 j = j + 1
-
-
-
-    def _findall(self, L, test):
-        i=0
-        indices = []
-        while(True):
-            try:
-                nextvalue = filter(test, L[i:])[0]
-                indices.append(L.index(nextvalue, i ))
-                i = indices[-1]+1
-            except IndexError:
-                return indices
-
-
+        print(len(veni_vidi_vici))
+        with open("dots/glob.dot", "w") as f:
+            f.write("digraph global {\n")
+            for gr in grafowiec:
+                f.write(gr)
+                f.write("\n")
+            f.write("}\n")
 
     def _generate_components(self):
         """
