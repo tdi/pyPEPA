@@ -1,4 +1,5 @@
 digraph P1{
-"P1" -> "P2" [label="(a,a)"]
-"P2" -> "P1" [label="(b,b)"]
+"P1" -> "P1" [label="(reg14,r)"                 fontsize=10, fontcolor=red]
+"P1" -> "P2" [label="(move15,m)" fontsize=10]
+"P2" -> "P1" [label="(mee,r)" fontsize=10]
 }
