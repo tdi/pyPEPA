@@ -8,6 +8,7 @@ class BaseNode():
     left,right = None, None
     data = None
     asttype = None
+    length = None
 
     def __init__(self, data, asttype):
         self.data = data

@@ -18,10 +18,12 @@ class PEPATreeWalker():
         self.seq_components = {}
         self.shared_actions = {}
         self.global_start_state = []
+        self.operators = []
+        self.components = []
 
     def derive_processes_ss(self, node):
         """ Takes node returns state space of a single
-            component
+            process (here process is P = (a,r).P;
         """
         node = self._visit_tree1(node)
         self._after_1_visit = node
@@ -29,6 +31,7 @@ class PEPATreeWalker():
         self.graph.name = node.process
         self.log.debug("Deriving " + node.process)
         self._visit_tree2(node)
+        self.opnum = 0
         return self.graph
 
     def _name_subtree(self,node):
@@ -57,11 +60,34 @@ class PEPATreeWalker():
 
     def derive_systemeq(self, node):
         """ API function for generating state space of a process (node)"""
+        #self._visit_systemeq(node)
+        self.operators = []
+        self.components = []
         self._visit_systemeq(node)
         self.graph.shared_actions = self.shared_actions
+        print(self.operators)
         return (self.seq_components, self.global_start_state)
 
     def _visit_systemeq(self, node):
+        if node.asttype == "procdef":
+            node.length = 1
+            node.offset = len(self.components)
+            self.components.append(node)
+        if node.asttype in ("coop") and node.left.asttype == "procdef" and node.right.asttype == "procdef":
+            print(node.actionset)
+        if node.left is not None:
+            self._visit_systemeq(node.left)
+        if node.right is not None:
+            self._visit_systemeq(node.right)
+        if node.asttype != "procdef":
+            node.length = node.left.length + node.right.length
+            self.operators.append(node)
+        print(node.length)
+
+    def _prepare_systemeq_tree(self, node):
+        """
+            Prepares the tree with offset and operator numbers
+        """
         if node.asttype == "coop" and node.cooptype is not "par":
             for action in node.actionset:
                 if action != "<>":
@@ -74,9 +100,10 @@ class PEPATreeWalker():
                 self.global_start_state.append(node.data)
                 self.seq_components[node.data] = 1
         if node.left is not None:
-            self._visit_systemeq(node.left)
+            self._prepare_systemeq_tree(node.left)
         if node.right is not None:
-            self._visit_systemeq(node.right)
+            self._prepare_systemeq_tree(node.right)
+
 
 
 
