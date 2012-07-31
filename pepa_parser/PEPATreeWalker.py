@@ -5,6 +5,7 @@ import sys
 from pprint import pprint
 from ComponentSSGraph import *
 from PEPAAst import *
+from derivation.StateSpace import *
 
 
 class PEPATreeWalker():
@@ -20,6 +21,7 @@ class PEPATreeWalker():
         self.global_start_state = []
         self.operators = []
         self.components = []
+        self.ss = StateSpace()
 
     def derive_processes_ss(self, node):
         """ Takes node returns state space of a single
@@ -60,29 +62,51 @@ class PEPATreeWalker():
 
     def derive_systemeq(self, node):
         """ API function for generating state space of a process (node)"""
-        #self._visit_systemeq(node)
         self.operators = []
         self.components = []
         self._visit_systemeq(node)
         self.graph.shared_actions = self.shared_actions
-        print(self.operators)
-        return (self.seq_components, self.global_start_state)
+        self.ss.operators = self.operators
+        self.ss.components = self.components
+        return self.ss
 
     def _visit_systemeq(self, node):
+        """ Every procdef in system equation gets offset number
+            describing the position in a system equation.
+            Additionally every node gets length, which is the sum of
+            lengths of its children. Leaves get length 1.
+            Operators are added to operators list, whereas components to
+            components.
+        """
         if node.asttype == "procdef":
+            c = Component()
+            c.length = 1
+            if self.ss.max_length < c.length:
+                self.ss.max_length = c.length
+            c.offset = len(self.components)
+            c.name = node.data
+            # TODO zmienic, to redundantne i idiotyczne
+            c.data = node.data
             node.length = 1
             node.offset = len(self.components)
-            self.components.append(node)
-        if node.asttype in ("coop") and node.left.asttype == "procdef" and node.right.asttype == "procdef":
-            print(node.actionset)
-        if node.left is not None:
-            self._visit_systemeq(node.left)
-        if node.right is not None:
-            self._visit_systemeq(node.right)
+            self.components.append(c)
+            #self.components.append(node)
         if node.asttype != "procdef":
+            c = Operator()
+            c.actionset = node.actionset or []
+            self.operators.append(c)
+        if node.left is not None:
+            l = self._visit_systemeq(node.left)
+            c.lhs = l
+        if node.right is not None:
+            r = self._visit_systemeq(node.right)
+            c.rhs = r
+        if node.asttype != "procdef":
+            c.length = l.length + r.length
+            if self.ss.max_length < c.length:
+                self.ss.max_length = c.length
             node.length = node.left.length + node.right.length
-            self.operators.append(node)
-        print(node.length)
+        return c
 
     def _prepare_systemeq_tree(self, node):
         """

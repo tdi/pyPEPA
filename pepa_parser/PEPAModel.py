@@ -7,9 +7,6 @@ from PEPAParser import PEPAParser
 from pyparsing import ParseException
 from ComponentSSGraph import ComponentSSGraph
 
-class SS():
-    pass
-
 class ComponentStateVisitor():
 
     def __init__(self, graph):
@@ -62,7 +59,6 @@ class ComponentStateVisitor():
             if tran.to not in self.visited:
                 self._visit_dot(tran.to)
 
-
 class PEPAModel():
     """
         Representation of a final PEPA model, everything needed to derive CTMC
@@ -80,16 +76,24 @@ class PEPAModel():
         self.systemeq = None
         self.rate_definitions = {}
         self.components = {}
-        self.seq_processes = {}
-        self.global_state_start = None
+        # from BU alg, get rid of it
+        self.components_seq = []
+        self.operators_seq = []
         self.tw = PEPATreeWalker()
         self.log = logging.getLogger(__name__)
+        self.ss = None
         self._parse_read_model(modelfile)
-        self._prepare_systemeq()
         self._prepare_trees()
+        self._prepare_systemeq()
         self._generate_components()
-#        self._generate_model_ss() old bad function
+        self._system_eq_BU()
 
+
+
+    def _system_eq_BU(self):
+        self.ss.comp_ss = self.tw.graph.ss
+        self.ss.derive()
+        pass
 
     def _gs_to_string(self, gs_list):
         return ','.join( map( str, gs_list ) )
@@ -100,18 +104,17 @@ class PEPAModel():
         in the model into components dict
         """
         visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in self.seq_processes.keys():
-            self.components[comp] = ComponentSSGraph(comp)
-            self.components[comp] = visitor.generate_ss(comp, self.components[comp])
+        for comp in set(self.components_seq):
+            self.components[comp.data] = ComponentSSGraph(comp.data)
+            self.components[comp.data] = visitor.generate_ss(comp.data, self.components[comp.data])
 
     def _prepare_systemeq(self):
         """
-        Derives components taking part in processing into dict
-        where key is name, values is number of processes
-        TODO: aggregation should be here
+        Returns StateSpace object
         """
         self.log.debug("Preparing systemeq")
-        self.seq_processes, self.global_state_start = self.tw.derive_systemeq(self.systemeq)
+        self.ss = self.tw.derive_systemeq(self.systemeq)
+        self.components_seq, self.operators_seq = self.ss.components, self.ss.operators
 
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it.
@@ -134,8 +137,8 @@ class PEPAModel():
 
     def generate_dots(self):
         visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in self.seq_processes.keys():
-            visitor.get_dot(comp)
+        for comp in set(self.components_seq):
+            visitor.get_dot(comp.data)
 
 
 
