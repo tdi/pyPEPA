@@ -1,0 +1,10 @@
+r=1;
+s=2;
+m=3;
+
+P1 = (reg14, r).P1 + (move15, m).P2;
+P2 = (mee, r).P1;
+
+S1 = (reg14, infty).(rep14, s).S1;
+DB1 = (rep14,infty).DB1 ;
+(P1||P1) <reg14> (S1) <rep14> DB1
