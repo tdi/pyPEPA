@@ -1,6 +1,0 @@
-digraph P{
-"P" -> "P" [label="(a,infty)" fontsize=10]
-"P" -> "(b,infty).Q" [label="(u,infty)" fontsize=10]
-"(b,infty).Q" -> "Q" [label="(b,infty)" fontsize=10]
-"P" -> "R" [label="(c,infty)" fontsize=10]
-}
