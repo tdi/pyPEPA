@@ -1,0 +1,8 @@
+*.pyc
+dots/*
+tags
+tags/*
+htmlcov/
+external/
+.coverage
+.ropeproject
