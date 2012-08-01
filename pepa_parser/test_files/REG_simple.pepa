@@ -7,4 +7,5 @@ P2 = (mee, r).P1;
 
 S1 = (reg14, infty).(rep14, s).S1;
 DB1 = (rep14,infty).DB1 ;
-(P1||P1) <reg14> (S1) <rep14> DB1
+P1 <reg14> (S1) <rep14> DB1
+//(P1||P1) <reg14> (S1) <rep14> DB1

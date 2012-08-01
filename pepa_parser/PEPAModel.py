@@ -93,7 +93,7 @@ class PEPAModel():
     def _system_eq_BU(self):
         self.ss.comp_ss = self.tw.graph.ss
         self.ss.derive()
-        pass
+
 
     def _gs_to_string(self, gs_list):
         return ','.join( map( str, gs_list ) )

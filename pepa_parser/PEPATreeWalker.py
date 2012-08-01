@@ -33,7 +33,6 @@ class PEPATreeWalker():
         self.graph.name = node.process
         self.log.debug("Deriving " + node.process)
         self._visit_tree2(node)
-        self.opnum = 0
         return self.graph
 
     def _name_subtree(self,node):
@@ -79,12 +78,11 @@ class PEPATreeWalker():
             components.
         """
         if node.asttype == "procdef":
-            c = Component()
+            c = Component(self.graph.ss, node.data, len(self.components))
             c.length = 1
             if self.ss.max_length < c.length:
                 self.ss.max_length = c.length
-            c.offset = len(self.components)
-            c.name = node.data
+#            c.offset = len(self.components)
             # TODO zmienic, to redundantne i idiotyczne
             c.data = node.data
             node.length = 1
@@ -93,7 +91,7 @@ class PEPATreeWalker():
             #self.components.append(node)
         if node.asttype != "procdef":
             c = Operator()
-            c.actionset = node.actionset or []
+            c.actionset = list(node.actionset) if node.actionset is not None else []
             self.operators.append(c)
         if node.left is not None:
             l = self._visit_systemeq(node.left)
@@ -107,28 +105,6 @@ class PEPATreeWalker():
                 self.ss.max_length = c.length
             node.length = node.left.length + node.right.length
         return c
-
-    def _prepare_systemeq_tree(self, node):
-        """
-            Prepares the tree with offset and operator numbers
-        """
-        if node.asttype == "coop" and node.cooptype is not "par":
-            for action in node.actionset:
-                if action != "<>":
-                    self.shared_actions[action]=""
-        elif node.asttype == "procdef":
-            if node.data in self.seq_components:
-                self.global_start_state.append(node.data)
-                self.seq_components[node.data] += 1
-            else:
-                self.global_start_state.append(node.data)
-                self.seq_components[node.data] = 1
-        if node.left is not None:
-            self._prepare_systemeq_tree(node.left)
-        if node.right is not None:
-            self._prepare_systemeq_tree(node.right)
-
-
 
 
     def _visit_tree1(self,node):
