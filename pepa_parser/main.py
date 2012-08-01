@@ -11,9 +11,9 @@ if __name__ == "__main__":
 #    pm = PEPAModel("test_files/simple.pepa")
 #    pm = PEPAModel("test_files/browser.pepa")
 #    pm = PEPAModel("test_files/REG-DB.pepa")
-#    pm = PEPAModel("test_files/REG_simple.pepa")
+    pm = PEPAModel("test_files/REG_simple.pepa")
 
-    pm = PEPAModel("test_files/test1_coop.pepa")
+   # pm = PEPAModel("test_files/test1_coop.pepa")
 #    pm = PEPAModel("test_files/sri.pepa")
     pm.generate_dots()
 
