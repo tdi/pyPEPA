@@ -4,19 +4,17 @@ beta = 1.0;
 garage_true = 0.01;
 garage_false = 0.99;
 
-/* Car Description */
 CarDriving = (car_breaks, lifetime_rate).CarEnd;
 CarEnd = (car_idle, 1000).CarDriving; 
-
-/* Credit Card Description */
 CreditCard0 = (car_breaks, infty).CreditCardCommit;
 CreditCardCommit = (commit_credit_card, alpha).CreditCardCommitted;
 CreditCardCommitted = (garage_appointed, infty).CreditCard0 + (garage_not_appointed, infty).CreditCard0;
 
 //CreditCardEnd = (card_idle, 2000).CreditCard0;
 
-/* Garage Description */
 Garage0 = (commit_credit_card, infty).OrderGarage;
+
+
 OrderGarage = (garage_appointed, garage_true).Garage0 + (garage_not_appointed, garage_false).Garage0;
 //GarageRollBack = (garage_false, beta).GarageEnd;  
 //GarageBooked = (garage_idle, 1000).GarageBooked;
