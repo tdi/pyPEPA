@@ -18,29 +18,31 @@ class StateSpace():
             initial_state.append(comp.name)
         queue.append(initial_state)
         #TODO: dodawac stan nowy, a nie stary
-        print(self.components)
+        #print(self.components)
         while(queue):
             state = queue.pop()
-            if self._gs_to_string(state) in visited:
-                continue
-            print("IN STATE" + str(state))
+            print("STATE " + str(state))
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
             for i in list( range(0, len( state ),1)):
-                if not self.components[i].name == state[i]:
-                    self.components[i].update( state[i] )
+#                if not self.components[i].name == state[i]:
+                self.components[i].update( state[i] )
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
                     if op.length == x:
                         if self.max_length == op.length:
+                            #TODO: agregacja stanow, jedno przejscie, dwie akcje
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
+                            if not new_states:
+                                print("DEADLOCK")
+                                exit(1)
                             for news in new_states:
                                 if len(news.to_s) < self.max_length:
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                print("\t " + str (news.to_s))
+                                print("\t " + str(news))
                                 if self._gs_to_string(news.to_s) not in visited:
                                     #print(self._gs_to_string(news.to_s) + " ", end="" )
                                     queue.append(news.to_s)
@@ -114,7 +116,10 @@ class Operator(Component):
 
     def compose(self,ss, state, topop=False):
         self.derivatives =  []
-        #print("OPER" + str(self.actionset))
+        if state == ['P2', 'Q1', 'R2']:
+            print("OPER" + str(self.actionset))
+#        if state[0] == "P2":
+            #pprint(self.lhs.get_derivatives())
         for tran_l in self.lhs.get_derivatives():
             # UNSHARED
             if tran_l.action not in self.actionset:
@@ -130,18 +135,21 @@ class Operator(Component):
                         new_state[tran_r.offset] = tran_r.to_s[0]
                         new_state[tran_l.offset] = tran_l.to_s[0]
                         ddd = Derivative(tran_l.from_s, new_state,tran_l.action,tran_l.rate,self.offset,True)
-                        #self.derivatives.append(tran_r)
                         self.derivatives.append(ddd)
-                        #print("\t |" + str( ddd ))
-         #               print("\t PS" + str( new_state ))
         for tran_r in self.rhs.get_derivatives():
+            #if state == ['P2', 'Q1', 'R2']: print(tran_r)
             if tran_r.action not in self.actionset:
                 self.derivatives.append(tran_r)
-                new_state = state[:]
-                new_state[tran_r.offset] = tran_r.to_s[0]
+                if state == ['P2', 'Q1', 'R2']: print("R " + str(tran_r))
+                #new_state = state[:]
+                #new_state[tran_r.offset] = tran_r.to_s[0]
                 #print("\t \\"+str(tran_r))
           #      print("\t PS "+str(new_state))
         if topop == True:
+            if state == ['P2', 'Q1', 'R2']:
+                for ddd in self.derivatives:
+                    print("final =========================")
+                    print(ddd)
             return self.derivatives
 
 
