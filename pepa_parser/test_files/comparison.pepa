@@ -22,4 +22,3 @@ P  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
 
 //(P || P)  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
 
-//P  <getm1, getm2, relm1, relm2> Bus <getm1, getm2, relm1, relm2> (M1 <> M2)
