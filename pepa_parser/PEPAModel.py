@@ -4,7 +4,6 @@ from pprint import pprint
 import sys
 from PEPATreeWalker import PEPATreeWalker
 from PEPAParser import PEPAParser
-from pyparsing import ParseException
 from ComponentSSGraph import ComponentSSGraph
 
 class ComponentStateVisitor():
@@ -30,13 +29,13 @@ class ComponentStateVisitor():
                 self._visit_for_ss(tran.to, comp)
         return comp
 
-    def visit_print(self, node):
-        self.visited.append(node)
-        transitions = self.graph.ss[node].transitions
-        for tran in transitions:
-            print(node + " -> " + tran.to)
-            if tran.to not in self.visited:
-                self.visit_print(tran.to)
+    # def visit_print(self, node):
+    #     self.visited.append(node)
+    #     transitions = self.graph.ss[node].transitions
+    #     for tran in transitions:
+    #         print(node + " -> " + tran.to)
+    #         if tran.to not in self.visited:
+    #             self.visit_print(tran.to)
 
     def get_dot(self, node):
         with open("dots/"+node + ".dot", "w") as f:
@@ -77,26 +76,20 @@ class PEPAModel():
         self.rate_definitions = {}
         self.components = {}
         # from BU alg, get rid of it
-        self.components_seq = []
-        self.operators_seq = []
         self.tw = PEPATreeWalker()
         self.log = logging.getLogger(__name__)
         self.ss = None
         self._parse_read_model(modelfile)
         self._prepare_trees()
         self._prepare_systemeq()
-        self._generate_components()
         self._system_eq_BU()
 
 
-
     def _system_eq_BU(self):
+        """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
         self.ss.derive()
 
-
-    def _gs_to_string(self, gs_list):
-        return ','.join( map( str, gs_list ) )
 
     def _generate_components(self):
         """
@@ -104,7 +97,7 @@ class PEPAModel():
         in the model into components dict
         """
         visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in set(self.components_seq):
+        for comp in set(self.ss.components):
             self.components[comp.data] = ComponentSSGraph(comp.data)
             self.components[comp.data] = visitor.generate_ss(comp.data, self.components[comp.data])
 
@@ -114,7 +107,6 @@ class PEPAModel():
         """
         self.log.debug("Preparing systemeq")
         self.ss = self.tw.derive_systemeq(self.systemeq)
-        self.components_seq, self.operators_seq = self.ss.components, self.ss.operators
 
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it.
@@ -126,7 +118,7 @@ class PEPAModel():
             (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
         except Exception as e:
             self.log.debug(e)
-            print("Parsing error : " + e.msg )
+            print("Parsing error : " + str(e) )
             sys.exit(1)
 
     def _prepare_trees(self):
@@ -136,8 +128,10 @@ class PEPAModel():
             self.tw.derive_processes_ss(node)
 
     def generate_dots(self):
+        """ Generates dot files to browse with e.g. xdot """
+        self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in set(self.components_seq):
+        for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
 
 

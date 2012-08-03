@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 """
 PEPA Parser
-Known limitations:
-    - no handling of <> yet and no handling of hiding operator
-    - no error handling
-    - no handling systemEQ
 """
 
-from pyparsing import *
+from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional, ZeroOrMore, Forward, restOfLine
 from PEPAAst import *
 import sys
 
@@ -27,11 +23,11 @@ class PEPAParser(object):
     def __init__(self, logging_pa = False):
         self.logging_pa = logging_pa
 
-    def log_pa(self,string, msg="",prepend="[PARSEACT]"):
+    def log_pa(self, string, msg="", prepend="[PARSEACT]"):
         fname = sys._getframe(1).f_code.co_name
-        if self.logging_pa:  print(prepend+"["+fname+"]",msg,string)
+        if self.logging_pa:  print(prepend + "[" + fname + "]", msg, string)
 
-    def log(self,string, msg="",prepend="log"):
+    def log(self, string, msg="", prepend="log"):
         if logging:  print(prepend,msg,string)
 
     def error(self,string):
@@ -45,7 +41,7 @@ class PEPAParser(object):
         n.rate = tok[1]
         return n
 
-    def createProcdef(self,str,loc,tok):
+    def _create_procdef(self,str,loc,tok):
         self.log_pa("Token: "+tok[0])
         n = ProcdefNode(tok[0], "procdef")
         n.name = tok[0]
@@ -186,7 +182,7 @@ class PEPAParser(object):
         choice_op = Literal('+')
         parallel = Literal("||") | Literal("<>")
 #ident = Word(alphas, alphanums+'_')
-        ratename = Word(alphas.lower(),alphanums.lower()+"_")
+        ratename = Word(alphas.lower(),alphanums+"_")
         lpar = Literal('(').suppress()
         rpar = Literal(')').suppress()
         define = Literal('=')
@@ -204,11 +200,10 @@ class PEPAParser(object):
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self.createSyncSet)
         activity = (ratename + col + peparate).setParseAction(self._createActivity)
-        procdef = Word(alphas.upper(), alphanums+"_").setParseAction(self.createProcdef)
+        procdef = Word(alphas.upper(), alphanums+"_").setParseAction(self._create_procdef)
 ## RATES Definitions
         ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self.assignVar) + semicol
 
-        expression = Forward()
         prefix = Forward()
         choice = Forward()
         coop = Forward()

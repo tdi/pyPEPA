@@ -6,28 +6,25 @@ class StateSpace():
     operators = []
     components = []
     comp_ss = None
-    STAN = ['(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
+    STAN = ['ss(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
 
     def __init__(self):
         self.max_length = 0
 
-
     def _combine_states(self, states):
-        combined_states = []
-        to_del = []
-        to_states = [i.to_s for i in states]
-        # TODO FIX OFFSETS
-        for i in list( range(0, len(to_states))):
-            if to_states[i] is None: continue
-            for j in list (range(0, len(to_states))):
-                if i!=j and to_states[i] == to_states[j]:
-                    states[i].action += "," + states[j].action
-                    to_del.append(j)
-                    to_states[j] = None
-                    combined_states.append(states[i])
-        to_states = [i for i in to_states if i is not None]
-        for tod in to_del:
-            states.pop(tod)
+        """ When more than one transition leads to the same state,
+            the function combines these transitions into one with actions rewritten
+            TODO: add rates calculating
+        """
+        for i in list( range(0, len(states))):
+            if states[i] is not None:
+                for j in list (range(i+1, len(states))):
+                    if states[j] is not None:
+                        if states[i].to_s == states[j].to_s:
+                            states[i].action += "," + states[j].action
+                            states[j] = None
+        states = [i for i in states if i is not None]
+        return states
 
 
     def derive(self):
@@ -39,18 +36,15 @@ class StateSpace():
         for comp in self.components:
             initial_state.append(comp.name)
         queue.append(initial_state)
-        #TODO: dodawac stan nowy, a nie stary
-        #print(self.components)
         while(queue):
             state = queue.pop(0)
             if self._gs_to_string(state) in visited:
               continue
-            if state == self.STAN:
-                print("STATE " + str(state))
+            #if state == self.STAN:
+            print("STATE " + str(state))
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
             for i in list( range(0, len( state ),1)):
-#                if not self.components[i].name == state[i]:
                 self.components[i].update( state[i] )
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
@@ -61,17 +55,15 @@ class StateSpace():
                             if not new_states:
                                 print("DEADLOCK in " + str(state))
                                 exit(1)
-                            self._combine_states(new_states)
+                            new_states = self._combine_states(new_states[:])
                             for news in new_states:
                                 # aggregate
                                 if len(news.to_s) < self.max_length:
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                if state==self.STAN:
-                                    print(Fore.GREEN + "\t " + news.action + Fore.RESET + "\t"+ str(news.to_s))
+                                print(Fore.GREEN + "\t " + news.action + Fore.RESET + "\t"+ str(news.to_s))
                                 if self._gs_to_string(news.to_s) not in visited:
-                                    #print(self._gs_to_string(news.to_s) + " ", end="" )
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
@@ -96,11 +88,6 @@ class Component():
         self.name = name
         self.data = name #TODO: wyjebac
         self.derivatives = []
-        # if self.name=="Bus":
-        #     print("AAA")
-        #     for trr in self.ss[self.name].transitions:
-        #         print(trr.to)
-        #     print("ZZZ")
         for der in self.ss[self.name].transitions:
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset))
 
@@ -136,7 +123,7 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
-    STAN = ['(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
+    STAN = ['ss(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
 
     def __init__(self):
         self.actionset = []
@@ -191,19 +178,11 @@ class Operator(Component):
                         if state == self.STAN: print(Back.BLUE + "S H A R E D " + Back.RESET + str(tran_l))
                         if state == self.STAN: print(Back.CYAN + "S H A R E D " + Back.RESET + str(tran_r))
                         ddd = self._create_shared_trans(state, tran_l, tran_r)
-#                        new_state[tran_r.offset] = tran_r.to_s[0]
-#                        new_state[tran_l.offset] = tran_l.to_s[0]
                         if state == self.STAN: print(Back.MAGENTA + "S H A R E D OUT" + Back.RESET + str(ddd))
                         self.derivatives.append(ddd)
         for tran_r in self.rhs.get_derivatives():
             if tran_r.action not in self.actionset:
                 self.derivatives.append(tran_r)
-                #print("\t \\"+str(tran_r))
-          #      print("\t PS "+str(new_state))
-        if state==self.STAN:
-            print(Fore.RED + "DERIVATIVES" + Fore.RESET)
-            for ddd in self.derivatives:
-                print("\t"+str(ddd))
         if topop == True:
             return self.derivatives
 

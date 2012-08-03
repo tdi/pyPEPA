@@ -25,4 +25,5 @@ loss = 1.0;
 # M3 = (drop, loss).M0 + (ack0, def).M0;
 # M4 = (drop, loss).M0 + (ack1, def).M0;
 
- (S0[2] <send0, send1, ack0, ack1> M0[2]) <recv0, recv1, a0, a1> R0[2]
+ //(S0[2] <send0, send1, ack0, ack1> M0[2]) <recv0, recv1, a0, a1> R0[2]
+ (S0 <send0, send1, ack0, ack1> M0) <recv0, recv1, a0, a1> R0

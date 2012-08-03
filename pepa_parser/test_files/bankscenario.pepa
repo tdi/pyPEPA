@@ -1,4 +1,4 @@
-//Rates
+
 rateReadInfo = 1.0;
 rateLoanRequest = 1.0;
 rateReset = 1.0;
