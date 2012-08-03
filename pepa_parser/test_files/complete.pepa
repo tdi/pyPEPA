@@ -1,5 +1,7 @@
 /* A model containing all the possible constructs */
 
+UWAGA SAMI TEGO NIE OBSLUGUJA
+
 // The comment is the first construct to test.
 r = 1.0 + 2.0 * 3 / 1.5;
 /* Prefix */
