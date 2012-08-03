@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-from pprint import pprint
 from colorama import Fore, Back
 
 class StateSpace():
     operators = []
     components = []
     comp_ss = None
-    STAN = ['ss(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
 
     def __init__(self):
         self.max_length = 0
@@ -32,6 +30,8 @@ class StateSpace():
         initial_state = []
         queue = []
         visited = []
+        resulting_states = {}
+        state_num = 0
         for oper in self.operators:
             oper.update_offset()
         for comp in self.components:
@@ -41,8 +41,9 @@ class StateSpace():
             state = queue.pop(0)
             if self._gs_to_string(state) in visited:
               continue
-            #if state == self.STAN:
-            print("STATE " + str(state))
+            state_num = state_num + 1
+            print(str(state_num) + "STATE " + str(state))
+            resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
             for i in list( range(0, len( state ),1)):
@@ -64,14 +65,26 @@ class StateSpace():
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
                                 print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + news.rate + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+                                resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 if self._gs_to_string(news.to_s) not in visited:
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
         else:
             print( str( len(visited)))
+            self.gen_for_test( resulting_states )
     def _gs_to_string(self, gs_list):
         return ','.join( map( str, gs_list ) )
+
+    def gen_for_test(self, res):
+        superstring = ""
+        for key in sorted(res, key=lambda k: res[k][1]):
+            for tos in res[key][0]:
+                superstring += str(res[key][1]) + ","
+                superstring += str(res[tos[1]][1]) + ","
+                superstring += str(float(tos[0])) + "\n"
+        with open("NICE", "w") as f:
+            f.write(superstring)
 
 
 
@@ -124,7 +137,6 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
-    STAN = ['ss(getm1,g_times_p).(use,m1).(relm1,r).P1+(getm2,g_times_1_minus_p).(use,m2).(relm2,r).P2', 'Bus', 'M1', 'M2']
 
     def __init__(self):
         self.actionset = []
@@ -146,15 +158,14 @@ class Operator(Component):
             to_state[self.lhs.offset + i] = tran_l.to_s[self.lhs.offset + i]
         for i in list(range(0, self.rhs.length)):
             to_state[self.rhs.offset + i] = tran_r.to_s[self.rhs.offset + i]
-        ddd = Derivative(state, to_state,tran_l.action,tran_l.rate,self.offset,True)
+        new_rate = self._min(tran_r.rate, tran_l.rate)
+        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
         return ddd
 
 
 
     def compose(self,ss, state, topop=False):
         self.derivatives =  []
-        if state == self.STAN:
-            print(Fore.BLUE + "OPERATOR" + str(self) + Fore.RESET)
         for tran_l in self.lhs.get_derivatives():
             # UNSHARED
             if tran_l.action not in self.actionset:
@@ -176,10 +187,7 @@ class Operator(Component):
                             new_tran_s = new_state[:]
                             new_tran_s[tran_l.offset] = tran_l.to_s[0]
                             tran_l.to_s = new_tran_s
-                        if state == self.STAN: print(Back.BLUE + "S H A R E D " + Back.RESET + str(tran_l))
-                        if state == self.STAN: print(Back.CYAN + "S H A R E D " + Back.RESET + str(tran_r))
                         ddd = self._create_shared_trans(state, tran_l, tran_r)
-                        if state == self.STAN: print(Back.MAGENTA + "S H A R E D OUT" + Back.RESET + str(ddd))
                         self.derivatives.append(ddd)
         for tran_r in self.rhs.get_derivatives():
             if tran_r.action not in self.actionset:
@@ -188,5 +196,16 @@ class Operator(Component):
             return self.derivatives
 
 
-
+    def _min(self,rate1, rate2):
+        if rate1 == "infty":
+            if rate2 == "infty":
+                return "infty"
+            else:
+                return rate2
+        if rate2 == "infty":
+            if rate1 == "infty":
+                return "infty"
+            else:
+                return rate1
+        return min(rate1,rate2)
 
