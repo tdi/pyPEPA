@@ -3,9 +3,9 @@
 import logging
 import sys
 from pprint import pprint
-from ComponentSSGraph import *
+from ComponentSSGraph import Transition, ModelSSGraph, ComponentState
 from PEPAAst import *
-from derivation.StateSpace import *
+from derivation.StateSpace import StateSpace, Operator, Component
 
 
 class PEPATreeWalker():

@@ -5,7 +5,7 @@ Module with classes for PEPA model.
 """
 
 class BaseNode():
-    left,right = None, None
+    left, right = None, None
     data = None
     asttype = None
     length = None
@@ -25,7 +25,7 @@ class ChoiceNode(BaseNode):
         super().__init__(data, asttype)
 
 class PrefixNode(BaseNode):
-    action, resolved,rate = None, None, None
+    action, resolved, rate = None, None, None
 
     def __init__(self, data, asttype):
         super().__init__(data, asttype)
