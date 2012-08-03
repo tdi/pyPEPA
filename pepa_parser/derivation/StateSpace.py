@@ -28,6 +28,7 @@ class StateSpace():
 
 
     def derive(self):
+        """ Derives the whole state space according to BU"""
         initial_state = []
         queue = []
         visited = []
@@ -62,7 +63,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                print(Fore.GREEN + "\t " + news.action + Fore.RESET + "\t"+ str(news.to_s))
+                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + news.rate + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
                                 if self._gs_to_string(news.to_s) not in visited:
                                     queue.append(news.to_s)
                         else:

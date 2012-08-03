@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-import sys
-from pprint import pprint
+#from pprint import pprint
 from ComponentSSGraph import Transition, ModelSSGraph, ComponentState
 from PEPAAst import *
 from derivation.StateSpace import StateSpace, Operator, Component
@@ -11,7 +10,7 @@ from derivation.StateSpace import StateSpace, Operator, Component
 class PEPATreeWalker():
     """ Various AST Tree methods to generate state spaces
     """
-    def __init__(self):
+    def __init__(self, rates):
         self._visitstack= []
         self.graph = ModelSSGraph()
         self.log = logging.getLogger(__name__)
@@ -22,10 +21,12 @@ class PEPATreeWalker():
         self.operators = []
         self.components = []
         self.ss = StateSpace()
+        self.rates = rates
 
-    def derive_processes_ss(self, node):
+    def derive_processes_ss(self, node, rates):
         """ Takes node returns state space of a single
             process (here process is P = (a,r).P;
+            Assigns rates values
         """
         node = self._visit_tree1(node)
         self._after_1_visit = node
@@ -118,7 +119,10 @@ class PEPATreeWalker():
             node.left = None
         elif node.data == ".":
             node.action = node.left.action
-            node.rate = node.left.rate
+            if node.left.rate in self.rates:
+                node.rate = self.rates[node.left.rate]
+            else:
+                node.rate = node.left.rate
             node.resolved = self._name_subtree(node.right)
             node.left = None
             if node.right.asttype == "procdef":

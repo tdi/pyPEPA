@@ -76,7 +76,7 @@ class PEPAModel():
         self.rate_definitions = {}
         self.components = {}
         # from BU alg, get rid of it
-        self.tw = PEPATreeWalker()
+        self.tw = None
         self.log = logging.getLogger(__name__)
         self.ss = None
         self._parse_read_model(modelfile)
@@ -116,6 +116,7 @@ class PEPAModel():
         try:
             parser = PEPAParser(False)
             (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
+            self.tw = PEPATreeWalker(self.rate_definitions)
         except Exception as e:
             self.log.debug(e)
             print("Parsing error : " + str(e) )
@@ -125,7 +126,7 @@ class PEPAModel():
         """ Here ss graphs of every process is derived from AST trees
         """
         for node in self.processes.values():
-            self.tw.derive_processes_ss(node)
+            self.tw.derive_processes_ss(node, self.rate_definitions)
 
     def generate_dots(self):
         """ Generates dot files to browse with e.g. xdot """
