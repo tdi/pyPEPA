@@ -47,7 +47,7 @@ class PEPAParser(object):
         n.name = tok[0]
         return n
 
-    def createDefinition(self,str,loc, tok):
+    def _create_definition(self,str,loc, tok):
         self.log_pa("Left token: "+tok[0].data)
         self.log_pa("Right token: "+tok[2].data)
         n = DefNode("=", "definition")
@@ -61,7 +61,7 @@ class PEPAParser(object):
         self.processes[tok[0]] = n
         return n
 
-    def createPrefix(self,string, loc, tok):
+    def _create_prefix(self,string, loc, tok):
         self.log_pa("Tokens: "+str( len(tok) ))
         if len(tok) > 1:
             self.log_pa("Left token: "+tok[0].data)
@@ -76,7 +76,7 @@ class PEPAParser(object):
             self.log_pa("Token: "+tok[0].data)
             return tok[0]
 
-    def createChoice(self,string,loc,tok):
+    def _create_choice(self,string,loc,tok):
         self.log_pa("Start")
         self.log_pa("Tokens: "+str( len(tok) ))
         if not tok[0] is None:
@@ -154,12 +154,6 @@ class PEPAParser(object):
         self.systemeq = tok[0]
 
 
-    def createRates(self,string, loc, tok):
-        """ TODO: redundant
-        """
-        self.rates = self.varStack
-
-
     def assignVar(self,toks):
         self.varStack[toks[0]] = toks[2]
 
@@ -212,17 +206,16 @@ class PEPAParser(object):
                  | procdef
                  | lpar + coop + rpar
                 ).setParseAction(self.createProcess)
-        prefix  << (process + ZeroOrMore(prefix_op + prefix)).setParseAction(self.createPrefix)
-        choice << (prefix + ZeroOrMore(choice_op + choice)).setParseAction(self.createChoice)
+        prefix  << (process + ZeroOrMore(prefix_op + prefix)).setParseAction(self. _create_prefix)
+        choice << (prefix + ZeroOrMore(choice_op + choice)).setParseAction(self. _create_choice)
         coop << (choice + ZeroOrMore(coop_op + coop)).setParseAction(self.createCoop)
-        rmdef = (Optional(pound) + procdef + define + coop + semicol).setParseAction(self.createDefinition)
+        rmdef = (Optional(pound) + procdef + define + coop + semicol).setParseAction(self._create_definition)
 
 
         system_eq =  Optional(pound) + coop
 
-        pepa = (ZeroOrMore(ratedef)  + ZeroOrMore(rmdef)
-                + system_eq.setParseAction(self.createSystemEQ)
-                ).setParseAction(self.createRates)
+        pepa = ZeroOrMore(ratedef)  + ZeroOrMore(rmdef) + system_eq.setParseAction(self.createSystemEQ)
+
 
         pepacomment = '//' + restOfLine
         pepa.ignore(pepacomment)
@@ -230,7 +223,7 @@ class PEPAParser(object):
 
     def parse(self,string):
             self.gramma().parseString(string)
-            return (self.processes, self.rates, self.systemeq)
+            return (self.processes, self.varStack, self.systemeq)
 
 
 

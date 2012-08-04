@@ -29,13 +29,6 @@ class ComponentStateVisitor():
                 self._visit_for_ss(tran.to, comp)
         return comp
 
-    # def visit_print(self, node):
-    #     self.visited.append(node)
-    #     transitions = self.graph.ss[node].transitions
-    #     for tran in transitions:
-    #         print(node + " -> " + tran.to)
-    #         if tran.to not in self.visited:
-    #             self.visit_print(tran.to)
 
     def get_dot(self, node):
         with open("dots/"+node + ".dot", "w") as f:
@@ -88,7 +81,10 @@ class PEPAModel():
     def _system_eq_BU(self):
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
-        self.ss.derive()
+        (res,actset) = self.ss.derive()
+        from solvers.ctmc import ctmc, create_matrix
+        steady = (ctmc(create_matrix(res)))
+        print(steady)
 
 
     def _generate_components(self):
