@@ -12,7 +12,7 @@ class StateSpace():
     def _combine_states(self, states):
         """ When more than one transition leads to the same state,
             the function combines these transitions into one with actions rewritten
-            TODO: add rates calculating
+            TODO: change action list
         """
         for i in list( range(0, len(states))):
             if states[i] is not None:
@@ -20,6 +20,7 @@ class StateSpace():
                     if states[j] is not None:
                         if states[i].to_s == states[j].to_s:
                             states[i].action += "," + states[j].action
+                            states[i].rate =  float(states[i].rate) + float(states[j].rate)
                             states[j] = None
         states = [i for i in states if i is not None]
         return states
@@ -31,6 +32,7 @@ class StateSpace():
         queue = []
         visited = []
         resulting_states = {}
+        actions_to_state = {}
         state_num = 0
         for oper in self.operators:
             oper.update_offset()
@@ -64,16 +66,25 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + news.rate + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
+                                if news.action not in actions_to_state:
+                                    action_set = set()
+                                    action_set.add(state_num)
+                                    actions_to_state[news.action] = action_set
+                                else:
+                                    actions_to_state[news.action].add(news.action)
                                 if self._gs_to_string(news.to_s) not in visited:
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
         else:
-            print( str( len(visited)))
             self.gen_for_test( resulting_states )
+        return (resulting_states, actions_to_state)
+
+
     def _gs_to_string(self, gs_list):
+        """ TODO: wywalic do osobnych toolsów """
         return ','.join( map( str, gs_list ) )
 
     def gen_for_test(self, res):

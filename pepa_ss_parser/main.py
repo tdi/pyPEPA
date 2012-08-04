@@ -13,7 +13,7 @@ if __name__ == "__main__":
             err = 1
             break
     if err == 0:
-        print(x)   
+        print(x)
 
 
 

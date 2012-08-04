@@ -1,4 +1,7 @@
 import numpy
+from scipy.sparse import lil_matrix
+from scipy.sparse.linalg import spsolve
+
 
 def file_len(f):
     for i, l in enumerate(f):
