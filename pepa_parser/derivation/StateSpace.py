@@ -70,10 +70,25 @@ class StateSpace():
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 if news.action not in actions_to_state:
                                     action_set = set()
-                                    action_set.add(state_num)
+                                    action_set.add( (state_num, float(news.rate)) )
                                     actions_to_state[news.action] = action_set
                                 else:
-                                    actions_to_state[news.action].add(news.action)
+                                    #check if the same state and action, so we add rates
+                                    to_add = []
+                                    to_change = {}
+                                    for hedge in actions_to_state[news.action]:
+                                        if hedge[0] == state_num:
+                                            new_rate = hedge[1] + float(news.rate)
+                                            to_change[hedge] = (state_num, new_rate)
+                                        else:
+                                            to_add.append( (state_num, float(news.rate) ) )
+                                    # new action in this state
+                                    for toadd in to_add:
+                                        actions_to_state[news.action].add( toadd )
+                                    # changes actions in this state
+                                    for tochange in to_change:
+                                        actions_to_state[news.action].remove(tochange)
+                                        actions_to_state[news.action].add(to_change[tochange])
                                 if self._gs_to_string(news.to_s) not in visited:
                                     queue.append(news.to_s)
                         else:
