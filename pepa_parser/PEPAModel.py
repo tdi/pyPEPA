@@ -82,9 +82,18 @@ class PEPAModel():
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
         (res,actset) = self.ss.derive()
-        from solvers.ctmc import ctmc, create_matrix
+        from solvers.ctmc import ctmc, create_matrix, vector_mult
         steady = (ctmc(create_matrix(res)))
         print(steady)
+        for action in actset.keys():
+            print(action)
+            acts = actset[action]
+            print(acts)
+            vect = [0] * len(steady)
+            for aaa in acts:
+                #0 is state, 1 is rate
+                vect[aaa[0]-1] = aaa[1]
+            print(vector_mult(steady, vect))
 
 
     def _generate_components(self):
