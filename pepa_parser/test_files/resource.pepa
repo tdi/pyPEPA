@@ -1,0 +1,4 @@
+Process = (use, 2).(task,2).Process;
+Resource = (use, 6).(update,8).Resource;
+
+Process <use> Resource
