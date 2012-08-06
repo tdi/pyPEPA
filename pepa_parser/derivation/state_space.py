@@ -11,7 +11,6 @@ class StateSpace():
     def _combine_states(self, states):
         """ When more than one transition leads to the same state,
             the function combines these transitions into one with actions rewritten
-            TODO: change action list
         """
         for i in list( range(0, len(states))):
             if states[i] is not None:

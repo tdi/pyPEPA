@@ -2,7 +2,7 @@
 
 from pprint import pprint
 import logging
-from PEPAModel import PEPAModel
+from pepa_model import PEPAModel
 import argparse
 
 if __name__ == "__main__":

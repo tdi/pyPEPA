@@ -2,11 +2,9 @@
 """
 PEPA Parser
 """
-
 from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional, ZeroOrMore, Forward, restOfLine
-from PEPAAst import *
 import sys
-
+from parsing.pepa_ast import *
 
 class PEPAParser(object):
     """
