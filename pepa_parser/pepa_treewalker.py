@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
 import logging
-#from pprint import pprint
-from ComponentSSGraph import Transition, ModelSSGraph, ComponentState
-from PEPAAst import *
-from derivation.StateSpace import StateSpace, Operator, Component
+from comp_state_space_graph import Transition, ModelSSGraph, ComponentState
+from derivation.state_space import StateSpace, Operator, Component
+from parsing.pepa_ast import *
 
 
 class PEPATreeWalker():
