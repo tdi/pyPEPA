@@ -1,8 +1,8 @@
 #/usr/bin/env python
 import logging
 import sys
-from pepa_treewalker import PEPATreeWalker
-from comp_state_space_graph import ComponentSSGraph
+from parsing.pepa_treewalker import PEPATreeWalker
+from parsing.comp_state_space_graph import ComponentSSGraph
 from pylab import figure, axes,pie,title, show
 from parsing.parser import PEPAParser
 

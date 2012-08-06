@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from comp_state_space_graph import Transition, ModelSSGraph, ComponentState
+from parsing.comp_state_space_graph import Transition, ModelSSGraph, ComponentState
 from derivation.state_space import StateSpace, Operator, Component
 from parsing.pepa_ast import *
 
