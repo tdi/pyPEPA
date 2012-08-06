@@ -19,8 +19,12 @@ class StateSpace():
                 for j in list (range(i+1, len(states))):
                     if states[j] is not None:
                         if states[i].to_s == states[j].to_s:
+                            states[i].actions = {}
+                            states[i].actions[states[i].action] = states[i].rate
+                            states[i].combined = True
                             states[i].action += "," + states[j].action
                             states[i].rate =  float(states[i].rate) + float(states[j].rate)
+                            states[i].actions[states[j].action] = float(states[j].rate)
                             states[j] = None
         states = [i for i in states if i is not None]
         return states
@@ -68,27 +72,13 @@ class StateSpace():
                                     news.to_s = new_state
                                 print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
-                                if news.action not in actions_to_state:
-                                    action_set = set()
-                                    action_set.add( (state_num, float(news.rate)) )
-                                    actions_to_state[news.action] = action_set
+                                #handle combines actions, not very elegant so to be changed
+                                if news.combined:
+                                    for act in news.actions:
+                                        self._add_to_actions_set(act, news.actions[act], actions_to_state, state_num)
                                 else:
-                                    #check if the same state and action, so we add rates
-                                    to_add = []
-                                    to_change = {}
-                                    for hedge in actions_to_state[news.action]:
-                                        if hedge[0] == state_num:
-                                            new_rate = hedge[1] + float(news.rate)
-                                            to_change[hedge] = (state_num, new_rate)
-                                        else:
-                                            to_add.append( (state_num, float(news.rate) ) )
-                                    # new action in this state
-                                    for toadd in to_add:
-                                        actions_to_state[news.action].add( toadd )
-                                    # changes actions in this state
-                                    for tochange in to_change:
-                                        actions_to_state[news.action].remove(tochange)
-                                        actions_to_state[news.action].add(to_change[tochange])
+                                    self._add_to_actions_set(news.action, news.rate, actions_to_state, state_num)
+
                                 if self._gs_to_string(news.to_s) not in visited:
                                     queue.append(news.to_s)
                         else:
@@ -96,6 +86,30 @@ class StateSpace():
         else:
             self.gen_for_test( resulting_states )
         return (resulting_states, actions_to_state)
+
+    def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
+        if action not in actions_to_state:
+            action_set = set()
+            action_set.add( (state_num, float(rate)) )
+            actions_to_state[action] = action_set
+        else:
+            #check if the same state and action, so we add rates
+            to_add = []
+            to_change = {}
+            for hedge in actions_to_state[action]:
+                if hedge[0] == state_num:
+                    rate = hedge[1] + float(rate)
+                    to_change[hedge] = (state_num, new_rate)
+                else:
+                    to_add.append( (state_num, float(rate) ) )
+            # new action in this state
+            for toadd in to_add:
+                actions_to_state[action].add( toadd )
+            # changes actions in this state
+            for tochange in to_change:
+                actions_to_state[action].remove(tochange)
+                actions_to_state[action].add(to_change[tochange])
+
 
 
     def _gs_to_string(self, gs_list):
@@ -152,6 +166,7 @@ class Derivative():
         self.rate = rate
         self.shared = shared
         self.offset = offset
+        self.combined = False
 
     def __str__(self):
         return " T:" + str(self.to_s) \
