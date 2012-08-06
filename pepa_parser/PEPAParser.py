@@ -166,7 +166,7 @@ class PEPAParser(object):
                 if tok[0] not in ("infty", "T", "tau"):
                     self.varStack[tok[0]]
             except:
-                self.error(tok[0]+" Rate not defined")
+                self.error("Rate " + tok[0]+ " not defined")
                 exit(1)
 
     def gramma(self):
