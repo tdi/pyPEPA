@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from colorama import Fore, Back
 
 class StateSpace():
     operators = []
@@ -48,7 +47,7 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            print(str(state_num) + "STATE " + str(state))
+            #print(str(state_num) + "STATE " + str(state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
@@ -70,7 +69,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+                                #print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -98,7 +97,7 @@ class StateSpace():
             to_change = {}
             for hedge in actions_to_state[action]:
                 if hedge[0] == state_num:
-                    rate = hedge[1] + float(rate)
+                    new_rate = hedge[1] + float(rate)
                     to_change[hedge] = (state_num, new_rate)
                 else:
                     to_add.append( (state_num, float(rate) ) )
@@ -113,7 +112,7 @@ class StateSpace():
 
 
     def _gs_to_string(self, gs_list):
-        """ TODO: wywalic do osobnych toolsów """
+        """ TODO: wywalic do osobnych toolsow """
         return ','.join( map( str, gs_list ) )
 
     def gen_for_test(self, res):

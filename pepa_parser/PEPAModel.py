@@ -5,7 +5,7 @@ import sys
 from PEPATreeWalker import PEPATreeWalker
 from PEPAParser import PEPAParser
 from ComponentSSGraph import ComponentSSGraph
-from colorama import Fore, Back
+from pylab import figure, axes,pie,title, show
 
 class ComponentStateVisitor():
 
@@ -88,13 +88,21 @@ class PEPAModel():
         print(steady)
         print("Statespace has " + str(len(steady)) + " states")
         print("Throughoutput")
+        figure(1, figsize=(6,6))
+        labels = []
+        x = []
         for action in actset.keys():
             acts = actset[action]
             vect = [0] * len(steady)
             for aaa in acts:
                 #0 is state, 1 is rate
                 vect[aaa[0]-1] = aaa[1]
-            print(Fore.RED + action + "\t" + Fore.MAGENTA + str ( vector_mult(steady, vect)) )
+            labels.append(action + "\n" +  str( vector_mult(steady, vect)))
+            x.append(vector_mult(steady, vect))
+            print(action + "\t" +  str ( vector_mult(steady, vect)) )
+        pie(x, labels=labels)
+        title("Throughoutput")
+        show()
 
 
     def _generate_components(self):
