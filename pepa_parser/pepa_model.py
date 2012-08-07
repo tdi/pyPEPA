@@ -84,23 +84,22 @@ class PEPAModel():
         (res,actset) = self.ss.derive()
         from solvers.ctmc import ctmc, create_matrix, vector_mult
         steady = (ctmc(create_matrix(res)))
-        print(steady)
         print("Statespace has " + str(len(steady)) + " states")
         print("Throughoutput")
         figure(1, figsize=(6,6))
         labels = []
         x = []
-        for action in actset.keys():
-            acts = actset[action]
-            vect = [0] * len(steady)
-            for aaa in acts:
-                #0 is state, 1 is rate
-                vect[aaa[0]-1] = aaa[1]
-            labels.append(action + "\n" +  str( vector_mult(steady, vect)))
-            x.append(vector_mult(steady, vect))
-            print(action + "\t" +  str ( vector_mult(steady, vect)) )
-        pie(x, labels=labels)
-        title("Throughoutput")
+        act_vectors = {}
+        for (action,state) in actset.keys():
+            if action not in act_vectors:
+                act_vectors[action] = [0] * len(steady)
+            act_vectors[action][state-1] = actset[ (action, state) ]
+            #labels.append(action + "\n" +  str( vector_mult(steady, vect)))
+            #x.append(vector_mult(steady, vect))
+        for action in act_vectors.keys():
+            print(action + "\t" +  str ( vector_mult(steady, act_vectors[action])) )
+#        pie(x, labels=labels)
+        #title("Throughoutput")
         #show()
 
 
