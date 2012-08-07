@@ -32,20 +32,23 @@ class PEPAParser(object):
         print("SYNTAX ERROR: ", string)
 
 
-    def _createActivity(self,str,loc,tok):
+    def _createActivity(self, string, loc,tok):
         self.log_pa("Token: "+tok[0])
         n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
         n.action = tok[0]
         n.rate = tok[1]
         return n
 
-    def _create_procdef(self,str,loc,tok):
+    def _create_procdef(self, string, loc, tok):
         self.log_pa("Token: "+tok[0])
         n = ProcdefNode(tok[0], "procdef")
+        if len(tok) > 1:
+            n.aggregation = True
+            n.aggr_num = int(tok[1])
         n.name = tok[0]
         return n
 
-    def _create_definition(self,str,loc, tok):
+    def _create_definition(self, string, loc, tok):
         self.log_pa("Left token: "+tok[0].data)
         self.log_pa("Right token: "+tok[2].data)
         n = DefNode("=", "definition")
@@ -126,6 +129,23 @@ class PEPAParser(object):
             n.actionset = None
         return n
 
+    def _create_subtree_aggregation(self, num, procname):
+        """ Transforms Process[num] into AST subtree """
+        first = CoopNode("||", "coop")
+        first.cooptype = "par"
+        last = first
+        for i in list(range(2, num+1)):
+            nl = ProcdefNode(procname, "procdef")
+            if i == num:
+                nr = ProcdefNode(procname, "procdef")
+                last.right = nr
+            else:
+                nr = CoopNode("||", "coop")
+                nr.cooptype = "par"
+                last.right = nr
+            last.left = nl
+            last = nr
+        return first
 
     def createProcess(self,string, loc, tok):
         self.log_pa("Start")
@@ -136,6 +156,15 @@ class PEPAParser(object):
         else:
             if tok[0].asttype == "procdef":
                 n = ProcdefNode(tok[0].data, tok[0].asttype)
+                # TODO create subtree
+                if tok[0].aggregation == True:
+                    n.aggregation = True
+                    n.aggr_num = tok[0].aggr_num
+                    n = self._create_subtree_aggregation(tok[0].aggr_num, tok[0].data)
+                    n.asttype = "coop"
+                    n.data = "||"
+                    n.cooptype = "par"
+                    n.actionset = None
             elif tok[0].asttype == "activity":
                 n = ActivityNode(tok[0].data, tok[0].asttype)
                 n.rate = tok[0].rate
@@ -177,6 +206,9 @@ class PEPAParser(object):
         ratename = Word(alphas.lower(),alphanums+"_")
         lpar = Literal('(').suppress()
         rpar = Literal(')').suppress()
+        lsqpar = Literal('[').suppress()
+        rsqpar = Literal(']').suppress()
+
         define = Literal('=')
         semicol = Literal(';').suppress()
         col = Literal(',').suppress()
@@ -192,7 +224,7 @@ class PEPAParser(object):
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self.createSyncSet)
         activity = (ratename + col + peparate).setParseAction(self._createActivity)
-        procdef = Word(alphas.upper(), alphanums+"_").setParseAction(self._create_procdef)
+        procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + number + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
         ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self.assignVar) + semicol
 
@@ -220,8 +252,8 @@ class PEPAParser(object):
         return pepa
 
     def parse(self,string):
-            self.gramma().parseString(string)
-            return (self.processes, self.varStack, self.systemeq)
+        self.gramma().parseString(string)
+        return (self.processes, self.varStack, self.systemeq)
 
 
 
