@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+from colorama import Fore, Back
 
 class StateSpace():
     operators = []
     components = []
     comp_ss = None
+    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
+
 
     def __init__(self):
         self.max_length = 0
@@ -13,6 +16,8 @@ class StateSpace():
             the function combines these transitions into one with actions rewritten
         """
         for i in list( range(0, len(states))):
+            if len(states[i].to_s) == 1:
+                continue
             if states[i] is not None:
                 for j in list (range(i+1, len(states))):
                     if states[j] is not None:
@@ -61,6 +66,7 @@ class StateSpace():
                             if not new_states:
                                 print("DEADLOCK in " + str(state))
                                 exit(1)
+                            #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
                             for news in new_states:
                                 # aggregate
@@ -91,7 +97,8 @@ class StateSpace():
             action_set.add( (state_num, float(rate)) )
             actions_to_state[action] = action_set
         else:
-            #check if the same state and action, so we add rates
+            #check if the same stateand action, so we add rates
+            # FIXME: tutaj raty
             to_add = []
             to_change = {}
             for hedge in actions_to_state[action]:
@@ -155,6 +162,10 @@ class Component():
     def get_derivatives(self):
         return self.derivatives
 
+    def __str__(self):
+        return self.name
+
+
 class Derivative():
 
     def __init__(self, from_s, to_s, action, rate, offset,shared=False):
@@ -176,6 +187,7 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
+    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
 
     def __init__(self):
         self.actionset = []
@@ -201,6 +213,12 @@ class Operator(Component):
         ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
         return ddd
 
+    def _create_unshared_trans(self, state, tran):
+        to_state = state[:]
+        for i in list(range(0, self.lhs.length)):
+            to_state[self.lhs.offset + i] = tran.to_s[self.lhs.offset + i]
+        ddd = Derivative(state, to_state, tran.action, tran.rate, self.offset, False)
+        return ddd
 
 
     def compose(self,ss, state, topop=False):
@@ -208,14 +226,14 @@ class Operator(Component):
         for tran_l in self.lhs.get_derivatives():
             # UNSHARED
             if tran_l.action not in self.actionset:
-                self.derivatives.append(tran_l)
+#                ddd = self._create_unshared_trans(state, tran_l)
                 new_state = state[:]
                 new_state[tran_l.offset] = tran_l.to_s[0]
+                self.derivatives.append(tran_l)
         #        print("\t/ "+str(tran_l))
         #        print("\tPS "+str(new_state))
             else:
                 for tran_r in self.rhs.get_derivatives():
-                    #FIXME: TU SIE KURWI
                     if tran_r.action == tran_l.action:
                         new_state = state[:]
                         if len(tran_r.to_s) == 1:

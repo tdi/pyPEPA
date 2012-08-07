@@ -101,7 +101,7 @@ class PEPAModel():
             print(action + "\t" +  str ( vector_mult(steady, vect)) )
         pie(x, labels=labels)
         title("Throughoutput")
-        show()
+        #show()
 
 
     def _generate_components(self):
