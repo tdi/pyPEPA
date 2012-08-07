@@ -45,6 +45,8 @@ class ActivityNode(BaseNode):
 
 class ProcdefNode(BaseNode):
     name  = None
+    aggregation = False
+    aggr_num = 0
 
     def __init__(self, data, asttype):
         super().__init__(data, asttype)

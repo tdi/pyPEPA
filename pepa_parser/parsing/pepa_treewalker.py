@@ -69,6 +69,7 @@ class PEPATreeWalker():
         self.ss.components = self.components
         return self.ss
 
+
     def _visit_systemeq(self, node):
         """ Every procdef in system equation gets offset number
             describing the position in a system equation.
@@ -82,7 +83,6 @@ class PEPATreeWalker():
             c.length = 1
             if self.ss.max_length < c.length:
                 self.ss.max_length = c.length
-#            c.offset = len(self.components)
             # TODO zmienic, to redundantne i idiotyczne
             c.data = node.data
             node.length = 1
