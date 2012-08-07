@@ -87,51 +87,18 @@ class StateSpace():
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
-        else:
-            self.gen_for_test( resulting_states )
         return (resulting_states, actions_to_state)
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
-        if action not in actions_to_state:
-            action_set = set()
-            action_set.add( (state_num, float(rate)) )
-            actions_to_state[action] = action_set
+        if (action,state_num) not in actions_to_state:
+            actions_to_state[ (action, state_num) ] = float(rate)
         else:
             #check if the same stateand action, so we add rates
-            # FIXME: tutaj raty
-            to_add = []
-            to_change = {}
-            for hedge in actions_to_state[action]:
-                if hedge[0] == state_num:
-                    new_rate = hedge[1] + float(rate)
-                    to_change[hedge] = (state_num, new_rate)
-                else:
-                    to_add.append( (state_num, float(rate) ) )
-            # new action in this state
-            for toadd in to_add:
-                actions_to_state[action].add( toadd )
-            # changes actions in this state
-            for tochange in to_change:
-                actions_to_state[action].remove(tochange)
-                actions_to_state[action].add(to_change[tochange])
-
-
+            actions_to_state[ (action, state_num) ] += float(rate)
 
     def _gs_to_string(self, gs_list):
         """ TODO: wywalic do osobnych toolsow """
         return ','.join( map( str, gs_list ) )
-
-    def gen_for_test(self, res):
-        superstring = ""
-        for key in sorted(res, key=lambda k: res[k][1]):
-            for tos in res[key][0]:
-                superstring += str(res[key][1]) + ","
-                superstring += str(res[tos[1]][1]) + ","
-                superstring += str(float(tos[0])) + "\n"
-        with open("NICE", "w") as f:
-            f.write(superstring)
-
-
 
 class Component():
     length = None
@@ -226,7 +193,6 @@ class Operator(Component):
         for tran_l in self.lhs.get_derivatives():
             # UNSHARED
             if tran_l.action not in self.actionset:
-#                ddd = self._create_unshared_trans(state, tran_l)
                 new_state = state[:]
                 new_state[tran_l.offset] = tran_l.to_s[0]
                 self.derivatives.append(tran_l)
