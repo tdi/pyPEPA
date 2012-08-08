@@ -16,7 +16,8 @@ class StateSpace():
             the function combines these transitions into one with actions rewritten
         """
         for i in list( range(0, len(states))):
-            if len(states[i].to_s) == 1:
+            #FIXME: if None then exception
+            if states[i] is not None and len(states[i].to_s) == 1:
                 continue
             if states[i] is not None:
                 for j in list (range(i+1, len(states))):
