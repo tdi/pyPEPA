@@ -5,51 +5,8 @@ from parsing.pepa_treewalker import PEPATreeWalker
 from parsing.comp_state_space_graph import ComponentSSGraph
 from pylab import figure, axes,pie,title, show
 from parsing.parser import PEPAParser
-
-class ComponentStateVisitor():
-
-    def __init__(self, graph):
-        self.graph = graph
-        self.visited = []
-        self.dot = ""
-
-    def generate_ss(self, node, comp):
-        self.visited = []
-        return self._visit_for_ss(node,comp)
-
-    def _visit_for_ss(self, node, comp):
-        self.visited.append(node)
-        comp.ss[node] = self.graph.ss[node]
-        transitions = self.graph.ss[node].transitions
-        for tran in transitions:
-            if tran.action in self.graph.shared_actions:
-                comp.shared.append( (tran.action, tran.rate) )
-            comp.activities.append( (tran.action, tran.rate) )
-            if tran.to not in self.visited:
-                self._visit_for_ss(tran.to, comp)
-        return comp
-
-
-    def get_dot(self, node):
-        with open("dots/"+node + ".dot", "w") as f:
-            self.dot = "digraph " + node + "{\n"
-            self._visit_dot(node)
-            self.dot += "}\n"
-            f.write(self.dot)
-        return self.dot
-
-    def _visit_dot(self, node):
-        self.visited.append(node)
-        transitions = self.graph.ss[node].transitions
-        for tran in transitions:
-            if tran.action in self.graph.shared_actions:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + \
-                " [label=\"(" + tran.action + "," + tran.rate + ")\" \
-                fontsize=10, fontcolor=red]\n"
-            else:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + " [label=\"(" + tran.action + "," + tran.rate + ")\" fontsize=10]\n"
-            if tran.to not in self.visited:
-                self._visit_dot(tran.to)
+from solvers.solution import CTMCSolution
+from parsing.component_state_visitor import ComponentStateVisitor
 
 class PEPAModel():
     """
@@ -58,12 +15,13 @@ class PEPAModel():
         - rate definitions
         - system equation
     """
-    def __init__(self, modelfile):
+    def __init__(self, args):
         """ Create PEPA model instance and fill the fields
 
         Keyword arguments:
         modelfile --- path to the model file
         """
+        self.args = args
         self.processes = {}
         self.systemeq = None
         self.rate_definitions = {}
@@ -72,36 +30,35 @@ class PEPAModel():
         self.tw = None
         self.log = logging.getLogger(__name__)
         self.ss = None
-        self._parse_read_model(modelfile)
+        self._solver = None
+        self._parse_read_model(args.file)
         self._prepare_trees()
         self._prepare_systemeq()
-        self._system_eq_BU()
+        self._derive_steady_state()
 
 
-    def _system_eq_BU(self):
+    def get_steady_state_vector(self):
+        return self._solver.get_steady_state_vector()
+
+    def get_throughoutput(self):
+        return self._solver.get_actions_throughoutput()
+
+    def _derive_steady_state(self):
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
-        (res,actset) = self.ss.derive()
-        from solvers.ctmc import ctmc, create_matrix, vector_mult
-        steady = (ctmc(create_matrix(res)))
-        print("Statespace has " + str(len(steady)) + " states")
-        print("Throughoutput")
-        figure(1, figsize=(6,6))
-        labels = []
-        x = []
-        act_vectors = {}
-        for (action,state) in actset.keys():
-            if action not in act_vectors:
-                act_vectors[action] = [0] * len(steady)
-            act_vectors[action][state-1] = actset[ (action, state) ]
-            #labels.append(action + "\n" +  str( vector_mult(steady, vect)))
-            #x.append(vector_mult(steady, vect))
-        for action in act_vectors.keys():
-            print(action + "\t" +  str ( vector_mult(steady, act_vectors[action])) )
-#        pie(x, labels=labels)
-        #title("Throughoutput")
-        #show()
+        self._solver = CTMCSolution(self.ss)
 
+#        (res,actset) = self.ss.derive()
+#        steady = (ctmc(create_matrix(res)))
+#        print("Statespace has " + str(len(steady)) + " states")
+#        print("Throughoutput")
+        # act_vectors = {}
+        # for (action,state) in actset.keys():
+        #     if action not in act_vectors:
+        #         act_vectors[action] = [0] * len(steady)
+        #     act_vectors[action][state-1] = actset[ (action, state) ]
+        # for action in act_vectors.keys():
+        #     print(action + "\t" +  str ( vector_mult(steady, act_vectors[action])) )
 
     def _generate_components(self):
         """
