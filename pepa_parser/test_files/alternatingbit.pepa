@@ -2,10 +2,10 @@ def = 1.0;
 retry = 1.0;
 loss = 1.0;
 
-# S0 = (gm, def).(send0, def).S1;
-# S1 = (gm, def).S2 + (time0, retry).S3 + (ack0, infty).S5 + (ack1, infty).S1;
-# S2 = (time0, retry).S4 + (ack0, infty).S6 + (ack1, infty).S2;
-# S3 = (send0, def).S1;
+ S0 = (gm, def).(send0, def).S1;
+ S1 = (gm, def).S2 + (time0, retry).S3 + (ack0, infty).S5 + (ack1, infty).S1;
+ S2 = (time0, retry).S4 + (ack0, infty).S6 + (ack1, infty).S2;
+ S3 = (send0, def).S1;
 # S4 = (send0, def).S2;
 # S5 = (gm, def).(send1, def).S7;
 # S6 = (send1, def).S7;

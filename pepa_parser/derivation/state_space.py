@@ -46,6 +46,7 @@ class StateSpace():
             oper.update_offset()
         for comp in self.components:
             initial_state.append(comp.name)
+        #print(list(filter(lambda x: print(x), self.operators)))
         queue.append(initial_state)
         while(queue):
             state = queue.pop(0)
@@ -65,7 +66,7 @@ class StateSpace():
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
-                                print("DEADLOCK in " + str(state))
+                                print("DEADLOCK in {}".format(state))
                                 exit(1)
                             #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
@@ -91,6 +92,9 @@ class StateSpace():
         return (resulting_states, actions_to_state)
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
+        if rate == "infty":
+            print("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
+            exit(1)
         if (action,state_num) not in actions_to_state:
             actions_to_state[ (action, state_num) ] = float(rate)
         else:

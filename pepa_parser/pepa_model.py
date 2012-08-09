@@ -34,6 +34,8 @@ class PEPAModel():
         self._parse_read_model(args.file)
         self._prepare_trees()
         self._prepare_systemeq()
+        print(args)
+        self.generate_dots()
         self._derive_steady_state()
 
 
@@ -47,18 +49,6 @@ class PEPAModel():
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss)
-
-#        (res,actset) = self.ss.derive()
-#        steady = (ctmc(create_matrix(res)))
-#        print("Statespace has " + str(len(steady)) + " states")
-#        print("Throughoutput")
-        # act_vectors = {}
-        # for (action,state) in actset.keys():
-        #     if action not in act_vectors:
-        #         act_vectors[action] = [0] * len(steady)
-        #     act_vectors[action][state-1] = actset[ (action, state) ]
-        # for action in act_vectors.keys():
-        #     print(action + "\t" +  str ( vector_mult(steady, act_vectors[action])) )
 
     def _generate_components(self):
         """
