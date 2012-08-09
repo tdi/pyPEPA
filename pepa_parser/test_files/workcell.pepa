@@ -1,0 +1,83 @@
+// This file is an input file for the PEPA Eclipse Plug-in
+
+a1_T1 = 1.16083347843752;
+a1_T2 = 0.63318189732955;
+xi = 100;
+r_1 = 0.232774674115456;
+r_2 = 2.17256362507759;
+a2_T1 = 0.648735319687359;
+r_3 = 0.407355679702048;
+a2_T2 = 1.63530586106703;
+a2_T3 = 0.464475281577689;
+r_4 = 0.724187875025864;
+f_T = 0.503524672708963;
+f_B = 0.857632933104631;
+t_T = 0.353232073472271;
+p_b2m = 0.965250965250965;
+p_m2t2b = 0.317258883248731;
+d_B = 0.713266761768902;
+d_T = 0.34965034965035;
+c_H = 0.141924496168039;
+c_V = 0.372300819061802;
+
+Robot = (ready_to_pick,infty).BlankFromTable;
+
+BlankFromTable = 
+    (pick_posn_arm_1,a1_T1).(ready_to_pick,xi).
+    (safe_posn_arm_1,a1_T2).Rot_2Press;
+
+Rot_2Press = 
+    (at_press_arm_2,r_2).UnloadPress;
+
+UnloadPress = 
+    (unload_blank,infty).(pick_posn_arm_2,a2_T1).Rot_2Belt;
+
+Rot_2Belt = 
+    (unload_blank, xi).(at_belt_arm_2,r_3).BlankToDBelt;
+
+BlankToDBelt = 
+    (dbelt_ready,infty).(put_posn_arm_2,a2_T2). 
+    (dbelt_ready,xi).(safe_posn_arm_2,a2_T3).Rot_1Press;
+
+Rot_1Press = (at_press_arm_1,r_4).LoadPress;
+
+LoadPress = 
+    (load_blank,infty).(put_posn_arm_1,a1_T2).  
+    (safe_posn_arm_1,a1_T2).(load_blank,xi).Rot_1Table;
+
+Rot_1Table = (at_table_arm_1,r_1).Robot;
+Belt =
+    (b_sensor_On, f_T).(ready_to_put, infty).
+    (b_sensor_Off, f_B).(ready_to_put, xi).Belt;
+Table =
+    (move_table, t_T).(ready_to_put, xi).(ready_to_put, infty). 
+    (move_table, t_T).(ready_to_pick, xi).(ready_to_pick, infty).Table ;
+
+
+Press = 
+    (unload_blank, xi).(unload_blank, infty).(move_press, p_b2m). 
+    (load_blank, xi).(load_blank, infty).(move_press, p_m2t2b).Press ;
+
+DBelt_1 = 
+    (dbelt_ready, xi).(dbelt_ready, infty).(delay, d_B).DBelt_2;
+
+DBelt_2 =
+    (dbelt_ready, xi).(dbelt_ready, infty).(delay, d_B).DBelt_3 + 
+    (d_Sensor_On,d_T).(d_Sensor_Off,d_B).(blank_ready,xi).(blank_ready,infty).DBelt_1;
+
+DBelt_3 = 
+    (d_Sensor_On,d_T).(d_Sensor_Off,d_B).
+    (blank_ready,xi).(blank_ready,infty).DBelt_2;
+Crane = 
+    (mag_u, c_V).(over_belt2, c_H).(blank_ready, infty). 
+    (mag_d, c_V).(blank_ready,xi).(mag_u, c_V). 
+    (over_belt1, c_H).(can_accept, xi).(mag_d, c_V).Crane ;
+
+// The following expression invokes instances of the PEPA components
+// which were defined above.  In order to make models with larger 
+// state spaces try altering the term `Press' to `(Press <> Press)'
+// or change other components to be two copies in parallel similarly.
+
+Robot <ready_to_pick, unload_blank, dbelt_ready, load_blank> ((Belt <ready_to_put> Table) <> Press <> (DBelt_1 <blank_ready> Crane))
+
+
