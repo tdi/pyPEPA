@@ -5,7 +5,7 @@ class StateSpace():
     operators = []
     components = []
     comp_ss = None
-    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
+    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
 
 
     def __init__(self):
@@ -42,8 +42,10 @@ class StateSpace():
         resulting_states = {}
         actions_to_state = {}
         state_num = 0
-        for oper in self.operators:
-            oper.update_offset()
+        for x in list(range(0,self.max_length+1,1)):
+            for op in self.operators:
+                if op.length == x:
+                    op.update_offset()
         for comp in self.components:
             initial_state.append(comp.name)
         #print(list(filter(lambda x: print(x), self.operators)))
@@ -53,18 +55,24 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            #print(str(state_num) + "STATE " + str(state))
+            #print("in{}".format(state_num))
+            #print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
             for i in list( range(0, len( state ),1)):
                 self.components[i].update( state[i] )
+            # if self.STATE == str(state):
+                # print(list(filter(lambda x: print(x), self.components)))
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
                     if op.length == x:
                         if self.max_length == op.length:
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
+#                            if self.STATE == str(state):
+#                                for n in new_states:
+#                                    print(n)
                             if not new_states:
                                 print("DEADLOCK in {}".format(state))
                                 exit(1)
@@ -111,6 +119,7 @@ class Component():
     name = None
     ss = None
     data = None
+    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
 
     def update(self, name):
         """
@@ -159,13 +168,14 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
-    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
+    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
 
     def __init__(self):
         self.actionset = []
         self.derivatives = []
 
     def update_offset(self):
+        print("updating {} with {}".format(self, self.lhs.offset))
         if self.lhs is not None:
             self.offset = self.lhs.offset
 
@@ -181,6 +191,7 @@ class Operator(Component):
             to_state[self.lhs.offset + i] = tran_l.to_s[self.lhs.offset + i]
         for i in list(range(0, self.rhs.length)):
             to_state[self.rhs.offset + i] = tran_r.to_s[self.rhs.offset + i]
+#            to_state[i] = tran_r.to_s[i]
         new_rate = self._min(tran_r.rate, tran_l.rate)
         ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
         return ddd
