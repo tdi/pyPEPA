@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from solvers.ctmc import ctmc, create_matrix, vector_mult
+from solvers.ctmc import ctmc, ctmc2, create_matrix, vector_mult, create_lil_matrix
 
 class CTMCSolution():
 
@@ -14,6 +14,7 @@ class CTMCSolution():
     def _solve(self):
         (self._res, self._actset) = self._ss.derive()
         self._steady_state_vector = (ctmc(create_matrix(self._res)))
+        #self._steady_state_vector = (ctmc2(create_lil_matrix(self._res), len(self._res)))
 
     def get_steady_state_vector(self):
         return self._steady_state_vector
