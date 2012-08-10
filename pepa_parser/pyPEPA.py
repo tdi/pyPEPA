@@ -29,7 +29,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(description="pyPEPA, author {}, {}".format(__author__, __email__))
     parser.add_argument("file", help="path to the model file")
-    parser.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendost")
+    parser.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
     parser.add_argument("-s", "--steady", help="print steady state probability vector", action="store_true")
     parser.add_argument("-t", "--performance", help="print throughoutput of action", action="store_true", dest="top")
     args = parser.parse_args()
@@ -41,6 +41,7 @@ if __name__ == "__main__":
         print("Steady state vector")
         _pretty_print_vector(pm.get_steady_state_vector())
     if args.top:
-        print("Throuhoutput\n")
+        print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
+        print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
 

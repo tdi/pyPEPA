@@ -34,8 +34,8 @@ class PEPAModel():
         self._parse_read_model(args.file)
         self._prepare_trees()
         self._prepare_systemeq()
-        print(args)
-        self.generate_dots()
+        if args.gendots:
+            self.generate_dots()
         self._derive_steady_state()
 
 
