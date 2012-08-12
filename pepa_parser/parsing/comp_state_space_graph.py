@@ -12,6 +12,7 @@ class Transition():
 
     def __init__(self, action, rate, to):
         self.rate = rate
+        self.var_rate = None
         self.action = action
         self.to = to
 
@@ -42,7 +43,6 @@ class ModelSSGraph():
     def __init__(self):
         self.name = ""
         self.ss = {}
-        self.firstnodes = []
         self.dotrepr = ""
         self.shared_actions = None
 

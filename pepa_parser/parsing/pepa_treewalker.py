@@ -13,27 +13,27 @@ class PEPATreeWalker():
         self._visitstack= []
         self.graph = ModelSSGraph()
         self.log = logging.getLogger(__name__)
-        self._after_1_visit = None
         self.seq_components = {}
         self.shared_actions = {}
-        self.global_start_state = []
         self.operators = []
         self.components = []
         self.ss = StateSpace()
         self.rates = rates
 
-    def derive_processes_ss(self, node, rates):
+    def prepare(self):
+        pass
+
+
+    def derive_process_state_space(self, node, rates):
         """ Takes node returns state space of a single
             process (here process is P = (a,r).P;
             Assigns rates values
         """
         node = self._visit_tree1(node)
-        self._after_1_visit = node
         self._visitstack = []
         self.graph.name = node.process
-        self.log.debug("Deriving " + node.process)
+        self.log.debug("Deriving {}".format(node.process))
         self._visit_tree2(node)
-        return self.graph
 
     def _name_subtree(self,node):
         """ Names the subtree
@@ -118,7 +118,9 @@ class PEPATreeWalker():
             node.left = None
         elif node.data == ".":
             node.action = node.left.action
+            # assign numerical value to rate
             if node.left.rate in self.rates:
+                node.var_rate = node.left.rate
                 node.rate = self.rates[node.left.rate]
             else:
                 node.rate = node.left.rate
@@ -152,12 +154,13 @@ class PEPATreeWalker():
             compnode.resolved = node.resolved
             # adding to ss dict
             self.graph.ss[node.process] = compnode
-            self.graph.firstnodes.append( node.process )
             # first node for sure
-            self.log.debug("(COMPONENT) " + node.process + " = " + node.resolved)
+            self.log.debug("(COMPONENT) {} = {}".format(node.process,node.resolved))
             self._visitstack.append(node.process)
         elif node.data == ".":
             trans = Transition(node.action, node.rate, node.resolved)
+            if node.var_rate is not None:
+                trans.var_rate = node.var_rate
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
             self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)

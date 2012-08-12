@@ -11,28 +11,27 @@ class PEPAParser(object):
     TODO: change all to private fields...
     """
 
-    logging = False
-    logging_pa = False
-    varStack = {}
-    processes = {}
-    rates = {}
-    systemeq = None
+    _logging_pa = False
+    _var_stack = None
+    _processes = None
+    _rates = None
+    _systemeq = None
 
     def __init__(self, logging_pa = False):
-        self.logging_pa = logging_pa
+        self._logging_pa = logging_pa
+        self._processes = {}
+        self._rates = {}
+        self._var_stack = {}
 
     def log_pa(self, string, msg="", prepend="[PARSEACT]"):
         fname = sys._getframe(1).f_code.co_name
-        if self.logging_pa:  print(prepend + "[" + fname + "]", msg, string)
-
-    def log(self, string, msg="", prepend="log"):
-        if logging:  print(prepend,msg,string)
+        if self._logging_pa:  print(prepend + "[" + fname + "]", msg, string)
 
     def error(self,string):
         print("SYNTAX ERROR: ", string)
 
 
-    def _createActivity(self, string, loc,tok):
+    def _create_activity(self, string, loc,tok):
         self.log_pa("Token: "+tok[0])
         n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
         n.action = tok[0]
@@ -55,11 +54,11 @@ class PEPAParser(object):
         n.left = tok[0]
         n.right = tok[2]
         n.process = tok[0].data
-        for key in self.processes.keys():
-            if self.processes[key].process == tok[0].data:
+        for key in self._processes.keys():
+            if self._processes[key].process == tok[0].data:
                 self.error("Process "+tok[0].data+" already defined")
                 exit(1)
-        self.processes[tok[0]] = n
+        self._processes[tok[0]] = n
         return n
 
     def _create_prefix(self,string, loc, tok):
@@ -94,7 +93,7 @@ class PEPAParser(object):
                 return n
 
 
-    def createCoop(self,string, loc, tok):
+    def _create_coop(self,string, loc, tok):
         if not tok[0] is None:
             if len(tok) <3:
                 self.log_pa("Token: "+tok[0].data)
@@ -118,7 +117,7 @@ class PEPAParser(object):
                 n.right= tok[2]
                 return n
 
-    def createSyncSet(self,string, loc, tok):
+    def _create_sync_set(self,string, loc, tok):
         if tok[0] != "||" and tok[0] != "<>":
             self.log_pa("Non empty synset: " + str(tok))
             n = SyncsetNode("<>", "syncset")
@@ -147,7 +146,7 @@ class PEPAParser(object):
             last = nr
         return first
 
-    def createProcess(self,string, loc, tok):
+    def _create_process(self,string, loc, tok):
         self.log_pa("Start")
         if tok[0].left is not None or tok[0].right is not None:
             self.log_pa("Token: "+tok[0].data)
@@ -176,22 +175,22 @@ class PEPAParser(object):
         return n
 
 
-    def createSystemEQ(self, string, loc, tok):
+    def _create_system_equation(self, string, loc, tok):
         self.log_pa("Creating system EQ")
-        self.systemeq = tok[0]
+        self._systemeq = tok[0]
 
 
-    def assignVar(self,toks):
-        self.varStack[toks[0]] = toks[2]
+    def _assign_var(self,toks):
+        self._var_stack[toks[0]] = toks[2]
 
-    def checkVar(self,str,loc,tok):
+    def _check_var(self,str,loc,tok):
         try:
             # just a number
             float(tok[0])
         except:
             try:
                 if tok[0] not in ("infty", "T", "tau"):
-                    self.varStack[tok[0]]
+                    self._var_stack[tok[0]]
             except:
                 self.error("Rate " + tok[0]+ " not defined")
                 exit(1)
@@ -219,14 +218,14 @@ class PEPAParser(object):
         internalrate = Word('tau')
         pound = Literal('#').suppress()
         percent = Literal('%').suppress()
-        peparate = (ratename | floatnumber | internalrate | passiverate).setParseAction(self.checkVar)
+        peparate = (ratename | floatnumber | internalrate | passiverate).setParseAction(self._check_var)
         peparate_indef = floatnumber | internalrate | passiverate
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
-        coop_op = (parallel | sync).setParseAction(self.createSyncSet)
-        activity = (ratename + col + peparate).setParseAction(self._createActivity)
+        coop_op = (parallel | sync).setParseAction(self._create_sync_set)
+        activity = (ratename + col + peparate).setParseAction(self._create_activity)
         procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + number + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
-        ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self.assignVar) + semicol
+        ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
 
         prefix = Forward()
         choice = Forward()
@@ -235,25 +234,20 @@ class PEPAParser(object):
         process = ( activity
                  | procdef
                  | lpar + coop + rpar
-                ).setParseAction(self.createProcess)
+                ).setParseAction(self._create_process)
         prefix  << (process + ZeroOrMore(prefix_op + prefix)).setParseAction(self. _create_prefix)
         choice << (prefix + ZeroOrMore(choice_op + choice)).setParseAction(self. _create_choice)
-        coop << (choice + ZeroOrMore(coop_op + coop)).setParseAction(self.createCoop)
+        coop << (choice + ZeroOrMore(coop_op + coop)).setParseAction(self._create_coop)
         rmdef = (Optional(pound) + procdef + define + coop + semicol).setParseAction(self._create_definition)
-
-
         system_eq =  Optional(pound) + coop
-
-        pepa = ZeroOrMore(ratedef)  + ZeroOrMore(rmdef) + system_eq.setParseAction(self.createSystemEQ)
-
-
+        pepa = ZeroOrMore(ratedef)  + ZeroOrMore(rmdef) + system_eq.setParseAction(self._create_system_equation)
         pepacomment = '//' + restOfLine
         pepa.ignore(pepacomment)
         return pepa
 
     def parse(self,string):
         self.gramma().parseString(string)
-        return (self.processes, self.varStack, self.systemeq)
+        return (self._processes, self._var_stack, self._systemeq)
 
 
 
