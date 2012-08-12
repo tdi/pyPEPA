@@ -11,6 +11,7 @@ __version__ = "201208"
 from pprint import pprint
 import logging
 from pepa_model import PEPAModel
+from experiments.experiment import rate_experiment, range_maker
 import argparse
 
 
@@ -36,7 +37,16 @@ if __name__ == "__main__":
 
     pm = PEPAModel(args)
     pm.derive()
-    pm.recalculate()
+
+
+    ran = range_maker(1,100,1)
+    result = rate_experiment("rateReset", ran, "badOffer", pm)
+    from pylab import plot, ylabel, xlabel, show, savefig
+    plot(result[0], result[1], linewidth=1.0)
+    xlabel("rateReset")
+    ylabel("badOffer throughoutput")
+    savefig("fig1.png")
+    #show()
 
     if args.steady or args.top:
         pm.steady_state()
