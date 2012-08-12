@@ -54,7 +54,7 @@ class StateSpace():
               continue
             state_num = state_num + 1
             #print("in{}".format(state_num))
-            print("{} STATE {}".format(state_num, state))
+            #print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
@@ -77,8 +77,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-#                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
-                                print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
+                                #print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -91,7 +90,6 @@ class StateSpace():
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
-        print("{}".format(actions_to_state))
         return (resulting_states, actions_to_state)
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):

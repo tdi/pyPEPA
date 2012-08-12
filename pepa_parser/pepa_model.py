@@ -22,9 +22,9 @@ class PEPAModel():
         modelfile --- path to the model file
         """
         self.args = args
-    #    self.processes = {}
-    #    self.systemeq = None
-    #    self.rate_definitions = {}
+        self.processes = {}
+        self.systemeq = None
+        self.rate_definitions = {}
         self.components = {}
         # from BU alg, get rid of it
         self.tw = None
@@ -33,15 +33,18 @@ class PEPAModel():
         self._solver = None
         self._parse_read_model(args.file)
 
+
+    def get_rates(self):
+        return self.rate_definitions
+
     def derive(self):
         self._prepare_components()
         if self.args.gendots:
             self.generate_dots()
 
-    def recalculate(self):
+    def recalculate(self, rates=None):
         self._parse_read_model(self.args.file)
-#        self._prepare_components()
-#        self._prepare_systemeq()
+        self._prepare_components(rates)
 
     def steady_state(self):
         self._derive_steady_state()
@@ -70,11 +73,14 @@ class PEPAModel():
             print("Parsing error : " + str(e) )
             sys.exit(1)
 
-    def _prepare_components(self):
+    def _prepare_components(self, rateDef=None):
         """ Here ss graphs of every process is derived from AST trees
             as well as state space of components is derived
         """
-        self.tw = PEPATreeWalker(self.rate_definitions)
+        if rateDef is None:
+            self.tw = PEPATreeWalker(self.rate_definitions)
+        else:
+            self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
