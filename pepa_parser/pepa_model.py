@@ -22,9 +22,9 @@ class PEPAModel():
         modelfile --- path to the model file
         """
         self.args = args
-        self.processes = {}
-        self.systemeq = None
-        self.rate_definitions = {}
+    #    self.processes = {}
+    #    self.systemeq = None
+    #    self.rate_definitions = {}
         self.components = {}
         # from BU alg, get rid of it
         self.tw = None
@@ -32,12 +32,19 @@ class PEPAModel():
         self.ss = None
         self._solver = None
         self._parse_read_model(args.file)
-        self._prepare_trees()
-        self._prepare_systemeq()
-        if args.gendots:
-            self.generate_dots()
-        self._derive_steady_state()
 
+    def derive(self):
+        self._prepare_components()
+        if self.args.gendots:
+            self.generate_dots()
+
+    def recalculate(self):
+        self._parse_read_model(self.args.file)
+#        self._prepare_components()
+#        self._prepare_systemeq()
+
+    def steady_state(self):
+        self._derive_steady_state()
 
     def get_steady_state_vector(self):
         return self._solver.get_steady_state_vector()
@@ -50,23 +57,6 @@ class PEPAModel():
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss)
 
-    def _generate_components(self):
-        """
-        Generates state space graphs for every component
-        in the model into components dict
-        """
-        visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in set(self.ss.components):
-            self.components[comp.data] = ComponentSSGraph(comp.data)
-            self.components[comp.data] = visitor.generate_ss(comp.data, self.components[comp.data])
-
-    def _prepare_systemeq(self):
-        """
-        Returns StateSpace object
-        """
-        self.log.debug("Preparing systemeq")
-        self.ss = self.tw.derive_systemeq(self.systemeq)
-
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it.
         """
@@ -75,17 +65,19 @@ class PEPAModel():
         try:
             parser = PEPAParser(False)
             (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
-            self.tw = PEPATreeWalker(self.rate_definitions)
         except Exception as e:
             self.log.debug(e)
             print("Parsing error : " + str(e) )
             sys.exit(1)
 
-    def _prepare_trees(self):
+    def _prepare_components(self):
         """ Here ss graphs of every process is derived from AST trees
+            as well as state space of components is derived
         """
+        self.tw = PEPATreeWalker(self.rate_definitions)
         for node in self.processes.values():
-            self.tw.derive_processes_ss(node, self.rate_definitions)
+            self.tw.derive_process_state_space(node, self.rate_definitions)
+        self.ss = self.tw.derive_systemeq(self.systemeq)
 
     def generate_dots(self):
         """ Generates dot files to browse with e.g. xdot """
@@ -93,6 +85,17 @@ class PEPAModel():
         visitor = ComponentStateVisitor(self.tw.graph)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
+
+    def _generate_components(self):
+        """
+        Generates state space graphs for every component
+        in the model into components dict
+        TODO: wywalic, uzywane jedynie do testow oraz generowania dotow
+        """
+        visitor = ComponentStateVisitor(self.tw.graph)
+        for comp in set(self.ss.components):
+            self.components[comp.data] = ComponentSSGraph(comp.data)
+            self.components[comp.data] = visitor.generate_ss(comp.data, self.components[comp.data])
 
 
 

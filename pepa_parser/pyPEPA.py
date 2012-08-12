@@ -35,6 +35,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     pm = PEPAModel(args)
+    pm.derive()
+    pm.recalculate()
+
+    if args.steady or args.top:
+        pm.steady_state()
+
 
     if args.steady:
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
@@ -44,4 +50,5 @@ if __name__ == "__main__":
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
+
 

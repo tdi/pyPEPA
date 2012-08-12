@@ -5,7 +5,6 @@ class StateSpace():
     operators = []
     components = []
     comp_ss = None
-    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
 
 
     def __init__(self):
@@ -16,7 +15,6 @@ class StateSpace():
             the function combines these transitions into one with actions rewritten
         """
         for i in list( range(0, len(states))):
-            #FIXME: if None then exception
             if states[i] is not None and len(states[i].to_s) == 1:
                 continue
             if states[i] is not None:
@@ -36,6 +34,7 @@ class StateSpace():
 
     def derive(self):
         """ Derives the whole state space according to BU"""
+        change = ("rateReset", 2)
         initial_state = []
         queue = []
         visited = []
@@ -48,7 +47,6 @@ class StateSpace():
                     op.update_offset()
         for comp in self.components:
             initial_state.append(comp.name)
-        #print(list(filter(lambda x: print(x), self.operators)))
         queue.append(initial_state)
         while(queue):
             state = queue.pop(0)
@@ -56,23 +54,18 @@ class StateSpace():
               continue
             state_num = state_num + 1
             #print("in{}".format(state_num))
-            #print("{} STATE {}".format(state_num, state))
+            print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
             for i in list( range(0, len( state ),1)):
                 self.components[i].update( state[i] )
-            # if self.STATE == str(state):
-                # print(list(filter(lambda x: print(x), self.components)))
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
                     if op.length == x:
                         if self.max_length == op.length:
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
-#                            if self.STATE == str(state):
-#                                for n in new_states:
-#                                    print(n)
                             if not new_states:
                                 print("DEADLOCK in {}".format(state))
                                 exit(1)
@@ -84,7 +77,8 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                #print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+#                                print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+                                print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -97,6 +91,7 @@ class StateSpace():
                                     queue.append(news.to_s)
                         else:
                             op.compose(self.comp_ss , state , False)
+        print("{}".format(actions_to_state))
         return (resulting_states, actions_to_state)
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
@@ -119,7 +114,7 @@ class Component():
     name = None
     ss = None
     data = None
-    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
+
 
     def update(self, name):
         """
@@ -149,7 +144,7 @@ class Component():
 
 class Derivative():
 
-    def __init__(self, from_s, to_s, action, rate, offset,shared=False):
+    def __init__(self, from_s, to_s, action, rate, offset,shared=False ):
         self.from_s = from_s
         self.to_s = to_s
         self.action = action
@@ -168,14 +163,12 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
-    STATE = "['Robot', 'Belt', '(ready_to_pick,xi).(ready_to_pick,infty).Table', 'Press', 'DBelt_1', 'Crane']"
 
     def __init__(self):
         self.actionset = []
         self.derivatives = []
 
     def update_offset(self):
-        print("updating {} with {}".format(self, self.lhs.offset))
         if self.lhs is not None:
             self.offset = self.lhs.offset
 
