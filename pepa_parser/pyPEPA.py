@@ -36,7 +36,9 @@ if __name__ == "__main__":
     parser.add_argument("file", help="path to the model file")
     output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
     output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
-    output_args.add_argument("-th", "--performance", help="print throughoutput of action", action="store_true", dest="top")
+    output_args.add_argument("-th", "--performance", help="print throughoutput of actions", action="store_true", dest="top")
+    output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
+    output_args.add_argument("-f", "--format", dest="format", type=str, choices=["console", "csv", "maple"], help="format for -st -th -ut")
 
     exp_args.add_argument("-ratexp")
 
@@ -45,27 +47,27 @@ if __name__ == "__main__":
     pm = PEPAModel(args)
     pm.derive()
 
+    # ran = range_maker(1,100,1)
+    # result = rate_experiment("rateReset", ran, "badOffer", pm)
+    # from pylab import plot, ylabel, xlabel, show, savefig
+    # plot(result[0], result[1], linewidth=1.0)
+    # xlabel("rateReset")
+    # ylabel("badOffer throughoutput")
+    # savefig("fig1.png")
+    # #show()
 
-    ran = range_maker(1,100,1)
-    result = rate_experiment("rateReset", ran, "badOffer", pm)
-    from pylab import plot, ylabel, xlabel, show, savefig
-    plot(result[0], result[1], linewidth=1.0)
-    xlabel("rateReset")
-    ylabel("badOffer throughoutput")
-    savefig("fig1.png")
-    #show()
-
-    if args.steady or args.top:
+    if args.steady or args.top or args.util:
         pm.steady_state()
+        print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
 
 
     if args.steady:
-        print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
         print("Steady state vector")
         _pretty_print_vector(pm.get_steady_state_vector())
     if args.top:
-        print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
+    if args.util:
+        print("NOT IMPLEMENTED YET")
 
 

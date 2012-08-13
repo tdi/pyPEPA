@@ -12,21 +12,18 @@ def ctmc(Q):
     Q[:,0] = 1
     return numpy.linalg.solve(Q.transpose(),b)
 
-def ctmc2(Q, size):
+def ctmc_sparse(Q, size):
     b = numpy.zeros(size, dtype=numpy.float64)
     b[0] = 1
     # normalization
     Q[:,0] = 1
     Q =Q.tocsr()
     return spsolve(Q.transpose(),b)
-#    return numpy.linalg.solve(Q.transpose(),b)
 
 
 
 def vector_mult(v1, v2):
     return float(numpy.vdot(numpy.array(v1), numpy.array(v2)))
-
-
 
 def create_lil_matrix(res):
     size = len(res)
@@ -44,8 +41,6 @@ def create_lil_matrix(res):
         Q[ res[key][1]-1 , res[key][1]-1] = -rowsum
         rowsum = 0.0
     return Q
-
-
 
 
 def create_matrix(res):
