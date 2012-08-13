@@ -58,7 +58,7 @@ class PEPAModel():
     def _derive_steady_state(self):
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
-        self._solver = CTMCSolution(self.ss)
+        self._solver = CTMCSolution(self.ss, self.args.solver)
 
     def _parse_read_model(self, modelfile):
         """ Reads model file and parses it."""

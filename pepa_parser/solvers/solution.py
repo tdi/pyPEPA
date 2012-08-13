@@ -1,20 +1,23 @@
 #!/usr/bin/env python
-from solvers.ctmc import ctmc, ctmc2, create_matrix, vector_mult, create_lil_matrix
+from solvers.ctmc import ctmc, ctmc_sparse, create_matrix, vector_mult, create_lil_matrix
 
 class CTMCSolution():
 
-    def __init__(self, ss):
+    def __init__(self, ss, solver):
         self._ss = ss
         self._res = None
         self._actset = None
+        self._solver = solver
         self._steady_state_vector = None
         self._solve()
 
 
     def _solve(self):
         (self._res, self._actset) = self._ss.derive()
-        self._steady_state_vector = (ctmc(create_matrix(self._res)))
-        #self._steady_state_vector = (ctmc2(create_lil_matrix(self._res), len(self._res)))
+        if self._solver == "direct":
+            self._steady_state_vector = (ctmc(create_matrix(self._res)))
+        elif self._solver == "sparse":
+            self._steady_state_vector = (ctmc_sparse(create_lil_matrix(self._res), len(self._res)))
 
     def get_steady_state_vector(self):
         return self._steady_state_vector
