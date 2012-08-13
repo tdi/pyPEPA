@@ -61,8 +61,7 @@ class PEPAModel():
         self._solver = CTMCSolution(self.ss)
 
     def _parse_read_model(self, modelfile):
-        """ Reads model file and parses it.
-        """
+        """ Reads model file and parses it."""
         with open(modelfile, "r") as f:
             modelfile = f.read()
         try:
