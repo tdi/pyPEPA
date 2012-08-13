@@ -24,6 +24,7 @@ def rate_experiment(rate_x, var_rate, rate_y, pepa_model):
     return (rate_xs, rate_ys)
 
 
+
 def range_maker(low, hi, step):
     """
     Returns a generator function

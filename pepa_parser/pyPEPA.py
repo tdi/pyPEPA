@@ -29,10 +29,17 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(description="pyPEPA, author {}, {}".format(__author__, __email__))
+    sol_args = parser.add_argument_group("Solution", "Solution related commands")
+    exp_args = parser.add_argument_group("Experimentations", "Experimentations")
+    sol_args.add_argument("-s", "--solver", action="store", dest="solver",type=str,  choices=['direct', 'sparse'], help="choose solver type DEFAULT: sparse", default="sparse")
+    output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
-    parser.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
-    parser.add_argument("-s", "--steady", help="print steady state probability vector", action="store_true")
-    parser.add_argument("-t", "--performance", help="print throughoutput of action", action="store_true", dest="top")
+    output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
+    output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
+    output_args.add_argument("-th", "--performance", help="print throughoutput of action", action="store_true", dest="top")
+
+    exp_args.add_argument("-ratexp")
+
     args = parser.parse_args()
 
     pm = PEPAModel(args)
