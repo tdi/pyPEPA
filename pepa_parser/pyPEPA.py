@@ -40,28 +40,49 @@ if __name__ == "__main__":
     output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
     output_args.add_argument("-f", "--format", dest="format", type=str, choices=["console", "csv", "maple"], help="format for -st -th -ut")
 
-    exp_args.add_argument("-varrate", help="varying rate with \n range r:1.0,10,0.1 or list l:1,2,3,4,5,6,7,8,9", dest="varrate", action="store", metavar="ratename,range")
-    exp_args.add_argument("-", help="varying rate agains throughoutput of action", dest="varrate", action="store", metavar="ratename,actionname")
+    exp_args.add_argument("-vr", "--varrate", help="varyin rate name", dest="varrate", action="store", metavar="ratename")
+    exp_args.add_argument("--range", help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"", dest="range", action="store", metavar="range")
+    exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"", dest="list_range", action="store", metavar="list")
+    exp_args.add_argument("--actionth", help="throughoutput of action", dest="actionth", action="store", metavar="action name")
 
 
     args = parser.parse_args()
 
-    pm = PEPAModel(args)
-    pm.derive()
+    # mutual exclusion
+    if args.list_range and args.range:
+        print("Cannot use range and list")
+        exit(1)
 
-    # ran = range_maker(1,100,1)
-    # result = rate_experiment("rateReset", ran, "badOffer", pm)
-    # from pylab import plot, ylabel, xlabel, show, savefig
-    # plot(result[0], result[1], linewidth=1.0)
-    # xlabel("rateReset")
-    # ylabel("badOffer throughoutput")
-    # savefig("fig1.png")
-    # #show()
+
+    if args.varrate:
+        ratename = args.varrate
+        if args.actionth is None:
+            print("Action name not given")
+            exit(1)
+        if args.range:
+            rran = args.range.split(",")
+            if len(rran) != 3:
+                print("Range should be START, STOP, STEP")
+                exit(1)
+            start, stop, step = rran[0], rran[1], rran[2]
+            ran = range_maker(float(start), float(stop), float(step))
+            pm = PEPAModel(args)
+            pm.derive()
+            result = rate_experiment("rateReset", ran, "badOffer", pm)
+            from pylab import plot, ylabel, xlabel, show, savefig
+            plot(result[0], result[1], linewidth=1.0)
+            xlabel("{}".format(ratename))
+            ylabel("{} throughoutput".format(args.actionth))
+            #savefig("fig1.png")
+            show()
+
+
 
     if args.steady or args.top or args.util:
+        pm = PEPAModel(args)
+        pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
-
 
     if args.steady:
         print("Steady state vector")

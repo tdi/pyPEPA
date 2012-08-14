@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 
+
+
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
     for act in actset:
@@ -8,7 +10,7 @@ def get_rate_from_actset(action, actset):
             return float(act[1])
 
 
-def rate_experiment(rate_x, var_rate, rate_y, pepa_model):
+def rate_experiment(rate_x, var_rate, rate_y, pepa_model, llist=False):
     """ var_rate is a generator
         rate_y is the resulting rate on the Y axis
     """
