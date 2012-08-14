@@ -12,6 +12,7 @@ from pprint import pprint
 import logging
 from pepa_model import PEPAModel
 from experiments.experiment import rate_experiment, range_maker
+from experiments.graphing import plot_2d
 import argparse
 
 
@@ -68,14 +69,8 @@ if __name__ == "__main__":
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(args)
             pm.derive()
-            result = rate_experiment("rateReset", ran, "badOffer", pm)
-            from pylab import plot, ylabel, xlabel, show, savefig
-            plot(result[0], result[1], linewidth=1.0)
-            xlabel("{}".format(ratename))
-            ylabel("{} throughoutput".format(args.actionth))
-            #savefig("fig1.png")
-            show()
-
+            result = rate_experiment(ratename, ran, args.actionth, pm)
+            plot_2d(result[0], result[1], lw=2, action="show", xlab=ratename, ylab=args.actionth)
 
 
     if args.steady or args.top or args.util:
