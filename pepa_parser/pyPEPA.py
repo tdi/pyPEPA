@@ -11,8 +11,8 @@ __version__ = "201208"
 from pprint import pprint
 import logging
 from pepa_model import PEPAModel
-from experiments.experiment import rate_experiment, range_maker
-from experiments.graphing import plot_2d
+from experiments.experiment import rate_experiment, range_maker, rate_experiment_two
+from experiments.graphing import plot_2d, plot_3d
 import argparse
 
 
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     exp_args.add_argument("--range", help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"", dest="range", action="store", metavar="range")
     exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"", dest="list_range", action="store", metavar="list")
     exp_args.add_argument("--actionth", help="throughoutput of action", dest="actionth", action="store", metavar="action name")
+    exp_args.add_argument("--actionth2", help="throughoutput of the second action", dest="actionth2", action="store", metavar="action name")
 
 
     args = parser.parse_args()
@@ -69,8 +70,13 @@ if __name__ == "__main__":
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(args)
             pm.derive()
-            result = rate_experiment(ratename, ran, args.actionth, pm)
-            plot_2d(result[0], result[1], lw=2, action="show", xlab=ratename, ylab=args.actionth)
+            if args.actionth2 is None:
+                result = rate_experiment(ratename, ran, args.actionth, pm)
+                plot_2d(result[0], result[1], lw=2, action="show", xlab=ratename, ylab=args.actionth)
+            else:
+                result = rate_experiment_two(ratename, ran, args.actionth, args.actionth2, pm)
+                print(result)
+                plot_3d(result[0], result[1], result[2], lw=2, action="show", xlab=ratename, ylab=args.actionth, zlab=args.actionth2)
 
 
     if args.steady or args.top or args.util:
