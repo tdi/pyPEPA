@@ -8,6 +8,8 @@ rateUnreliabilityCheck = 1.0;
 rateAskManager = 1.0;
 rateGoodOffer = 1.0; 
 rateBadOffer = 1.0;
+n = 2;
+
 
 //Definitions
 Idle = (readInformation,rateReadInfo).Informed;
@@ -25,4 +27,4 @@ WaitingForEmployee = (askManager,infty).EvaluatingOffer;
 EvaluatingOffer = (goodOffer,rateGoodOffer).WaitingForEmployee + (badOffer,rateBadOffer).WaitingForEmployee;
 
 //System Equation
-(Idle <createLoanRequest,getNotReliableMessage,goodOffer> WaitingForCustomer) <askManager,badOffer,goodOffer> WaitingForEmployee
+(Idle[n] <createLoanRequest,getNotReliableMessage,goodOffer> WaitingForCustomer) <askManager,badOffer,goodOffer> WaitingForEmployee
