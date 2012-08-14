@@ -14,13 +14,11 @@ class PEPAParser(object):
     _logging_pa = False
     _var_stack = None
     _processes = None
-    _rates = None
     _systemeq = None
 
     def __init__(self, logging_pa = False):
         self._logging_pa = logging_pa
         self._processes = {}
-        self._rates = {}
         self._var_stack = {}
 
     def log_pa(self, string, msg="", prepend="[PARSEACT]"):
@@ -43,7 +41,10 @@ class PEPAParser(object):
         n = ProcdefNode(tok[0], "procdef")
         if len(tok) > 1:
             n.aggregation = True
-            n.aggr_num = int(tok[1])
+            if tok[1] in self._var_stack:
+                n.aggr_num = int(self._var_stack[tok[1]])
+            else:
+                n.aggr_num = int(tok[1])
         n.name = tok[0]
         return n
 
@@ -223,7 +224,7 @@ class PEPAParser(object):
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
         activity = (ratename + col + peparate).setParseAction(self._create_activity)
-        procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + number + rsqpar)).setParseAction(self._create_procdef)
+        procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + peparate_indef + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
         ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
 

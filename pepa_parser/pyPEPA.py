@@ -34,13 +34,15 @@ if __name__ == "__main__":
     sol_args.add_argument("-s", "--solver", action="store", dest="solver",type=str,  choices=['direct', 'sparse'], help="choose solver type DEFAULT: sparse", default="sparse")
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
-    output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequentail component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
+    output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequential component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
     output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
     output_args.add_argument("-th", "--performance", help="print throughoutput of actions", action="store_true", dest="top")
     output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
     output_args.add_argument("-f", "--format", dest="format", type=str, choices=["console", "csv", "maple"], help="format for -st -th -ut")
 
-    exp_args.add_argument("-ratexp")
+    exp_args.add_argument("-varrate", help="varying rate with \n range r:1.0,10,0.1 or list l:1,2,3,4,5,6,7,8,9", dest="varrate", action="store", metavar="ratename,range")
+    exp_args.add_argument("-", help="varying rate agains throughoutput of action", dest="varrate", action="store", metavar="ratename,actionname")
+
 
     args = parser.parse_args()
 
