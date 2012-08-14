@@ -15,12 +15,11 @@ def plot_2d(xs, ys, lw=1, xlab="X", ylab="Y", action="show", name="NONAME-2d"):
     else:
         savefig("{}.png".format(name))
 
-def plot_3d(xs, ys, zs, xlab="X", ylab="Y", action="show", name="NONAME-3d"):
+def plot_3d(xs, ys, zs, lw=1, xlab="X", ylab="Y", zlab="Z", action="show", name="NONAME-3d"):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X, Y = np.meshgrid(X, Y)
-    surf = ax.plot_surface(X, Y, zs, rstride=1, cstride=1, cmap=cm.jet,
-                    linewidth=0, antialiased=False)
+    #X, Y = np.meshgrid(xs, ys)
+    surf = ax.plot_wireframe(xs, ys, zs, rstride=1, cstride=1)
     plt.show()
 
 
