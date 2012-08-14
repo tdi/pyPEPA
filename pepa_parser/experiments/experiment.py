@@ -17,6 +17,9 @@ def rate_experiment(rate_x, var_rate, rate_y, pepa_model, llist=False):
     rate_ys = []
     rate_xs = []
     rates = pepa_model.get_rates()
+    if rate_x not in rates:
+        print("No such rate {}".format(rate_x))
+        exit(1)
     for i in var_rate():
             rates[rate_x] = str(i)
             rate_xs.append(float(i))
