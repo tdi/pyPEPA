@@ -38,15 +38,15 @@ if __name__ == "__main__":
     output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequential component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
     output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
     output_args.add_argument("-th", "--performance", help="print throughoutput of actions", action="store_true", dest="top")
+    output_args.add_argument("-tr", "--transient", help="print throughoutput of actions", action="store", dest="trantime", type=int)
     output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
-    output_args.add_argument("-f", "--format", dest="format", type=str, choices=["console", "csv", "maple"], help="format for -st -th -ut")
+    output_args.add_argument("-f", "--format", dest="format", type=str, choices=["graph", "console", "csv"], help="format for -st -th -ut", default="console")
 
     exp_args.add_argument("-vr", "--varrate", help="varyin rate name", dest="varrate", action="store", metavar="ratename")
     exp_args.add_argument("--range", help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"", dest="range", action="store", metavar="range")
     exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"", dest="list_range", action="store", metavar="list")
-    exp_args.add_argument("--actionth", help="throughoutput of action", dest="actionth", action="store", metavar="action name")
-    exp_args.add_argument("--actionth2", help="throughoutput of the second action", dest="actionth2", action="store", metavar="action name")
-
+    exp_args.add_argument("--actionth", help="throughoutput of action on the Y axis", dest="actionth", action="store", metavar="action name")
+    exp_args.add_argument("--actionth2", help="throughoutput of the second action on the Z axis, if this is given 3d graph is created", dest="actionth2", action="store", metavar="action name")
 
     args = parser.parse_args()
 
@@ -72,11 +72,22 @@ if __name__ == "__main__":
             pm.derive()
             if args.actionth2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
-                plot_2d(result[0], result[1], lw=2, action="show", xlab=ratename, ylab=args.actionth)
+                if args.format == "graph":
+                    plot_2d(result[0], result[1], lw=2, action="show", xlab=ratename, ylab=args.actionth)
+                elif args.format == "csv":
+                    with open("varrate-thr-{}-{}.csv".format(ratename, args.actionth), "w") as exp_f:
+                        exp_f.write("{}, {}\n".format(ratename, args.actionth))
+                        x = result[0]
+                        y = result[1]
+                        for i in list(range(0, len(x))):
+                            exp_f.write("{}, {}\n".format(x[i], y[i]))
+
             else:
                 result = rate_experiment_two(ratename, ran, args.actionth, args.actionth2, pm)
                 print(result)
-                plot_3d(result[0], result[1], result[2], lw=2, action="show", xlab=ratename, ylab=args.actionth, zlab=args.actionth2)
+                if args.format == "graph":
+                    plot_3d(result[0], result[1], result[2], lw=2, action="show", xlab=ratename, ylab=args.actionth, zlab=args.actionth2)
+    exit(0)
 
 
     if args.steady or args.top or args.util:
@@ -84,6 +95,11 @@ if __name__ == "__main__":
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
+    if args.trantime:
+        pm = PEPAModel(args)
+        pm.derive()
+        pm.transient(10)
+        print("transient")
 
     if args.steady:
         print("Steady state vector")

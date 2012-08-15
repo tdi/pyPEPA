@@ -4,6 +4,7 @@ import numpy
 import scipy
 from scipy.sparse import lil_matrix
 from scipy.sparse.linalg import spsolve
+from scipy.linalg import expm
 
 def ctmc(Q):
     b = numpy.zeros(len(Q), dtype=numpy.float64)
@@ -19,6 +20,10 @@ def ctmc_sparse(Q, size):
     Q[:,0] = 1
     Q =Q.tocsr()
     return spsolve(Q.transpose(),b)
+
+def ctmc_transient(Q, size, tstart, tstop):
+    Qnew = expm(Q*tstop)
+    return Qnew
 
 
 

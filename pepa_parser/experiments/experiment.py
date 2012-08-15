@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 
-
-
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
     for act in actset:
@@ -48,9 +46,6 @@ def rate_experiment_two(rate_x, var_rate, rate_y, rate_z, pepa_model, llist=Fals
             rate_zs.append( get_rate_from_actset(rate_z, pepa_model.get_throughoutput()))
     return (rate_xs, rate_ys, rate_zs)
 
-
-
-
 def range_maker(low, hi, step):
     """
     Returns a generator function
@@ -60,7 +55,8 @@ def range_maker(low, hi, step):
         nonlocal hi
         nonlocal step
         cur = low
-        while cur <= hi:
+        while cur < hi:
             yield cur
             cur += step
     return counter
+
