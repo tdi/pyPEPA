@@ -61,7 +61,7 @@ if __name__ == "__main__":
             os.makedirs("dots")
         pm.derive()
         pm.generate_dots()
-        #sys.exit(0)
+        sys.exit(0)
 
 
     # mutual exclusion
