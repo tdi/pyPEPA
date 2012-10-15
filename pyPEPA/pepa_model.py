@@ -33,14 +33,11 @@ class PEPAModel():
         self._solver = None
         self._parse_read_model(args.file)
 
-
     def get_rates(self):
         return self.rate_definitions
 
     def derive(self):
         self._prepare_components()
-        if self.args.gendots:
-            self.generate_dots()
 
     def recalculate(self, rates=None):
         self._parse_read_model(self.args.file)

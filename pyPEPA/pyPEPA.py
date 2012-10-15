@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """ Main file od pyPEPA """
 
 __author__ = "Dariusz Dwornikowski"
@@ -50,11 +51,23 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
+    if args.gendots:
+        pm = PEPAModel(args)
+        import os
+        if os.path.isdir("dots"):
+            pass
+        else:
+            os.makedirs("dots")
+        pm.derive()
+        pm.generate_dots()
+        #sys.exit(0)
+
+
     # mutual exclusion
     if args.list_range and args.range:
         print("Cannot use range and list")
         exit(1)
-
 
     if args.varrate:
         ratename = args.varrate

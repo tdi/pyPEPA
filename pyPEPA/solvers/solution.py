@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from solvers.ctmc import ctmc, ctmc_sparse, create_matrix, vector_mult, create_lil_matrix, ctmc_transient
-
+from pprint import pprint
 class CTMCSolution():
 
     def __init__(self, ss, solver):
@@ -22,6 +22,7 @@ class CTMCSolution():
         if self._solver == "direct":
             self._steady_state_vector = (ctmc(create_matrix(self._res)))
         elif self._solver == "sparse":
+            pprint(self._res)
             self._steady_state_vector = (ctmc_sparse(create_lil_matrix(self._res), len(self._res)))
 
     def get_steady_state_vector(self):

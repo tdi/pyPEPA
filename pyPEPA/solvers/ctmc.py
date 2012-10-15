@@ -25,8 +25,6 @@ def ctmc_transient(Q, size, tstart, tstop):
     Qnew = expm(Q*tstop)
     return Qnew
 
-
-
 def vector_mult(v1, v2):
     return float(numpy.vdot(numpy.array(v1), numpy.array(v2)))
 
