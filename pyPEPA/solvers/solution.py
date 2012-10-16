@@ -15,15 +15,23 @@ class CTMCSolution():
         (self._res, self._actset) = self._ss.derive()
         matrix = create_matrix(self._res)
         a = ctmc_transient(matrix, len(self._res),0, stop)
-        print(a)
 
     def solve_steady(self):
         (self._res, self._actset) = self._ss.derive()
         if self._solver == "direct":
             self._steady_state_vector = (ctmc(create_matrix(self._res)))
         elif self._solver == "sparse":
-            pprint(self._res)
             self._steady_state_vector = (ctmc_sparse(create_lil_matrix(self._res), len(self._res)))
+        self._vect_names = self._prepare_new_vector(self._res)
+
+    def _prepare_new_vector(self,res):
+        vect_names = []
+        for key in sorted(res, key=lambda k: res[k][1]):
+            vect_names.append(key)
+        return vect_names
+
+    def get_vect_names(self):
+        return self._vect_names
 
     def get_steady_state_vector(self):
         return self._steady_state_vector

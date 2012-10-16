@@ -21,10 +21,11 @@ def _pretty_print_performance(actset):
     for perf in actset:
         print("{0:<40} {1:>10}".format(perf[0],perf[1]) )
 
-def _pretty_print_vector(vect):
+def _pretty_print_vector(vect, vect_names):
     i = 1
+    print("Using ; delimiter")
     for prob in vect:
-        print("State {}: {}".format(i, vect[i-1]))
+        print("{};{};{}".format(i, vect_names[i-1], vect[i-1]))
         i = i + 1
 
 if __name__ == "__main__":
@@ -63,7 +64,6 @@ if __name__ == "__main__":
         pm.generate_dots()
         sys.exit(0)
 
-
     # mutual exclusion
     if args.list_range and args.range:
         print("Cannot use range and list")
@@ -94,7 +94,6 @@ if __name__ == "__main__":
                         y = result[1]
                         for i in list(range(0, len(x))):
                             exp_f.write("{}, {}\n".format(x[i], y[i]))
-
             else:
                 result = rate_experiment_two(ratename, ran, args.actionth, args.actionth2, pm)
                 print(result)
@@ -116,7 +115,7 @@ if __name__ == "__main__":
 
     if args.steady:
         print("Steady state vector")
-        _pretty_print_vector(pm.get_steady_state_vector())
+        _pretty_print_vector(pm.get_steady_state_vector(), pm.get_state_names())
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
