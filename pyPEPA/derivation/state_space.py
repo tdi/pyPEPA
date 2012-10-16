@@ -5,7 +5,6 @@ class StateSpace():
     operators = []
     components = []
     comp_ss = None
-    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
 
 
     def __init__(self):
@@ -16,7 +15,7 @@ class StateSpace():
             the function combines these transitions into one with actions rewritten
         """
         for i in list( range(0, len(states))):
-            if len(states[i].to_s) == 1:
+            if states[i] is not None and len(states[i].to_s) == 1:
                 continue
             if states[i] is not None:
                 for j in list (range(i+1, len(states))):
@@ -35,14 +34,17 @@ class StateSpace():
 
     def derive(self):
         """ Derives the whole state space according to BU"""
+        change = ("rateReset", 2)
         initial_state = []
         queue = []
         visited = []
         resulting_states = {}
         actions_to_state = {}
         state_num = 0
-        for oper in self.operators:
-            oper.update_offset()
+        for x in list(range(0,self.max_length+1,1)):
+            for op in self.operators:
+                if op.length == x:
+                    op.update_offset()
         for comp in self.components:
             initial_state.append(comp.name)
         queue.append(initial_state)
@@ -51,7 +53,8 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            #print(str(state_num) + "STATE " + str(state))
+            #print("in{}".format(state_num))
+            #print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators)
@@ -64,7 +67,7 @@ class StateSpace():
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
-                                print("DEADLOCK in " + str(state))
+                                print("DEADLOCK in {}".format(state))
                                 exit(1)
                             #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
@@ -74,7 +77,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                #print(Fore.GREEN + "\t " + news.action + " " + Back.WHITE + Fore.BLACK  + str(news.rate) + Back.RESET + Fore.RESET + "\t"+ str(news.to_s))
+                                #print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -90,6 +93,9 @@ class StateSpace():
         return (resulting_states, actions_to_state)
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
+        if rate == "infty":
+            print("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
+            exit(1)
         if (action,state_num) not in actions_to_state:
             actions_to_state[ (action, state_num) ] = float(rate)
         else:
@@ -106,6 +112,7 @@ class Component():
     name = None
     ss = None
     data = None
+
 
     def update(self, name):
         """
@@ -135,7 +142,7 @@ class Component():
 
 class Derivative():
 
-    def __init__(self, from_s, to_s, action, rate, offset,shared=False):
+    def __init__(self, from_s, to_s, action, rate, offset,shared=False ):
         self.from_s = from_s
         self.to_s = to_s
         self.action = action
@@ -154,7 +161,6 @@ class Operator(Component):
     actionset = []
     lhs = None
     rhs = None
-    STATE = "['(task,2).Process', '(task,2).Process', '(update,8).Resource']"
 
     def __init__(self):
         self.actionset = []
@@ -176,6 +182,7 @@ class Operator(Component):
             to_state[self.lhs.offset + i] = tran_l.to_s[self.lhs.offset + i]
         for i in list(range(0, self.rhs.length)):
             to_state[self.rhs.offset + i] = tran_r.to_s[self.rhs.offset + i]
+#            to_state[i] = tran_r.to_s[i]
         new_rate = self._min(tran_r.rate, tran_l.rate)
         ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
         return ddd
