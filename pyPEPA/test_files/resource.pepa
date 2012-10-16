@@ -1,5 +1,5 @@
 Process = (use, 2).(task,2).Process;
 Resource = (use, 6).(update,8).Resource;
 
-(Process || Process || Process)  <use> Resource
-//Process[2] <use> Resource
+//(Process || Process || Process)  <use> Resource
+Process <use> Resource

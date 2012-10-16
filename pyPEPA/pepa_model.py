@@ -54,6 +54,9 @@ class PEPAModel():
     def get_steady_state_vector(self):
         return self._solver.get_steady_state_vector()
 
+    def get_state_names(self):
+        return self._solver.get_vect_names()
+
     def get_throughoutput(self):
         return self._solver.get_actions_throughoutput()
 
