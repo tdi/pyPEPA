@@ -55,7 +55,7 @@ def range_maker(low, hi, step):
         nonlocal hi
         nonlocal step
         cur = low
-        while cur < hi:
+        while cur <= hi:
             yield cur
             cur += step
     return counter
