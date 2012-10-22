@@ -31,7 +31,7 @@ class PEPAModel():
         self.log = logging.getLogger(__name__)
         self.ss = None
         self._solver = None
-        self._parse_read_model(args.file)
+        self._parse_read_model(args["file"])
 
     def get_rates(self):
         return self.rate_definitions
@@ -40,7 +40,7 @@ class PEPAModel():
         self._prepare_components()
 
     def recalculate(self, rates=None):
-        self._parse_read_model(self.args.file)
+        self._parse_read_model(self.args["file"])
         self._prepare_components(rates)
 
     def steady_state(self):
@@ -48,7 +48,7 @@ class PEPAModel():
 
     def transient(self, timestop, timestart=0):
         self.ss.comp_ss = self.tw.graph.ss
-        self._solver = CTMCSolution(self.ss, self.args.solver)
+        self._solver = CTMCSolution(self.ss, self.args["solver"])
         self._solver.solve_transient(timestop, timestart)
 
     def get_steady_state_vector(self):
@@ -63,7 +63,7 @@ class PEPAModel():
     def _derive_steady_state(self):
         """ Derives global state space """
         self.ss.comp_ss = self.tw.graph.ss
-        self._solver = CTMCSolution(self.ss, self.args.solver)
+        self._solver = CTMCSolution(self.ss, self.args["solver"])
         self._solver.solve_steady()
 
     def _parse_read_model(self, modelfile):

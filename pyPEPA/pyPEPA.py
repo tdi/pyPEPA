@@ -51,10 +51,10 @@ if __name__ == "__main__":
     exp_args.add_argument("--actionth2", help="throughoutput of the second action on the Z axis, if this is given 3d graph is created", dest="actionth2", action="store", metavar="action name")
 
     args = parser.parse_args()
-
+    pargs = {"file": args.file, "solver" : args.solver}
 
     if args.gendots:
-        pm = PEPAModel(args)
+        pm = PEPAModel(pargs)
         import os
         if os.path.isdir("dots"):
             pass
@@ -68,7 +68,6 @@ if __name__ == "__main__":
     if args.list_range and args.range:
         print("Cannot use range and list")
         exit(1)
-
     if args.varrate:
         ratename = args.varrate
         if args.actionth is None:
@@ -81,7 +80,7 @@ if __name__ == "__main__":
                 exit(1)
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
-            pm = PEPAModel(args)
+            pm = PEPAModel(pargs)
             pm.derive()
             if args.actionth2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
@@ -96,23 +95,21 @@ if __name__ == "__main__":
                             exp_f.write("{}, {}\n".format(x[i], y[i]))
             else:
                 result = rate_experiment_two(ratename, ran, args.actionth, args.actionth2, pm)
-                print(result)
                 if args.format == "graph":
                     plot_3d(result[0], result[1], result[2], lw=2, action="show", xlab=ratename, ylab=args.actionth, zlab=args.actionth2)
         exit(0)
 
 
     if args.steady or args.top or args.util:
-        pm = PEPAModel(args)
+        pm = PEPAModel(pargs)
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
     if args.trantime:
-        pm = PEPAModel(args)
+        pm = PEPAModel(pargs)
         pm.derive()
         pm.transient(10)
         print("transient")
-
     if args.steady:
         print("Steady state vector")
         _pretty_print_vector(pm.get_steady_state_vector(), pm.get_state_names())
