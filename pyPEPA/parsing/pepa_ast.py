@@ -4,7 +4,7 @@ Module with classes for PEPA model.
 
 """
 
-class BaseNode():
+class BaseNode(object):
     left, right = None, None
     data = None
     asttype = None
@@ -22,26 +22,26 @@ class ChoiceNode(BaseNode):
     reolved = None
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(ChoiceNode, self).__init__(data, asttype)
 
 class PrefixNode(BaseNode):
     action, resolved, rate, var_rate  = None, None, None, None
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(PrefixNode, self).__init__(data, asttype)
 
 class DefNode(BaseNode):
     process, resolved = None, None
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(DefNode, self).__init__(data, asttype)
 
 class ActivityNode(BaseNode):
 
     action, rate = "", ""
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(ActivityNode, self).__init__(data, asttype)
 
 class ProcdefNode(BaseNode):
     name  = None
@@ -49,17 +49,17 @@ class ProcdefNode(BaseNode):
     aggr_num = 0
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(ProcdefNode, self).__init__(data, asttype)
 
 class CoopNode(BaseNode):
     cooptype, actionset = None, None
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(CoopNode, self).__init__(data, asttype)
 
 class SyncsetNode(BaseNode):
     actionset = None
 
     def __init__(self, data, asttype):
-        super().__init__(data, asttype)
+        super(SyncsetNode, self).__init__(data, asttype)
 

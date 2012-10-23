@@ -6,7 +6,7 @@ __author__ = "Dariusz Dwornikowski"
 __copyright__ = "Dariusz Dwornikowski, Poznan University of Technology"
 __licence__ = "GNU General Public License version 3"
 __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
-__version__ = "201208"
+__version__ = "201212"
 
 
 from pprint import pprint
@@ -15,6 +15,7 @@ from pepa_model import PEPAModel
 from experiments.experiment import rate_experiment, range_maker, rate_experiment_two
 from experiments.graphing import plot_2d, plot_3d
 import argparse
+import sys
 
 
 def _pretty_print_performance(actset):
@@ -67,17 +68,17 @@ if __name__ == "__main__":
     # mutual exclusion
     if args.list_range and args.range:
         print("Cannot use range and list")
-        exit(1)
+        sys.exit(1)
     if args.varrate:
         ratename = args.varrate
         if args.actionth is None:
             print("Action name not given")
-            exit(1)
+            sys.exit(1)
         if args.range:
             rran = args.range.split(",")
             if len(rran) != 3:
                 print("Range should be START, STOP, STEP")
-                exit(1)
+                sys.exit(1)
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(pargs)
