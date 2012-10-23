@@ -4,7 +4,7 @@ import sys
 from parsing.pepa_treewalker import PEPATreeWalker
 from parsing.comp_state_space_graph import ComponentSSGraph
 from pylab import figure, axes,pie,title, show
-from parsing.parser import PEPAParser
+from parsing.parser_func import parse
 from solvers.solution import CTMCSolution
 from parsing.component_state_visitor import ComponentStateVisitor
 
@@ -71,8 +71,8 @@ class PEPAModel():
         with open(modelfile, "r") as f:
             modelfile = f.read()
         try:
-            parser = PEPAParser(False)
-            (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
+#            parser = PEPAParser(False)
+            (self.processes, self.rate_definitions, self.systemeq) = parse(modelfile)
         except Exception as e:
             self.log.debug(e)
             print("Parsing error : " + str(e) )
