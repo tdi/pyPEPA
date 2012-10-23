@@ -6,7 +6,7 @@ __author__ = "Dariusz Dwornikowski"
 __copyright__ = "Dariusz Dwornikowski, Poznan University of Technology"
 __licence__ = "GNU General Public License version 3"
 __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
-__version__ = "201208"
+__version__ = "201212"
 
 
 from pprint import pprint
@@ -15,7 +15,6 @@ from pepa_model import PEPAModel
 from experiments.experiment import rate_experiment, range_maker, rate_experiment_two
 from experiments.graphing import plot_2d, plot_3d
 import argparse
-
 
 def _pretty_print_performance(actset):
     for perf in actset:
