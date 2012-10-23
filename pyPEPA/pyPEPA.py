@@ -15,6 +15,8 @@ from pepa_model import PEPAModel
 from experiments.experiment import rate_experiment, range_maker, rate_experiment_two
 from experiments.graphing import plot_2d, plot_3d
 import argparse
+import sys
+
 
 def _pretty_print_performance(actset):
     for perf in actset:
