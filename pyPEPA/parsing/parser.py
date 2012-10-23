@@ -36,16 +36,16 @@ class PEPAParser(object):
         n.rate = tok[1]
         return n
 
-    def _create_procdef(self, string, loc, tok):
-        self.log_pa("Token: "+tok[0])
-        n = ProcdefNode(tok[0], "procdef")
-        if len(tok) > 1:
+    def _create_procdef(self, s, loc, toks):
+        self.log_pa("Token: "+toks[0])
+        n = ProcdefNode(toks[0], "procdef")
+        if len(toks) > 1:
             n.aggregation = True
-            if tok[1] in self._var_stack:
-                n.aggr_num = int(self._var_stack[tok[1]])
+            if toks[1] in self._var_stack:
+                n.aggr_num = int(self._var_stack[toks[1]])
             else:
-                n.aggr_num = int(tok[1])
-        n.name = tok[0]
+                n.aggr_num = int(toks[1])
+        n.name = toks[0]
         return n
 
     def _create_definition(self, string, loc, tok):
