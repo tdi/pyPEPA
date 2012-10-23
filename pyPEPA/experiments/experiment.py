@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
@@ -50,10 +51,11 @@ def range_maker(low, hi, step):
     """
     Returns a generator function
     """
+    n = { 'low': low, 'hi':hi, 'step':step}
     def counter():
-        nonlocal low
-        nonlocal hi
-        nonlocal step
+        low = n['low']
+        hi = n['hi']
+        step = n['step']
         cur = low
         while cur <= hi:
             yield cur
