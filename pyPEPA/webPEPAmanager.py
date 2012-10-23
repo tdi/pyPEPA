@@ -1,15 +1,11 @@
+#!/usr/bin/env python
 import json
 from bottle import route, run, request, abort, response, error
 from pprint import pprint
 import uuid
 import time
 import sys
-
-try:
-    import requests
-except ImportError:
-    print("Install python-requests")
-    sys.exit(1)
+import requests
 
 workers = {}
 
