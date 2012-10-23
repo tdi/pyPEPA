@@ -97,7 +97,7 @@ if __name__ == "__main__":
                 result = rate_experiment_two(ratename, ran, args.actionth, args.actionth2, pm)
                 if args.format == "graph":
                     plot_3d(result[0], result[1], result[2], lw=2, action="show", xlab=ratename, ylab=args.actionth, zlab=args.actionth2)
-        exit(0)
+        sys.exit(0)
 
 
     if args.steady or args.top or args.util:
