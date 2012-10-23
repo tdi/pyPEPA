@@ -66,17 +66,17 @@ if __name__ == "__main__":
     # mutual exclusion
     if args.list_range and args.range:
         print("Cannot use range and list")
-        exit(1)
+        sys.exit(1)
     if args.varrate:
         ratename = args.varrate
         if args.actionth is None:
             print("Action name not given")
-            exit(1)
+            sys.exit(1)
         if args.range:
             rran = args.range.split(",")
             if len(rran) != 3:
                 print("Range should be START, STOP, STEP")
-                exit(1)
+                sys.exit(1)
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(pargs)
