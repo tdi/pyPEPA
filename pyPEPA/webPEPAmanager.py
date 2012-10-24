@@ -8,14 +8,21 @@ import sys
 import requests
 
 workers = {}
+registered = []
+worker_id_start = 1
 
 @route('/workers', method="POST")
 def reg_worker():
-    if request.remote_addr not in workers:
-        workers[request.remote_addr]  = request.remote_addr
+    port = request.forms.get("port")
+    radr = request.remote_addr
+    wid = uuid.uuid4()
+    if (radr, port) not in registered:
+        registered.append( (radr,port) )
+        workers[str(wid)] = (radr, port)
     else:
         print("Already registered")
-    return {"success": True, "id": str(workers[request.remote_addr])}
+        return {"success": False, "info": "Alredy there"}
+    return {"success": True, "id": str(wid), "port": port}
 
 @route('/workers')
 def print_workers():

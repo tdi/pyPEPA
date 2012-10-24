@@ -11,6 +11,7 @@ import sys
 solutions = []
 models = {}
 master_addr = "http://localhost:8081/"
+_port = None
 
 @route('/models/<name>', method="PUT")
 def submit_model(name):
@@ -82,16 +83,16 @@ def submit_model_noname():
 def list_models():
     return { "success": True, "models": models }
 
-def initialize():
+def initialize(port):
     """ Read config with a master """
+    _port = port
     models["test"] = "resource.pepa"
-    register()
+    register(port)
 
 
-def register():
+def register(port):
     try:
-        r = requests.post(master_addr + "workers", data={'test': 'tests'})
-        print(r.text)
+        r = requests.post(master_addr + "workers", data={'port': port})
     except Exception as e:
         print("Cannot connect to %s" %master_addr )
         sys.exit(1)
@@ -106,5 +107,6 @@ def error_404(code):
     return "404 not found"
 
 
-initialize()
-run(reloader=True, host='localhost', port=8080)
+if __name__ == "__main__":
+    initialize(sys.argv[1])
+    run(reloader=True, host='localhost', port=sys.argv[1])
