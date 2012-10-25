@@ -24,6 +24,10 @@ def reg_worker():
         return {"success": False, "info": "Alredy there"}
     return {"success": True, "id": str(wid), "port": port}
 
+@route('/test')
+def test():
+    r = requests.
+
 @route('/workers')
 def print_workers():
     return {'success': True, "workers": workers}
@@ -32,4 +36,4 @@ def initialize():
     pass
 
 initialize()
-run(reloader=True, host='localhost', port=8081)
+run(reloader=True, host='localhost', port=9090)
