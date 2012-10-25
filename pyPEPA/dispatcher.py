@@ -14,11 +14,12 @@ def carousel(sequence, m):
     n = float(len(sequence))
     return [sequence[((i+0)*int(n/m)):((i+1)*int(n/m))] for i in range(m)]
 
-def req(addr, port, task):
+def req(addr, port, experiment):
     start = time.time()
-    r = requests.get("http://" + addr + ":" + str(port) + "/models/test/th")
-    d = json.loads(r.text)
-    print("his time %s"% d["time"])
+    vals = json.dumps(experiment["values"])
+    data = {"actionth":experiment["actionth"], "values": vals, "rate":experiment["rate"]}
+    r = requests.post("http://" + addr + ":" + str(port) + "/models/test/experiment", data=data)
+     # print("his time %s"% d["time"])
     print("my time %s" % (time.time() - start))
 
 
@@ -26,8 +27,9 @@ def send():
     tasks = carousel(values, len(workers))
     i = 0
     for worker in list(workers.keys()):
-        task = values.pop(0)
-        t = Thread(target=req, args=(workers[worker][0], workers[worker][1], tasks))
+        task = tasks.pop(0)
+        experiment = {"actionth": "use", "rate": "userate", "values": task }
+        t = Thread(target=req, args=(workers[worker][0], workers[worker][1], experiment))
         t.start()
         print("worker %s has task %s" % (worker, task))
 

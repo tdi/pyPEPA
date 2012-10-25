@@ -3,6 +3,7 @@ import json
 from bottle import route, run, request, abort, response, error
 from pprint import pprint
 from pepa_model import PEPAModel
+from experiments.experiment import rate_experiment
 import requests
 import uuid
 import time
@@ -32,11 +33,19 @@ def get_modelfile(name):
     return { "success": True, "modelfile" : models[name], "id": name }
 
 @route('/models/<name>/experiment', method="POST")
-def experiment(actionth, rate, values):
+def experiment(name):
     actionth = request.forms.get("actionth")
     rate = request.forms.get("rate")
     values = request.forms.get("values")
-    print(values)
+    vals = json.loads(values)
+    pargs = {"file" : "resource.pepa", "solver": "sparse"} 
+    pm = PEPAModel(pargs)
+    pm.derive()
+    result = rate_experiment(rate, vals, actionth, pm)
+    print(result[1])
+
+
+
 
 @route('/models/<name>/ss')
 def ss_model(name):
