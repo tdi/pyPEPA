@@ -14,4 +14,4 @@ DB14 = (rep14,infty).DB14 + (rep15,infty).DB15 + (rep16,infty).DB16;
 DB15 = (rep14,infty).DB14 + (rep15,infty).DB15 + (rep16,infty).DB16;
 DB16 = (rep14,infty).DB14 + (rep15,infty).DB15 + (rep16,infty).DB16;
 
-P14 <reg14,reg15,reg16> (S14 <> S15 <> S16) <rep14, rep15, rep16> DB14
+P14[4] <reg14,reg15,reg16> (S14 <> S15 <> S16) <rep14, rep15, rep16> DB14[4]

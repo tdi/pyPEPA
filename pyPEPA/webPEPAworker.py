@@ -10,7 +10,7 @@ import sys
 
 solutions = []
 models = {}
-master_addr = "http://localhost:8081/"
+master_addr = "http://localhost:9090/"
 _port = None
 
 @route('/models/<name>', method="PUT")
@@ -31,6 +31,12 @@ def get_modelfile(name):
         return { "success": False, "error": "Model with this name does not exist" }
     return { "success": True, "modelfile" : models[name], "id": name }
 
+@route('/models/<name>/experiment', method="POST")
+def experiment(actionth, rate, values):
+    actionth = request.forms.get("actionth")
+    rate = request.forms.get("rate")
+    values = request.forms.get("values")
+    print(values)
 
 @route('/models/<name>/ss')
 def ss_model(name):
@@ -83,14 +89,14 @@ def submit_model_noname():
 def list_models():
     return { "success": True, "models": models }
 
-def initialize(port):
+def _initialize(port):
     """ Read config with a master """
     _port = port
     models["test"] = "resource.pepa"
-    register(port)
+    # _register(port)
 
 
-def register(port):
+def _register(port):
     try:
         r = requests.post(master_addr + "workers", data={'port': port})
     except Exception as e:
@@ -107,6 +113,6 @@ def error_404(code):
     return "404 not found"
 
 
-if __name__ == "__main__":
-    initialize(sys.argv[1])
+if __name__ == '__main__':
+    _initialize(sys.argv[1])
     run(reloader=True, host='localhost', port=sys.argv[1])
