@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from colorama import Fore, Back
 
 class StateSpace():
     operators = []

@@ -42,7 +42,7 @@ def experiment(name):
     pm = PEPAModel(pargs)
     pm.derive()
     result = rate_experiment(rate, vals, actionth, pm)
-    print(result[1])
+    return {"success": True, "result": json.dumps(result)}
 
 
 
