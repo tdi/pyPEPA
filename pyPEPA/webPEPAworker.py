@@ -38,14 +38,11 @@ def experiment(name):
     rate = request.forms.get("rate")
     values = request.forms.get("values")
     vals = json.loads(values)
-    pargs = {"file" : "resource.pepa", "solver": "sparse"} 
+    pargs = {"file" : "resource.pepa", "solver": "sparse"}
     pm = PEPAModel(pargs)
     pm.derive()
     result = rate_experiment(rate, vals, actionth, pm)
     return {"success": True, "result": json.dumps(result)}
-
-
-
 
 @route('/models/<name>/ss')
 def ss_model(name):
