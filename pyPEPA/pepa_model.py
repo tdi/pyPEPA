@@ -3,7 +3,6 @@ import logging
 import sys
 from parsing.pepa_treewalker import PEPATreeWalker
 from parsing.comp_state_space_graph import ComponentSSGraph
-from pylab import figure, axes,pie,title, show
 from parsing.parser import PEPAParser
 from solvers.solution import CTMCSolution
 from parsing.component_state_visitor import ComponentStateVisitor

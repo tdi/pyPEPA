@@ -7,8 +7,8 @@ from math import ceil
 from experiments.experiment import range_maker
 from threading import Thread
 
-workers = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
-# workers = {}
+workers_avail = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
+# workers = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"]}
 values =  [1,2,3,4,5,6,7,8,9,10,11,12,13]
 #values =  [1,2,3,4,5]
@@ -30,19 +30,23 @@ def req(addr, port, experiment, name):
     queue.put(res2[1])
 
 
-def check_alive():
-    for worker in workers:
+def check_alive(w):
+    for worker in workers_avail:
         try:
-            addr = workers[worker][0]
-            port = workers[worker][1]
+            addr = workers_avail[worker][0]
+            port = workers_avail[worker][1]
             r = requests.head("http://" + addr + ":" + str(port) +"/models")
+            w[worker] = workers_avail[worker]
         except Exception:
             print("Worker %s dead" % worker)
+    return w
 
 
 def map():
     myq = Queue.Queue()
-    check_alive()
+    workers = {}
+    workers = check_alive(workers)
+    print(workers)
     tasks = carousel(values, len(workers))
     i = 0
     for worker in list(workers.keys()):
