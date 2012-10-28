@@ -11,6 +11,7 @@ workers_avail = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"]}
 values =  [1,2,3,4,5,6,7,8,9,10,11,12,13]
+#values =  [i for i in range(1,22)]
 #values =  [1,2,3,4,5]
 
 def carousel(sequence, m):
@@ -24,7 +25,6 @@ def req(addr, port, experiment, name):
     queue = experiment["q"]
     data = {"actionth":experiment["actionth"], "values": vals, "rate":experiment["rate"]}
     r = requests.post("http://" + addr + ":" + str(port) + "/models/test/experiment", data=data)
-    print("my time %s" % (time.time() - start))
     res = json.loads(r.text)
     res2 = json.loads(res["result"])
     queue.put(res2[1])
@@ -42,13 +42,14 @@ def check_alive(w):
     return w
 
 
-def map():
+def map_tasks():
     myq = Queue.Queue()
     workers = {}
     workers = check_alive(workers)
     print(workers)
     tasks = carousel(values, len(workers))
     i = 0
+    start = time.time()
     for worker in list(workers.keys()):
         task = tasks.pop(0)
         experiment = {"actionth": "use", "rate": "userate", "values": task, "q": myq }
@@ -62,10 +63,8 @@ def map():
             i = i - 1
             val = myq.get()
             vals = vals + val
+    print("Time: %s" % (time.time()-start))
     print(vals)
 
-
-
-
 if __name__ == "__main__":
-    map()
+    map_tasks()

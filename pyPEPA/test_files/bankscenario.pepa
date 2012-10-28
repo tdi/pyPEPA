@@ -27,4 +27,4 @@ WaitingForEmployee = (askManager,infty).EvaluatingOffer;
 EvaluatingOffer = (goodOffer,rateGoodOffer).WaitingForEmployee + (badOffer,rateBadOffer).WaitingForEmployee;
 
 //System Equation
-(Idle[n] <createLoanRequest,getNotReliableMessage,goodOffer> WaitingForCustomer) <askManager,badOffer,goodOffer> WaitingForEmployee
+(Idle <createLoanRequest,getNotReliableMessage,goodOffer> WaitingForCustomer) <askManager,badOffer,goodOffer> WaitingForEmployee
