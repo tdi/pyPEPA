@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import requests
-import Queue
 import time
 import json
 from math import ceil
 from experiments.experiment import range_maker
-from threading import Thread
+from multiprocessing import Process, Queue
 
 workers_avail = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
@@ -27,7 +26,7 @@ def req(addr, port, experiment, name):
     r = requests.post("http://" + addr + ":" + str(port) + "/models/test/experiment", data=data)
     res = json.loads(r.text)
     res2 = json.loads(res["result"])
-    queue.put(res2[1])
+    queue.put((res2[1], name))
 
 
 def check_alive(w):
@@ -43,7 +42,7 @@ def check_alive(w):
 
 
 def map_tasks():
-    myq = Queue.Queue()
+    myq =Queue()
     workers = {}
     workers = check_alive(workers)
     print(workers)
@@ -53,16 +52,14 @@ def map_tasks():
     for worker in list(workers.keys()):
         task = tasks.pop(0)
         experiment = {"actionth": "use", "rate": "userate", "values": task, "q": myq }
-        t = Thread(target=req, args=(workers[worker][0], workers[worker][1], experiment, i))
+        t = Process(target=req, args=(workers[worker][0], workers[worker][1], experiment, i))
         t.start()
         i = i + 1
         print("worker %s has task %s" % (worker, task))
     vals = []
-    while i != 0:
-        if not myq.empty():
-            i = i - 1
-            val = myq.get()
-            vals = vals + val
+    for worker in list(workers.keys()):
+        val = myq.get()[0]
+        vals = vals + val
     print("Time: %s" % (time.time()-start))
     print(vals)
 
