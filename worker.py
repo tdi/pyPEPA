@@ -4,9 +4,9 @@
 from gevent.server import StreamServer
 import socket
 import pepa_prot
-
+from pepa_model import PEPAModel
 clients = set()
-models = ["a", "b", "c"]
+models = ["resource.pepa"]
 
 def send_callback(address):
     ip = (address, 6001)
@@ -40,6 +40,7 @@ def process_cmd(data):
         ret["ret"] = models
     elif cmd == "solve_ss":
         ret["ret"] = solve_ss(data["data"], data["ret"])
+
     else:
         print("Command not found")
         return None
@@ -48,9 +49,12 @@ def process_cmd(data):
 
 def solve_ss(data, ret):
     print("Solving %s, returning %s" % (data, ret))
-    return [1,2,43,5,6,7,8,8,9]
-
-
+    model = data
+    pm = PEPAModel({"file": model, "solver": "sparse"})
+    pm.derive()
+    pm.steady_state()
+    ss = pm.get_steady_state_vector()
+    return ss
 
 if __name__ == '__main__':
     server = StreamServer(('0.0.0.0', 6000), process)

@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     server = StreamServer( ('0.0.0.0', 6001), callback)
     address = ('localhost', 6000)
-    dat = {"cmd": "solve_ss", "data":"a","rid": rid, "ret":"ss"}
+    dat = {"cmd": "solve_ss", "data":"resource.pepa","rid": rid, "ret":"ss"}
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect(address)
