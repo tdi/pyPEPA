@@ -34,7 +34,6 @@ class StateSpace():
 
     def derive(self):
         """ Derives the whole state space according to BU"""
-        change = ("rateReset", 2)
         initial_state = []
         queue = []
         visited = []
@@ -53,15 +52,19 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            # print("{} STATE {}".format(state_num, state))
+            print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
-            # update components table (same refs are in operators)
+            # update components table (same refs are in operators) -->
+            # new state
             for i in list( range(0, len( state ),1)):
                 self.components[i].update( state[i] )
+            # for every length can be changed
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
                     if op.length == x:
+                        # Runs through all operators, if operator is the
+                        # top one it composes
                         if self.max_length == op.length:
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
@@ -76,7 +79,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                # print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
+                                print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -131,6 +134,7 @@ class Component():
         self.derivatives = []
         for der in self.ss[self.name].transitions:
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset))
+            
 
     def get_derivatives(self):
         return self.derivatives
@@ -141,7 +145,7 @@ class Component():
 
 class Derivative():
 
-    def __init__(self, from_s, to_s, action, rate, offset,shared=False ):
+    def __init__(self, from_s, to_s, action, rate, offset,shared=False, arate=0.0 ):
         self.from_s = from_s
         self.to_s = to_s
         self.action = action
@@ -149,6 +153,7 @@ class Derivative():
         self.shared = shared
         self.offset = offset
         self.combined = False
+        self.arate = arate
 
     def __str__(self):
         return " T:" + str(self.to_s) \
@@ -186,12 +191,12 @@ class Operator(Component):
         ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
         return ddd
 
-    def _create_unshared_trans(self, state, tran):
-        to_state = state[:]
-        for i in list(range(0, self.lhs.length)):
-            to_state[self.lhs.offset + i] = tran.to_s[self.lhs.offset + i]
-        ddd = Derivative(state, to_state, tran.action, tran.rate, self.offset, False)
-        return ddd
+    # def _create_unshared_trans(self, state, tran):
+    #     to_state = state[:]
+    #     for i in list(range(0, self.lhs.length)):
+    #         to_state[self.lhs.offset + i] = tran.to_s[self.lhs.offset + i]
+    #     ddd = Derivative(state, to_state, tran.action, tran.rate, self.offset, False)
+    #     return ddd
 
 
     def compose(self,ss, state, topop=False):
@@ -221,6 +226,8 @@ class Operator(Component):
         for tran_r in self.rhs.get_derivatives():
             if tran_r.action not in self.actionset:
                 self.derivatives.append(tran_r)
+        if len(self.actionset) == 0:
+            for i in self.derivatives: print(i)
         if topop == True:
             return self.derivatives
 
