@@ -9,8 +9,8 @@ from multiprocessing import Process, Queue
 workers_avail = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"], "b": ["127.0.0.1", "8080"]}
 # workers = {"a" : ["127.0.0.1", "8090"]}
-values =  [1,2,3,4,5,6,7,8,9,10,11,12,13]
-#values =  [i for i in range(1,22)]
+# values =  [1,2,3,4,5,6,7,8,9,10,11,12,13]
+values =  [i for i in range(1,2000)]
 #values =  [1,2,3,4,5]
 
 def carousel(sequence, m):
