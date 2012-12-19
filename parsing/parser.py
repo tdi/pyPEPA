@@ -159,6 +159,7 @@ class PEPAParser(object):
                 # TODO create subtree
                 if tok[0].aggregation == True:
                     n.aggregation = True
+                    print("Aggregation")
                     n.aggr_num = tok[0].aggr_num
                     n = self._create_subtree_aggregation(tok[0].aggr_num, tok[0].data)
                     n.asttype = "coop"
@@ -224,7 +225,7 @@ class PEPAParser(object):
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
         activity = (ratename + col + peparate).setParseAction(self._create_activity)
-        procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + peparate_indef + rsqpar)).setParseAction(self._create_procdef)
+        procdef = (Word(alphas.upper(), alphanums+"_") + Optional(lsqpar + peparate + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
         ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
 

@@ -226,8 +226,8 @@ class Operator(Component):
         for tran_r in self.rhs.get_derivatives():
             if tran_r.action not in self.actionset:
                 self.derivatives.append(tran_r)
-        if len(self.actionset) == 0:
-            for i in self.derivatives: print(i)
+        # if len(self.actionset) == 0:
+            # for i in self.derivatives: print(i)
         if topop == True:
             return self.derivatives
 
