@@ -3,12 +3,14 @@ import sys
 import gevent
 import pepa_prot
 from cmd import Cmd
-
+import time
+from math import ceil
 rid = 1
 
 workers = [ ('localhost', 6000),
-            ('localhost', 6001) ]
+            ('192.168.1.23', 6000) ]
 
+config = {"timing":1}
 
 class CLI(Cmd):
 
@@ -44,30 +46,69 @@ class CLI(Cmd):
         dat = {"cmd": "list_models" , "rid": rid}
         try:
             data = send_recv( workers[int(args[0])], dat)
-            for mod in data["ret"]:
-                print("%s" % mod)
         except:
             print("Connection error")
+        for mod in data["data"]:
+            print("%s" % mod)
 
     def do_solve_th(self, arg):
         """ solve_th MODEL WORKER """
+        global rid
         args = self._parse(arg)
         if len(args) != 2:
             print("Wrong arguments")
             return
+        if args[1] == "all":
+            jobs = []
+            for i in workers:
+                rid = rid + 1
+                dat = {"cmd": "solve_th", "data" : args[0], "rid" :rid, "ret": "th"}
+                jobs.append(gevent.spawn(send_recv, i, dat))
+            gevent.joinall(jobs)
+            print("All done")
+            return
+
         try:
             workers[int(args[1])]
         except:
             print("No such worker")
             return
-        global rid
         rid = rid + 1
-        dat = {"cmd": "solve_th", "data" : args[0], "rid" :rid, "ret": "th"}
+        dat = {"cmd": "solve_th", "data" : args[0], "rid" :rid}
         data = send_recv( workers[int(args[1])], dat)
-        print(data["ret"])
+        print(data["data"])
 
-
-
+    def do_exp(self, arg):
+        """ exp MODEL ACTION RATE VALUES WORKER """
+        global rid
+        args = self._parse(arg)
+        rid = rid + 1
+        if args[4] == "map":
+            vals = [i for i in range(1,200)]
+            cpus = len(workers)
+            tasks = _carousel(vals, cpus)
+            jobs = []
+            if "timing" in config:
+                start = time.time()
+            for w in workers:
+                job = tasks.pop(0)
+                dat = {"cmd": "exp", "data" : args[0], "rid" :rid, "action": "use", "ret": "th", "rate":"userate","values":job, "map":1}
+                jobs.append(gevent.spawn(send_recv, w, dat))
+            gevent.joinall(jobs)
+            if "timing" in config:
+                stop = time.time() - start
+                print("Time %s" % stop)
+            print("All done")
+            return
+        vals = [i for i in range(1,200)]
+        dat = {"cmd": "exp", "data" : args[0], "rid" :rid, "action": "use", "ret": "th", "rate":"userate","values":vals, "map":1}
+        if "timing" in config:
+            start = time.time()
+        data = send_recv( workers[int(args[4])], dat)
+        if "timing" in config:
+            stop = time.time() - start
+            print("Time %s" % stop)
+        print(len(data["data"]))
 
     def do_solve_ss(self, arg):
         """ solve_ss MODEL WORKER """
@@ -84,7 +125,7 @@ class CLI(Cmd):
         rid = rid + 1
         dat = {"cmd": "solve_ss", "data" : args[0], "rid" :rid, "ret": "ss"}
         data = send_recv( workers[int(args[1])], dat)
-        print(data["ret"])
+        print(data["data"])
 
 
     def do_quit(self,arg):
@@ -112,6 +153,12 @@ def send_recv( address, dat):
     sock.shutdown(socket.SHUT_RDWR)
     sock.close()
     return pepa_prot.extract_data(data_bytes)
+
+def _carousel(sequence, m):
+    if len(sequence) < m:
+        m = len(sequence)
+    n = float(len(sequence))
+    return [sequence[((i+0)*int(n/m)):((i+1)*int(ceil(n/m)))] for i in range(m)]
 
 
 

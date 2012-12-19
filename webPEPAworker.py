@@ -15,6 +15,8 @@ solutions = []
 models = {}
 master_addr = "http://localhost:9090/"
 _port = None
+config = { "timing" : 1 }
+
 
 @route('/models/<name>', method="PUT")
 def submit_model(name):
