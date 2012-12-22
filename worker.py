@@ -60,7 +60,7 @@ def _job(task, name, queue):
     pm.derive()
     result = rate_experiment(rate, values, actionth, pm)
     queue.put(result)
-
+    
 def experiment(data):
     model = "models/%s" % data["data"]
     rate = data["rate"]
@@ -71,7 +71,8 @@ def experiment(data):
         pm = PEPAModel({"file": model, "solver": "sparse"})
         pm.derive()
         result = rate_experiment(rate, values, action, pm)
-        return result
+        # return result
+        return "ok"
     else:
         cpus = multiprocessing.cpu_count()
         queue = multiprocessing.Queue()

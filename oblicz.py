@@ -1,6 +1,8 @@
+import gevent
+import gevent.monkey 
+gevent.monkey.patch_all()
 import socket
 import sys
-import gevent
 import pepa_prot
 import time
 from math import ceil
