@@ -159,7 +159,6 @@ class PEPAParser(object):
                 # TODO create subtree
                 if tok[0].aggregation == True:
                     n.aggregation = True
-                    print("Aggregation")
                     n.aggr_num = tok[0].aggr_num
                     n = self._create_subtree_aggregation(tok[0].aggr_num, tok[0].data)
                     n.asttype = "coop"
