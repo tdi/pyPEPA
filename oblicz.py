@@ -1,17 +1,50 @@
 import gevent
-import gevent.monkey 
+import gevent.monkey
 gevent.monkey.patch_all()
-import socket
 import sys
+import socket
 import pepa_prot
 import time
 from math import ceil
+import multiprocessing
 rid = 1
 
-workers = [ ('localhost', 6000),
+workers = [ ('lab-sec-1', 6000),
+ 	    ('lab-sec-2', 6000),
+ 	    ('lab-sec-3', 6000),
             ]
 
 config = {"timing":1}
+
+
+def _sendjob(dat,w, queue):
+	queue.put(send_recv(w,dat))
+	return
+    
+
+def expproc(data, ran):
+    rid = 1000
+    dat = data
+    vals = [i for i in range(1,ran)]
+    cpus = len(workers)
+    tasks = _carousel(vals, cpus)
+    jobs = []
+    if "timing" in config:
+        start = time.time()
+    queue = multiprocessing.Queue()
+    for w in workers:
+        job = tasks.pop(0)
+        dat["values"] = job
+	p = multiprocessing.Process(target=_sendjob, args=(dat, w,queue))
+	p.start()
+#        jobs.append(gevent.spawn(send_recv, w, dat))
+#    gevent.joinall(jobs)
+    for w in range(len(workers)):
+    	result = queue.get()
+    if "timing" in config:
+        stop = time.time() - start
+    return "%s,%d,%s\n" % ( model, ran, stop)
+
 
 
 def exp(data, ran):
@@ -81,9 +114,9 @@ def _carousel(sequence, m):
 
 if __name__ == "__main__":
     import sys
-    model = "resource.pepa"
+    model = "browser.pepa"
     ran = 100
-    dat = {"cmd": "exp", "data" : model, "rid" :rid, "action": "use", "ret": "th", "rate":"userate","map":1}
+    dat = {"cmd": "exp", "data" : model, "rid" :rid, "action": "display", "ret": "th", "rate":"m", "map":1}
     print("Using %s workers" % len(workers))
     with open("result.txt", "w") as f:
         for i in range(2):
