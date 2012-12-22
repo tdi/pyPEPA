@@ -21,6 +21,15 @@ class CLI(Cmd):
         for worker in workers:
             print("%d %s" % ( workers.index(worker), worker) )
 
+    def do_check(self, arg):
+        for worker in workers:
+            try:
+                send_recv(worker, {"cmd" : "chk"} )
+                print("%s:%s OK" % worker)
+            except:
+                print("%s:%s FAILED" % worker)
+
+
     def do_list_models(self, arg):
         """ list_models WORKER_NUM """
         args = self._parse(arg)
@@ -138,6 +147,7 @@ class CLI(Cmd):
 def send_recv( address, dat):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
         sock.connect(address)
     except Exception as e:
         raise

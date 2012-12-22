@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-"""Simple server that listens on port 6000 and echos back every input to the client.
-"""
 from gevent.server import StreamServer
 import gevent
 import socket
@@ -15,11 +13,7 @@ from math import ceil
 
 clients = set()
 models = list()
-
-def send_callback(address):
-    ip = (address, 6001)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(ip)
+doit = dict()
 
 def process(socket, address):
     if address[0] not in clients:
@@ -44,39 +38,9 @@ def process(socket, address):
     except:
         print("Command not found")
         ret["status"] = 0
-    # ret = process_cmd(data)
     socket.sendall( pepa_prot.prepare_to_send(ret))
     socket.close()
 
-
-def list_models(data):
-    return models
-
-def process_cmd(data):
-    cmd = data["cmd"]
-    print("CMD:%s" % cmd)
-    ret = dict()
-    if cmd == "list_models":
-        ret["ret"] = models
-        ret["status"]  = 1
-    elif cmd == "solve_ss":
-        ret["ret"] = solve_ss(data["data"], data["ret"])
-        ret["status"]  = 1
-    elif cmd == "solve_th":
-        ret["ret"] = solve_th(data["data"], data["ret"])
-        ret["status"] = 1
-    elif cmd == "exp":
-        ret["ret"] = experiment(data, data)
-        ret["status"] = 1
-    elif cmd == "chk":
-        ret["ret"] = "ok"
-        ret["status"] = 1
-    else:
-        print("Command not found")
-        ret["status"]  = 0
-        return None
-    ret["rid"] = data["rid"]
-    return ret
 
 def _carousel(sequence, m):
     if len(sequence) < m:
@@ -91,18 +55,18 @@ def _job(task, name, queue):
     rate = task["rate"]
     values = task["values"]
     print("Process %s Calculating %d values " % (curproc, len(values)))
-    pargs = { "file": "resource.pepa", "solver": "sparse" }
+    pargs = { "file": task["model"], "solver": "sparse" }
     pm = PEPAModel(pargs)
     pm.derive()
     result = rate_experiment(rate, values, actionth, pm)
     queue.put(result)
 
 def experiment(data):
-    print("Experiment %s, returning bool" % data)
     model = "models/%s" % data["data"]
     rate = data["rate"]
     action = data["action"]
     values = data["values"]
+    print("Experiment %s with %d values" % ( model, len(values)))
     if "map" not in data:
         pm = PEPAModel({"file": model, "solver": "sparse"})
         pm.derive()
@@ -113,14 +77,15 @@ def experiment(data):
         queue = multiprocessing.Queue()
         tasks = _carousel(values, cpus)
         for t in tasks:
-            task = {"actionth": action, "rate": rate, "values" : t}
+            task = {"actionth": action, "rate": rate, "values" : t, "model": model}
             p = multiprocessing.Process(target=_job, args=(task, "TASKNAME", queue))
             p.start()
         vals = []
         for i in range(len(tasks)):
             result = queue.get()
             # print(result)
-            vals.append(result)
+            #vals.append(result)
+            vals.append("ok")
         return vals
 
 def solve_ss(data):
@@ -147,16 +112,16 @@ def get_models():
     os.chdir("models")
     models = glob.glob("*.pepa")
     os.chdir(cwd)
+    print(cwd)
 
+if __name__ == '__main__':
 
-doit = {"list_models" : (lambda x: models),
+    doit = {"list_models" : (lambda x: models),
         "solve_ss" : solve_ss,
         "solve_th": solve_th,
         "exp": experiment,
         "chk": lambda x: 1
         }
-
-if __name__ == '__main__':
     if os.path.isdir("models"):
         get_models()
     else:
