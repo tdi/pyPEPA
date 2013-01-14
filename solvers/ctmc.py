@@ -43,6 +43,7 @@ def create_lil_matrix(res):
             rowsum += rate
         Q[ res[key][1]-1 , res[key][1]-1] = -rowsum
         rowsum = 0.0
+    print(Q)
     return Q
 
 
