@@ -9,7 +9,7 @@ class StateSpace():
 
     def __init__(self):
         self.max_length = 0
-    
+
     def _combine_states(self, states):
         """ When more than one transition leads to the same state,
             the function combines these transitions into one with actions rewritten
@@ -120,21 +120,23 @@ class Component():
         """
         Update with new name
         """
+        self.name
         self.name = name
         self.data = name #TODO: wyjebac
         self.derivatives = []
         for der in self.ss[self.name].transitions:
-            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset))
+            # print("self.name:%s der.action:%s der.rate:%s de.to:%s" % (self.name, der.action, der.rate, der.to))
+            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate))
 
 
     def __init__(self, ss, name,offset):
         self.name = name
         self.ss = ss
+        print(ss)
         self.offset = offset
         self.derivatives = []
         for der in self.ss[self.name].transitions:
-            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset))
-            
+            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate))
 
     def get_derivatives(self):
         return self.derivatives
@@ -145,7 +147,7 @@ class Component():
 
 class Derivative():
 
-    def __init__(self, from_s, to_s, action, rate, offset,shared=False, arate=0.0 ):
+    def __init__(self, from_s, to_s, action, rate, offset, arate, shared=False):
         self.from_s = from_s
         self.to_s = to_s
         self.action = action
@@ -244,4 +246,5 @@ class Operator(Component):
             else:
                 return rate1
         return min(rate1,rate2)
+
 

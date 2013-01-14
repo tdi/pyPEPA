@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 from gevent.server import StreamServer
-import gevent
-import socket
 import pepa_prot
 import glob
 import os

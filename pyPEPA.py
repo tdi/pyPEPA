@@ -103,6 +103,7 @@ if __name__ == "__main__":
 
     if args.steady or args.top or args.util:
         pm = PEPAModel(pargs)
+
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
