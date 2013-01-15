@@ -52,7 +52,7 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            # print("{} STATE {}".format(state_num, state))
+            print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators) -->
@@ -79,7 +79,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                # print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.rate, Back.RESET, Fore.RESET, news.to_s))
+                                print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.arate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -124,19 +124,32 @@ class Component():
         self.name = name
         self.data = name #TODO: wyjebac
         self.derivatives = []
+        arates = {}
+        for der in self.ss[self.name].transitions:
+            if der.action not in arates:
+                arates[der.action] = float(der.rate)
+            else:
+                arates[der.action] += float(der.rate)
         for der in self.ss[self.name].transitions:
             # print("self.name:%s der.action:%s der.rate:%s de.to:%s" % (self.name, der.action, der.rate, der.to))
-            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate))
+            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, arates[der.action], aprates=arates))
+
 
 
     def __init__(self, ss, name,offset):
         self.name = name
         self.ss = ss
-        print(ss)
         self.offset = offset
         self.derivatives = []
+        arates = {}
         for der in self.ss[self.name].transitions:
-            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate))
+            if der.action not in arates:
+                arates[der.action] = float(der.rate)
+            else:
+                arates[der.action] += float(der.rate)
+
+        for der in self.ss[self.name].transitions:
+            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate, aprates=arates))
 
     def get_derivatives(self):
         return self.derivatives
@@ -147,7 +160,7 @@ class Component():
 
 class Derivative():
 
-    def __init__(self, from_s, to_s, action, rate, offset, arate, shared=False):
+    def __init__(self, from_s, to_s, action, rate, offset, arate, shared=False, aprates=None):
         self.from_s = from_s
         self.to_s = to_s
         self.action = action
@@ -156,6 +169,7 @@ class Derivative():
         self.offset = offset
         self.combined = False
         self.arate = arate
+        self.apparent_rates = aprates
 
     def __str__(self):
         return " T:" + str(self.to_s) \
@@ -189,28 +203,42 @@ class Operator(Component):
         for i in list(range(0, self.rhs.length)):
             to_state[self.rhs.offset + i] = tran_r.to_s[self.rhs.offset + i]
 #            to_state[i] = tran_r.to_s[i]
-        new_rate = self._min(tran_r.rate, tran_l.rate)
-        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset,True)
+        left = float(tran_l.rate) / float(tran_l.arate)
+        right = float(tran_r.rate) / float(tran_r.arate)
+        lR = float(left) * float(right)
+        new_rate = lR * float(self._min(tran_r.arate, tran_l.arate))
+        # print("%s %s %s %s"% (left, right, lR, new_rate))
+        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset, new_rate,True)
         return ddd
 
-    # def _create_unshared_trans(self, state, tran):
-    #     to_state = state[:]
-    #     for i in list(range(0, self.lhs.length)):
-    #         to_state[self.lhs.offset + i] = tran.to_s[self.lhs.offset + i]
-    #     ddd = Derivative(state, to_state, tran.action, tran.rate, self.offset, False)
-    #     return ddd
+    def _create_left_transition(self, state, tran_l):
+        new_state = state[:]
+        new_state[tran_l.offset] = tran_l.to_s[0]
+        return tran_l
 
+    def _create_right_transition(self, state, tran_r):
+        new_state = state[:]
+        new_state[tran_r.offset] = tran_r.to_s[0]
+        return tran_r
 
     def compose(self,ss, state, topop=False):
         self.derivatives =  []
         for tran_l in self.lhs.get_derivatives():
+            if tran_l.action not in self.actionset:
+                for tran_r in self.rhs.get_derivatives():
+                    if tran_r.action not in self.actionset:
+                        if tran_l.action == tran_r.action:
+                            # print("%s %s %s %s" % (tran_l.action, tran_r.action, tran_l.arate, tran_r.arate))
+                            new_arate = tran_l.arate + tran_r.arate
+                            tran_l.apparent_rates[tran_l.action] = new_arate
+                            tran_r.apparent_rates[tran_l.action] = new_arate
+                            tran_l.arate = new_arate
+                            tran_r.arate = new_arate
+        for tran_l in self.lhs.get_derivatives():
             # UNSHARED
             if tran_l.action not in self.actionset:
-                new_state = state[:]
-                new_state[tran_l.offset] = tran_l.to_s[0]
-                self.derivatives.append(tran_l)
-        #        print("\t/ "+str(tran_l))
-        #        print("\tPS "+str(new_state))
+                l_tran = self._create_left_transition(state, tran_l)
+                self.derivatives.append(l_tran)
             else:
                 for tran_r in self.rhs.get_derivatives():
                     if tran_r.action == tran_l.action:
@@ -228,8 +256,6 @@ class Operator(Component):
         for tran_r in self.rhs.get_derivatives():
             if tran_r.action not in self.actionset:
                 self.derivatives.append(tran_r)
-        # if len(self.actionset) == 0:
-            # for i in self.derivatives: print(i)
         if topop == True:
             return self.derivatives
 
