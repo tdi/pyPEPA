@@ -4,6 +4,8 @@ from bottle import route, run, request, abort, response, error
 from pprint import pprint
 from pepa_model import PEPAModel
 from experiments.experiment import rate_experiment
+from math import ceil
+import multiprocessing
 import requests
 import uuid
 import time
@@ -13,6 +15,8 @@ solutions = []
 models = {}
 master_addr = "http://localhost:9090/"
 _port = None
+config = { "timing" : 1 }
+
 
 @route('/models/<name>', method="PUT")
 def submit_model(name):
@@ -31,6 +35,46 @@ def get_modelfile(name):
     if name not in models:
         return { "success": False, "error": "Model with this name does not exist" }
     return { "success": True, "modelfile" : models[name], "id": name }
+
+def carousel(sequence, m):
+    if len(sequence) < m:
+        m = len(sequence)
+    n = float(len(sequence))
+    return [sequence[((i+0)*int(n/m)):((i+1)*int(ceil(n/m)))] for i in range(m)]
+
+def job(task, name, queue):
+    print("Process %s started"% multiprocessing.current_process().name)
+    actionth = task["actionth"]
+    rate = task["rate"]
+    values = task["values"]
+    pargs = { "file": "resource.pepa", "solver": "sparse" }
+    pm = PEPAModel(pargs)
+    pm.derive()
+    result = rate_experiment(rate, values, actionth, pm)
+    queue.put(result)
+
+@route('/models/<name>/experimentp', method="POST")
+def experimentp(name):
+    cpus = multiprocessing.cpu_count()
+    queue = multiprocessing.Queue()
+    actionth = request.forms.get("actionth")
+    rate = request.forms.get("rate")
+    values = request.forms.get("values")
+    vals = json.loads(values)
+    # task = {"actionth": actionth, "rate": rate, "values" : vals}
+    pargs = {"file" : "resource.pepa", "solver": "sparse"}
+    tasks = carousel(vals, cpus)
+    for t in tasks:
+        task = {"actionth": actionth, "rate": rate, "values" : t}
+        p = multiprocessing.Process(target=job, args=(task, "lala", queue))
+        p.start()
+    vals = []
+    for i in range(len(tasks)):
+        result = queue.get()
+        print(result)
+        vals.append(result)
+    return {"success": True, "result": json.dumps(vals)}
+
 
 @route('/models/<name>/experiment', method="POST")
 def experiment(name):
@@ -121,4 +165,4 @@ def error_404(code):
 
 if __name__ == '__main__':
     _initialize(sys.argv[1])
-    run(reloader=True, host='localhost', port=sys.argv[1])
+    run(host='localhost', port=sys.argv[1])

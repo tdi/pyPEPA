@@ -7,6 +7,7 @@ class ComponentState():
         self.name = None
         self.resolved = None
         self.transitions = []
+        self.apparent_rates = {}
 
 class Transition():
 

@@ -1,9 +1,0 @@
-userate=2;
-taskrate=2;
-updaterate=8;
-
-Process = (use, userate).(task,taskrate).Process;
-Resource = (use, 6).(update,updaterate).Resource;
-
-//(Process || Process || Process)  <use> Resource
-Process <use> Resource

@@ -163,6 +163,7 @@ class PEPATreeWalker():
                 trans.var_rate = node.var_rate
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
+            # self.graph.ss[self._visitstack[-1]].apparent_rates[node.action] = node.rate
             self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
 #            self.log.debug("(NS) " +  node.resolved)
