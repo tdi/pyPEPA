@@ -127,11 +127,16 @@ class Component():
         arates = {}
         for der in self.ss[self.name].transitions:
             if der.action not in arates:
-                arates[der.action] = float(der.rate)
+                if der.rate == "infty":
+                    arates[der.action] = float(-1)
+                else:
+                    arates[der.action] = float(der.rate)
             else:
                 arates[der.action] += float(der.rate)
         for der in self.ss[self.name].transitions:
             # print("self.name:%s der.action:%s der.rate:%s de.to:%s" % (self.name, der.action, der.rate, der.to))
+            if der.rate == "infty":
+                der.rate = -1
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, arates[der.action], aprates=arates))
 
 
@@ -144,11 +149,16 @@ class Component():
         arates = {}
         for der in self.ss[self.name].transitions:
             if der.action not in arates:
-                arates[der.action] = float(der.rate)
+                if der.rate == "infty":
+                    arates[der.action] = float(-1)
+                else:
+                    arates[der.action] = float(der.rate)
             else:
                 arates[der.action] += float(der.rate)
 
         for der in self.ss[self.name].transitions:
+            if der.rate == "infty":
+                der.rate = -1
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate, aprates=arates))
 
     def get_derivatives(self):
@@ -259,8 +269,21 @@ class Operator(Component):
         if topop == True:
             return self.derivatives
 
-
     def _min(self,rate1, rate2):
+        if rate1 < 0:
+            if rate2 < 0:
+                return -1
+            else:
+                return rate2
+        if rate2 < 0:
+            if rate1 < 0:
+                return -1
+            else:
+                return rate1
+        return min(rate1,rate2)
+
+
+    def _min2(self,rate1, rate2):
         if rate1 == "infty":
             if rate2 == "infty":
                 return "infty"
