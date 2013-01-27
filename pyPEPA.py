@@ -10,12 +10,12 @@ __version__ = "201212"
 
 
 from pprint import pprint
-import sys
 import logging
 from libpepa.pepa_model import PEPAModel
 from libpepa.experiments.experiment import rate_experiment, range_maker, rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
 import argparse
+import sys
 
 
 def _pretty_print_performance(actset):
@@ -30,6 +30,7 @@ def _pretty_print_vector(vect, vect_names):
         i = i + 1
 
 if __name__ == "__main__":
+
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(description="pyPEPA, author {}, {}".format(__author__, __email__))
     sol_args = parser.add_argument_group("Solution", "Solution related commands")
