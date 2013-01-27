@@ -30,7 +30,7 @@ def _pretty_print_vector(vect, vect_names):
         i = i + 1
 
 if __name__ == "__main__":
-
+    print(sys.path)
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(description="pyPEPA, author {}, {}".format(__author__, __email__))
     sol_args = parser.add_argument_group("Solution", "Solution related commands")
