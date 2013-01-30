@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# from colorama import Fore, Back
+
+from libpepa.logger import init_log
 
 class StateSpace():
     operators = []
@@ -9,6 +10,7 @@ class StateSpace():
 
     def __init__(self):
         self.max_length = 0
+        self.log = init_log()
 
     def _combine_states(self, states):
         """ When more than one transition leads to the same state,
@@ -52,7 +54,7 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            # print("{} STATE {}".format(state_num, state))
+            self.log.info("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators) -->
@@ -69,7 +71,7 @@ class StateSpace():
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
-                                # print("DEADLOCK in {}".format(state))
+                                self.log.error("DEADLOCK in {}".format(state))
                                 exit(1)
                             #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
@@ -79,7 +81,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                # print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.arate, Back.RESET, Fore.RESET, news.to_s))
+                                self.log.info("{}\trate={} \t-> {}".format(news.action, news.arate, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
@@ -96,7 +98,7 @@ class StateSpace():
 
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
         if rate == "infty":
-            print("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
+            self.log.error("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
             exit(1)
         if (action,state_num) not in actions_to_state:
             actions_to_state[ (action, state_num) ] = float(rate)
@@ -105,7 +107,6 @@ class StateSpace():
             actions_to_state[ (action, state_num) ] += float(rate)
 
     def _gs_to_string(self, gs_list):
-        """ TODO: wywalic do osobnych toolsow """
         return ','.join( map( str, gs_list ) )
 
 class Component():
@@ -195,6 +196,7 @@ class Operator(Component):
     def __init__(self):
         self.actionset = []
         self.derivatives = []
+        self.log = init_log()
 
     def update_offset(self):
         if self.lhs is not None:

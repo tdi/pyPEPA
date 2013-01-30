@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from libpepa.solvers.ctmc import ctmc, ctmc_sparse, create_matrix, vector_mult, create_lil_matrix, ctmc_transient
-from pprint import pprint
+
 class CTMCSolution():
 
     def __init__(self, ss, solver):
