@@ -87,6 +87,7 @@ class PEPAModel():
         if rateDef is None:
             self.tw = PEPATreeWalker(self.rate_definitions)
         else:
+            self.log.info("Deriving model with changes rates {}".format(rateDef))
             self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
@@ -94,6 +95,7 @@ class PEPAModel():
 
     def generate_dots(self):
         """ Generates dot files to browse with e.g. xdot """
+        self.log.info("Generating dot files")
         self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph)
         for comp in set(self.ss.components):
