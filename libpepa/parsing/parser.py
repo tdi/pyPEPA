@@ -19,10 +19,6 @@ class PEPAParser(object):
         self.systemeq = None
 
 
-    def error(self,string):
-        print("SYNTAX ERROR: ", string)
-
-
     def _create_activity(self, string, loc,tok):
         self.log_pa.debug("Token: "+tok[0])
         n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
@@ -51,7 +47,7 @@ class PEPAParser(object):
         n.process = tok[0].data
         for key in self._processes.keys():
             if self._processes[key].process == tok[0].data:
-                self.error("Process "+tok[0].data+" already defined")
+                self.log_pa.error("Process "+tok[0].data+" already defined")
                 exit(1)
         self._processes[tok[0]] = n
         return n
@@ -164,7 +160,7 @@ class PEPAParser(object):
                 n.rate = tok[0].rate
                 n.action = tok[0].action
             else:
-                self.log_error("This situation should not take place")
+                self.log_pa.error("This situation should not take place")
             self.log_pa.debug("Terminal - creating Node ->" + tok[0].asttype)
             self.log_pa.debug("Token: "+tok[0].data)
         return n
@@ -187,7 +183,7 @@ class PEPAParser(object):
                 if tok[0] not in ("infty", "T", "tau"):
                     self._var_stack[tok[0]]
             except:
-                self.error("Rate " + tok[0]+ " not defined")
+                self.log_pa.error("Rate " + tok[0]+ " not defined")
                 exit(1)
 
     def gramma(self):
