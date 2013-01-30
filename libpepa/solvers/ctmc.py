@@ -61,17 +61,7 @@ def create_matrix(res):
             rowsum += rate
         Q[ res[key][1]-1 , res[key][1]-1] = -rowsum
         rowsum = 0.0
-    print(Q)
+    # print(Q)
     return Q
 
 
-
-if __name__ == "__main__":
-
-    x = ctmc(pepa_ss_parser("test_examples/model3.generator"))
-    for el in numpy.nditer(x):
-        if el < 0:
-            print("Error, probabilities are negative, the universe exploded just now")
-            break
-        else:
-            print(x)

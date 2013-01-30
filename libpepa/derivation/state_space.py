@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from colorama import Fore, Back
+# from colorama import Fore, Back
 
 class StateSpace():
     operators = []
@@ -52,7 +52,7 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            print("{} STATE {}".format(state_num, state))
+            # print("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators) -->
@@ -69,7 +69,7 @@ class StateSpace():
                             new_states = []
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
-                                print("DEADLOCK in {}".format(state))
+                                # print("DEADLOCK in {}".format(state))
                                 exit(1)
                             #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
@@ -79,7 +79,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.arate, Back.RESET, Fore.RESET, news.to_s))
+                                # print("{}\t{} {} {} {} {} {}\t{}".format(Fore.GREEN, news.action, Back.WHITE, Fore.BLACK, news.arate, Back.RESET, Fore.RESET, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
