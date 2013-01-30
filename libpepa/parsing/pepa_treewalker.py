@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import logging
 from libpepa.parsing.comp_state_space_graph import Transition, ModelSSGraph, ComponentState
 from libpepa.derivation.state_space import StateSpace, Operator, Component
 from libpepa.parsing.pepa_ast import *
+from libpepa.logger import init_log
 
 
 class PEPATreeWalker():
@@ -12,7 +12,7 @@ class PEPATreeWalker():
     def __init__(self, rates):
         self._visitstack= []
         self.graph = ModelSSGraph()
-        self.log = logging.getLogger(__name__)
+        self.log = init_log()
         self.seq_components = {}
         self.shared_actions = {}
         self.operators = []
@@ -32,7 +32,7 @@ class PEPATreeWalker():
         node = self._visit_tree1(node)
         self._visitstack = []
         self.graph.name = node.process
-        self.log.debug("Deriving {}".format(node.process))
+        self.log.info("Deriving {}".format(node.process))
         self._visit_tree2(node)
 
     def _name_subtree(self,node):
@@ -155,7 +155,7 @@ class PEPATreeWalker():
             # adding to ss dict
             self.graph.ss[node.process] = compnode
             # first node for sure
-            self.log.debug("(COMPONENT) {} = {}".format(node.process,node.resolved))
+            self.log.info("(COMPONENT) {} = {}".format(node.process,node.resolved))
             self._visitstack.append(node.process)
         elif node.data == ".":
             trans = Transition(node.action, node.rate, node.resolved)
@@ -164,9 +164,8 @@ class PEPATreeWalker():
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
             # self.graph.ss[self._visitstack[-1]].apparent_rates[node.action] = node.rate
-            self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
+            self.log.info("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
-#            self.log.debug("(NS) " +  node.resolved)
             if node.resolved not in self.graph.ss:
                 # new state - append
                 compnode = ComponentState()
