@@ -6,11 +6,11 @@ __version__ = "0.3"
 """ Main file od pyPEPA """
 
 from pprint import pprint
-import logging
 from libpepa import __version__ as libpepa_version
 from libpepa.pepa_model import PEPAModel
 from libpepa.experiments.experiment import rate_experiment, range_maker, rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
+from libpepa.logger import init_log
 import argparse
 import sys
 
@@ -28,7 +28,9 @@ def _pretty_print_vector(vect, vect_names):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.INFO)
+    logger = init_log()
+    logger.info("ratatatata")
+
     parser = argparse.ArgumentParser(description="pyPEPA v{}, libpepa v{}, author {}, {}".format(__version__, libpepa_version,__author__, __email__))
     sol_args = parser.add_argument_group("Solution", "Solution related commands")
     exp_args = parser.add_argument_group("Experimentations", "Experimentations")
@@ -100,7 +102,6 @@ if __name__ == "__main__":
 
     if args.steady or args.top or args.util:
         pm = PEPAModel(pargs)
-
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
-    if args.util:
-        print("NOT IMPLEMENTED YET")
+    # if args.util:
+    #     print("NOT IMPLEMENTED YET")
 
 

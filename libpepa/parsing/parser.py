@@ -5,39 +5,33 @@ PEPA Parser
 from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional, ZeroOrMore, Forward, restOfLine
 import sys
 from libpepa.parsing.pepa_ast import *
+from libpepa.logger import init_log
 
 class PEPAParser(object):
     """
-    TODO: change all to private fields...
+    TODO: change to dicts
     """
 
-    _logging_pa = False
-    _var_stack = None
-    _processes = None
-    _systemeq = None
-
-    def __init__(self, logging_pa = False):
-        self._logging_pa = logging_pa
+    def __init__(self):
+        self.log_pa = init_log()
         self._processes = {}
         self._var_stack = {}
+        self.systemeq = None
 
-    def log_pa(self, string, msg="", prepend="[PARSEACT]"):
-        fname = sys._getframe(1).f_code.co_name
-        if self._logging_pa:  print(prepend + "[" + fname + "]", msg, string)
 
     def error(self,string):
         print("SYNTAX ERROR: ", string)
 
 
     def _create_activity(self, string, loc,tok):
-        self.log_pa("Token: "+tok[0])
+        self.log_pa.info("Token: "+tok[0])
         n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
         n.action = tok[0]
         n.rate = tok[1]
         return n
 
     def _create_procdef(self, s, loc, toks):
-        self.log_pa("Token: "+toks[0])
+        self.log_pa.info("Token: "+toks[0])
         n = ProcdefNode(toks[0], "procdef")
         if len(toks) > 1:
             n.aggregation = True
@@ -49,8 +43,8 @@ class PEPAParser(object):
         return n
 
     def _create_definition(self, string, loc, tok):
-        self.log_pa("Left token: "+tok[0].data)
-        self.log_pa("Right token: "+tok[2].data)
+        self.log_pa.info("Left token: "+tok[0].data)
+        self.log_pa.info("Right token: "+tok[2].data)
         n = DefNode("=", "definition")
         n.left = tok[0]
         n.right = tok[2]
@@ -63,10 +57,10 @@ class PEPAParser(object):
         return n
 
     def _create_prefix(self,string, loc, tok):
-        self.log_pa("Tokens: "+str( len(tok) ))
+        self.log_pa.info("Tokens: "+str( len(tok) ))
         if len(tok) > 1:
-            self.log_pa("Left token: "+tok[0].data)
-            self.log_pa("Right token: "+tok[2].data)
+            self.log_pa.info("Left token: "+tok[0].data)
+            self.log_pa.info("Right token: "+tok[2].data)
             n = PrefixNode(".", "prefix")
             lhs = tok[0]
             rhs = tok[2]
@@ -74,19 +68,19 @@ class PEPAParser(object):
             n.right = rhs
             return n
         else:
-            self.log_pa("Token: "+tok[0].data)
+            self.log_pa.info("Token: "+tok[0].data)
             return tok[0]
 
     def _create_choice(self,string,loc,tok):
-        self.log_pa("Start")
-        self.log_pa("Tokens: "+str( len(tok) ))
+        self.log_pa.info("Start")
+        self.log_pa.info("Tokens: "+str( len(tok) ))
         if not tok[0] is None:
             if len(tok) <3:
-                self.log_pa("Token: "+tok[0].data)
+                self.log_pa.info("Token: "+tok[0].data)
                 return tok[0]
             else:
-                self.log_pa("Left token: "+tok[0].data)
-                self.log_pa("Right token: "+tok[2].data)
+                self.log_pa.info("Left token: "+tok[0].data)
+                self.log_pa.info("Right token: "+tok[2].data)
 
                 n = ChoiceNode("+", "choice")
                 n.left = tok[0]
@@ -97,34 +91,34 @@ class PEPAParser(object):
     def _create_coop(self,string, loc, tok):
         if not tok[0] is None:
             if len(tok) <3:
-                self.log_pa("Token: "+tok[0].data)
+                self.log_pa.info("Token: "+tok[0].data)
                 return tok[0]
             else:
-                self.log_pa("Number of tokens" + str(len(tok)))
-                self.log_pa("Left token: "+tok[0].data)
+                self.log_pa.info("Number of tokens" + str(len(tok)))
+                self.log_pa.info("Left token: "+tok[0].data)
                 if tok[1].actionset is not None:
                     n = CoopNode("<"+str(tok[1].actionset)+">", "coop")
                     n.cooptype = "sync"
                     n.actionset = tok[1].actionset
-                    self.log_pa(n.actionset)
+                    self.log_pa.info(n.actionset)
                 else:
                     n = CoopNode("||", "coop")
                     n.cooptype = "par"
                 if type(tok[2]).__name__ == "str":
-                    self.log_pa("String: "+tok[2])
+                    self.log_pa.info("String: "+tok[2])
                 else:
-                    self.log_pa("Right token: "+tok[2].data)
+                    self.log_pa.info("Right token: "+tok[2].data)
                 n.left = tok[0]
                 n.right= tok[2]
                 return n
 
     def _create_sync_set(self,string, loc, tok):
         if tok[0] != "||" and tok[0] != "<>":
-            self.log_pa("Non empty synset: " + str(tok))
+            self.log_pa.info("Non empty synset: " + str(tok))
             n = SyncsetNode("<>", "syncset")
             n.actionset = tok
         else:
-            self.log_pa("Parallel")
+            self.log_pa.info("Parallel")
             n = SyncsetNode("||", "syncset")
             n.actionset = None
         return n
@@ -148,10 +142,10 @@ class PEPAParser(object):
         return first
 
     def _create_process(self,string, loc, tok):
-        self.log_pa("Start")
+        self.log_pa.info("Start")
         if tok[0].left is not None or tok[0].right is not None:
-            self.log_pa("Token: "+tok[0].data)
-            self.log_pa("Non terminal - passing")
+            self.log_pa.info("Token: "+tok[0].data)
+            self.log_pa.info("Non terminal - passing")
             return tok[0]
         else:
             if tok[0].asttype == "procdef":
@@ -170,14 +164,14 @@ class PEPAParser(object):
                 n.rate = tok[0].rate
                 n.action = tok[0].action
             else:
-                self.log_pa("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROR")
-            self.log_pa("Terminal - creating Node ->" + tok[0].asttype)
-            self.log_pa("Token: "+tok[0].data)
+                self.log_error("This situation should not take place")
+            self.log_pa.info("Terminal - creating Node ->" + tok[0].asttype)
+            self.log_pa.info("Token: "+tok[0].data)
         return n
 
 
     def _create_system_equation(self, string, loc, tok):
-        self.log_pa("Creating system EQ")
+        self.log_pa.info("Creating system EQ")
         self._systemeq = tok[0]
 
 
@@ -202,7 +196,6 @@ class PEPAParser(object):
         prefix_op = Literal('.')
         choice_op = Literal('+')
         parallel = Literal("||") | Literal("<>")
-#ident = Word(alphas, alphanums+'_')
         ratename = Word(alphas.lower(),alphanums+"_")
         lpar = Literal('(').suppress()
         rpar = Literal(')').suppress()
