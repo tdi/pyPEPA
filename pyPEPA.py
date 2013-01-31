@@ -1,19 +1,16 @@
 #!/usr/bin/env python
+__author__= "Dariusz Dwornikowski"
+__email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
+__version__ = "0.3"
 
 """ Main file od pyPEPA """
 
-__author__ = "Dariusz Dwornikowski"
-__copyright__ = "Dariusz Dwornikowski, Poznan University of Technology"
-__licence__ = "GNU General Public License version 3"
-__email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
-__version__ = "201212"
-
-
 from pprint import pprint
-import logging
-from pepa_model import PEPAModel
-from experiments.experiment import rate_experiment, range_maker, rate_experiment_two
-from experiments.graphing import plot_2d, plot_3d
+from libpepa import __version__ as libpepa_version
+from libpepa.pepa_model import PEPAModel
+from libpepa.experiments.experiment import rate_experiment, range_maker, rate_experiment_two
+from libpepa.experiments.graphing import plot_2d, plot_3d
+from libpepa.logger import init_log
 import argparse
 import sys
 
@@ -30,9 +27,10 @@ def _pretty_print_vector(vect, vect_names):
         i = i + 1
 
 if __name__ == "__main__":
-    print(sys.path)
-    logging.basicConfig(level=logging.INFO)
-    parser = argparse.ArgumentParser(description="pyPEPA, author {}, {}".format(__author__, __email__))
+    logger = init_log()
+    logger.info("ratatatata")
+
+    parser = argparse.ArgumentParser(description="pyPEPA v{}, libpepa v{}, author {}, {}".format(__version__, libpepa_version,__author__, __email__))
     sol_args = parser.add_argument_group("Solution", "Solution related commands")
     exp_args = parser.add_argument_group("Experimentations", "Experimentations")
     sol_args.add_argument("-s", "--solver", action="store", dest="solver",type=str,  choices=['direct', 'sparse'], help="choose solver type DEFAULT: sparse", default="sparse")
@@ -42,7 +40,7 @@ if __name__ == "__main__":
     output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
     output_args.add_argument("-th", "--performance", help="print throughoutput of actions", action="store_true", dest="top")
     output_args.add_argument("-tr", "--transient", help="print throughoutput of actions", action="store", dest="trantime", type=int)
-    output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
+    # output_args.add_argument("-ut", "--utilization", help="print utilization of action", action="store_true", dest="util")
     output_args.add_argument("-f", "--format", dest="format", type=str, choices=["graph", "console", "csv"], help="format for -st -th -ut", default="console")
 
     exp_args.add_argument("-vr", "--varrate", help="varyin rate name", dest="varrate", action="store", metavar="ratename")
@@ -103,7 +101,6 @@ if __name__ == "__main__":
 
     if args.steady or args.top or args.util:
         pm = PEPAModel(pargs)
-
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format( args.file ,len(pm.get_steady_state_vector() )))
@@ -118,7 +115,7 @@ if __name__ == "__main__":
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
-    if args.util:
-        print("NOT IMPLEMENTED YET")
+    # if args.util:
+    #     print("NOT IMPLEMENTED YET")
 
 

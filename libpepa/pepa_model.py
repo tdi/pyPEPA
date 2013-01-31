@@ -1,6 +1,6 @@
 #/usr/bin/env python
-import logging
 import sys
+from libpepa.logger import init_log
 from parsing.pepa_treewalker import PEPATreeWalker
 from parsing.comp_state_space_graph import ComponentSSGraph
 from parsing.parser import PEPAParser
@@ -13,6 +13,7 @@ class PEPAModel():
         - state spaces of components that are present in a system equation
         - rate definitions
         - system equation
+        TODO: keyword arguments
     """
     def __init__(self, args):
         """ Create PEPA model instance and fill the fields
@@ -27,9 +28,10 @@ class PEPAModel():
         self.components = {}
         # from BU alg, get rid of it
         self.tw = None
-        self.log = logging.getLogger(__name__)
         self.ss = None
+        self.log = init_log()
         self._solver = None
+        self.log.info("Starting got args {}".format(args))
         self._parse_read_model(args["file"])
 
     def get_rates(self):
@@ -70,7 +72,7 @@ class PEPAModel():
         with open(modelfile, "r") as f:
             modelfile = f.read()
         try:
-            parser = PEPAParser(False)
+            parser = PEPAParser()
             (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
         except Exception as e:
             raise
@@ -85,6 +87,7 @@ class PEPAModel():
         if rateDef is None:
             self.tw = PEPATreeWalker(self.rate_definitions)
         else:
+            self.log.info("Deriving model with changes rates {}".format(rateDef))
             self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
@@ -92,6 +95,7 @@ class PEPAModel():
 
     def generate_dots(self):
         """ Generates dot files to browse with e.g. xdot """
+        self.log.info("Generating dot files")
         self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph)
         for comp in set(self.ss.components):
