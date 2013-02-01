@@ -37,7 +37,7 @@ if __name__ == "__main__":
     sol_args.add_argument("-s", "--solver", action="store", dest="solver",type=str,  choices=['direct', 'sparse'], help="choose solver type DEFAULT: sparse", default="sparse")
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
-    output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequential component.WARNING: this can be very memory consuming when the state space is big", action="store_true", dest="gendots")
+    output_args.add_argument("-gd", "--generate_dots", help="generate a graphviz dot file for every sequential component in a GENDOTS folder.WARNING: this can be very memory consuming when the state space is big", action="store", dest="gendots", type=str)
     output_args.add_argument("-st", "--steady", help="print steady state probability vector", action="store_true")
     output_args.add_argument("-th", "--performance", help="print throughoutput of actions", action="store_true", dest="top")
     output_args.add_argument("-tr", "--transient", help="print throughoutput of actions", action="store", dest="trantime", type=int)
@@ -52,16 +52,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     pargs = {"file": args.file, "solver" : args.solver}
-
     if args.gendots:
         pm = PEPAModel(pargs)
         import os
-        if os.path.isdir("dots"):
+        if os.path.isdir(args.gendots):
             pass
         else:
-            os.makedirs("dots")
+            os.makedirs(args.gendots)
         pm.derive()
-        pm.generate_dots()
+        pm.generate_dots(args.gendots)
         sys.exit(0)
 
     # mutual exclusion

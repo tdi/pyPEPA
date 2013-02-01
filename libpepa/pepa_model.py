@@ -93,11 +93,11 @@ class PEPAModel():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
 
-    def generate_dots(self):
-        """ Generates dot files to browse with e.g. xdot """
+    def generate_dots(self, out_dir = "dots"):
+        """ Generates dot files to browse with e.g. xdot to a specified directory"""
         self.log.info("Generating dot files")
         self._generate_components()
-        visitor = ComponentStateVisitor(self.tw.graph)
+        visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
 
