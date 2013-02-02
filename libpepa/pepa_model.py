@@ -15,13 +15,9 @@ class PEPAModel():
         - system equation
         TODO: keyword arguments
     """
-    def __init__(self, args):
-        """ Create PEPA model instance and fill the fields
-
-        Keyword arguments:
-        modelfile --- path to the model file
-        """
-        self.args = args
+    def __init__(self, **kwargs):
+        """ Create PEPA model instance and fill the fields """
+        self.args = kwargs
         self.processes = {}
         self.systemeq = None
         self.rate_definitions = {}
@@ -31,8 +27,8 @@ class PEPAModel():
         self.ss = None
         self.log = init_log()
         self._solver = None
-        self.log.info("Starting got args {}".format(args))
-        self._parse_read_model(args["file"])
+        self.log.info("Starting got args {}".format(kwargs))
+        self._parse_read_model(kwargs["file"])
 
     def get_rates(self):
         return self.rate_definitions
@@ -88,7 +84,7 @@ class PEPAModel():
         if rateDef is None:
             self.tw = PEPATreeWalker(self.rate_definitions)
         else:
-            self.log.info("Deriving model with changes rates {}"
+            self.log.info("Deriving model with changed rates {}"
                           .format(rateDef))
             self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
@@ -97,10 +93,11 @@ class PEPAModel():
 
     def generate_dots(self, out_dir = "dots"):
         """
-        Generates dot files to browse with e.g. xdot to a
-        specified directory
+        Generates dot files to a specified directory.
+        The best application to browse dot files interactively is xdot.
+        pip install xdot
         """
-        self.log.info("Generating dot files")
+        self.log.info("Generating dot files in: %s" % out_dir)
         self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
@@ -110,12 +107,12 @@ class PEPAModel():
         """
         Generates state space graphs for every component
         in the model into components dict
-        TODO: wywalic, uzywane jedynie do testow oraz generowania dotow
         """
         visitor = ComponentStateVisitor(self.tw.graph)
         for comp in set(self.ss.components):
             self.components[comp.data] = ComponentSSGraph(comp.data)
-            self.components[comp.data] = visitor.generate_ss(comp.data, self.components[comp.data])
+            self.components[comp.data] = \
+                     visitor.generate_ss(comp.data, self.components[comp.data])
 
 
 

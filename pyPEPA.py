@@ -89,7 +89,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     pargs = {"file": args.file, "solver" : args.solver}
     if args.gendots:
-        pm = PEPAModel(pargs)
+        pm = PEPAModel(**pargs)
         import os
         if os.path.isdir(args.gendots):
             pass
