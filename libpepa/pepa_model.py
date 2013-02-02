@@ -73,7 +73,8 @@ class PEPAModel():
             modelfile = f.read()
         try:
             parser = PEPAParser()
-            (self.processes, self.rate_definitions, self.systemeq) = parser.parse(modelfile)
+            (self.processes, self.rate_definitions,
+            self.systemeq) = parser.parse(modelfile)
         except Exception as e:
             raise
             self.log.debug(e)
@@ -87,14 +88,18 @@ class PEPAModel():
         if rateDef is None:
             self.tw = PEPATreeWalker(self.rate_definitions)
         else:
-            self.log.info("Deriving model with changes rates {}".format(rateDef))
+            self.log.info("Deriving model with changes rates {}"
+                          .format(rateDef))
             self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
 
     def generate_dots(self, out_dir = "dots"):
-        """ Generates dot files to browse with e.g. xdot to a specified directory"""
+        """
+        Generates dot files to browse with e.g. xdot to a
+        specified directory
+        """
         self.log.info("Generating dot files")
         self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
