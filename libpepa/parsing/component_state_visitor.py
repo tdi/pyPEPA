@@ -38,11 +38,13 @@ class ComponentStateVisitor():
         transitions = self.graph.ss[node].transitions
         for tran in transitions:
             if tran.action in self.graph.shared_actions:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + \
-                " [label=\"(" + tran.action + "," + tran.rate + ")\" \
-                fontsize=10, fontcolor=red]\n"
+                self.dot += "\"%s\" -> \"%s\" [label=\"(%s,%s)\"" \
+                            "fontsize=10]\n" % (node,tran.to,
+                                                tran.action, str(tran.rate))
             else:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + " [label=\"(" + tran.action + "," + str(tran.rate) + ")\" fontsize=10]\n"
+                self.dot += "\"%s\" -> \"%s\" [label=\"(%s,%s)\"" \
+                            "fontsize=10]\n" % (node, tran.to,
+                                                tran.action, str(tran.rate))
             if tran.to not in self.visited:
                 self._visit_dot(tran.to)
 
