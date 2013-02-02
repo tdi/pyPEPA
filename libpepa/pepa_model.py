@@ -98,21 +98,15 @@ class PEPAModel():
         pip install xdot
         """
         self.log.info("Generating dot files in: %s" % out_dir)
-        self._generate_components()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
+        for comp in set(self.ss.components):
+            comptmp = ComponentSSGraph(comp.data)
+            self.components[comp.data] = visitor.generate_ss(comp.data,
+                                                             comptmp)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
 
-    def _generate_components(self):
-        """
-        Generates state space graphs for every component
-        in the model into components dict
-        """
-        visitor = ComponentStateVisitor(self.tw.graph)
-        for comp in set(self.ss.components):
-            self.components[comp.data] = ComponentSSGraph(comp.data)
-            self.components[comp.data] = \
-                     visitor.generate_ss(comp.data, self.components[comp.data])
+
 
 
 

@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 sys.exit(1)
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
-            pm = PEPAModel(pargs)
+            pm = PEPAModel(**pargs)
             pm.derive()
             if args.actionth2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
@@ -141,13 +141,13 @@ if __name__ == "__main__":
 
 
     if args.steady or args.top or args.util:
-        pm = PEPAModel(pargs)
+        pm = PEPAModel(**pargs)
         pm.derive()
         pm.steady_state()
         print("Statespace of {} has {} states \n".format(args.file,
               len(pm.get_steady_state_vector() )))
     if args.trantime:
-        pm = PEPAModel(pargs)
+        pm = PEPAModel(**pargs)
         pm.derive()
         pm.transient(10)
         print("transient")
