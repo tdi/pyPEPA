@@ -7,7 +7,7 @@ __version__ = "0.3"
 
 from pprint import pprint
 from libpepa import __version__ as libpepa_version
-from libpepa.pepa_model import PEPAModel
+from libpepa import PEPAModel
 from libpepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
