@@ -5,7 +5,7 @@ import glob
 import os
 import sys
 from pepa_model import PEPAModel
-from experiments.experiment import rate_experiment
+from libpepa.experiments.experiment import rate_experiment
 import multiprocessing
 from math import ceil
 
