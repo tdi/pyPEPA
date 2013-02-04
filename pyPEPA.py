@@ -140,7 +140,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
 
-    if args.steady or args.top or args.util:
+    if args.steady or args.top:# or args.util:
         pm = PEPAModel(**pargs)
         pm.derive()
         pm.steady_state()
@@ -149,8 +149,9 @@ if __name__ == "__main__":
     if args.trantime:
         pm = PEPAModel(**pargs)
         pm.derive()
-        pm.transient(10)
-        print("transient")
+        tr = pm.transient(0,int(args.trantime))
+        print("Transient analysis from time %d to %d\n" % (0, args.trantime))
+        print(tr)
     if args.steady:
         print("Steady state vector")
         _pretty_print_vector(pm.get_steady_state_vector(),

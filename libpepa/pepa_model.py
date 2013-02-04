@@ -46,7 +46,7 @@ class PEPAModel():
     def transient(self, timestop, timestart=0):
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
-        self._solver.solve_transient(timestop, timestart)
+        return self._solver.solve_transient(timestop, timestart)
 
     def get_steady_state_vector(self):
         return self._solver.get_steady_state_vector()
