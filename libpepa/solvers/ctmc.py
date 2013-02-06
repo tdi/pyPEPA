@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import numpy
 import scipy
 from scipy.sparse import lil_matrix
@@ -22,8 +21,10 @@ def ctmc_sparse(Q, size):
     return spsolve(Q.transpose(),b)
 
 def ctmc_transient(Q, size, tstart, tstop):
+    b = numpy.zeros(len(Q), dtype=numpy.float64)
+    b[0] = 1
     Qnew = expm(Q*tstop)
-    return Qnew
+    return Qnew[0]
 
 def vector_mult(v1, v2):
     return float(numpy.vdot(numpy.array(v1), numpy.array(v2)))
@@ -61,7 +62,6 @@ def create_matrix(res):
             rowsum += rate
         Q[ res[key][1]-1 , res[key][1]-1] = -rowsum
         rowsum = 0.0
-    # print(Q)
     return Q
 
 

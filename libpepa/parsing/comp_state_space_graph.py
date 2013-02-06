@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 class ComponentState():
 
     def __init__(self):
