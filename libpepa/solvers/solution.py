@@ -16,6 +16,7 @@ class CTMCSolution():
         (self._res, self._actset) = self._ss.derive()
         matrix = create_matrix(self._res)
         a = ctmc_transient(matrix, len(self._res),start, stop)
+        self._vect_names = self._prepare_new_vector(self._res)
         return a
 
     def solve_steady(self):
