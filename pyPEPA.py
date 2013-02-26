@@ -29,16 +29,20 @@ def _pretty_print_vector(vect, vect_names):
 
 if __name__ == "__main__":
 
-    logger = init_log()
-    logger.info("ratatatata")
 
     parser = argparse.ArgumentParser(description="pyPEPA v{}, libpepa v{},"
                                      " author {}, {}".format(__version__,
                                      libpepa_version,__author__, __email__))
+    gen_args = parser.add_argument_group("General", "General arguments")
+    gen_args.add_argument("--log", action="store", dest="loglevel", 
+                          choices=["DEBUG", "INFO", "ERROR"], 
+                          help="logging level",
+                          default="INFO", type=str)
     sol_args = parser.add_argument_group("Solution",
                                          "Solution related commands")
     exp_args = parser.add_argument_group("Experimentations",
                                          "Experimentations")
+
     sol_args.add_argument("-s", "--solver", action="store",
                           dest="solver",type=str,
                           choices=['direct', 'sparse'],
@@ -87,6 +91,7 @@ if __name__ == "__main__":
                           metavar="action name")
 
     args = parser.parse_args()
+    logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver}
     if args.gendots:
         pm = PEPAModel(**pargs)
