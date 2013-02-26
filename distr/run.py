@@ -9,11 +9,11 @@ from math import ceil
 import multiprocessing
 rid = 1
 
-workers = [ ('lab-sec-1', 6000),
- 	    ('lab-sec-2', 6000),
- 	    ('lab-sec-3', 6000),
-            ]
-
+# workers = [ ('lab-sec-1', 6000),
+#  	    ('lab-sec-2', 6000),
+ 	    # ('lab-sec-3', 6000),
+            # ]
+workers = [('localhost', 8000)]
 config = {"timing":1}
 
 
