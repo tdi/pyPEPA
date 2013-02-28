@@ -14,6 +14,7 @@ from math import ceil
 clients = set()
 models = list()
 doit = dict()
+
 class WorkerServer(StreamServer):
 
     def __init__(self, listener, **kwargs):
@@ -30,6 +31,7 @@ class WorkerServer(StreamServer):
         header = pepa_prot.extract_header(header_bytes)
 
         print ("Length of data %i, protocol version %i" %(header[0], header[1]))
+
         if not pepa_prot.check_version(header[1]):
             print("Protocol mismatch")
 
@@ -65,7 +67,6 @@ def experiment(task, name, queue):
     curproc = multiprocessing.current_process().name
     print("Process %s started"% curproc)
     actionth = task["actionth"]
-    
     model = "models/%s" % data["data"]
     rate = data["rate"]
     action = data["action"]
@@ -75,7 +76,6 @@ def experiment(task, name, queue):
         pm = PEPAModel({"file": model, "solver": "sparse"})
         pm.derive()
         result = rate_experiment(rate, values, action, pm)
-        # return result
         return "ok"
     else:
         cpus = multiprocessing.cpu_count()
@@ -94,8 +94,6 @@ def experiment(task, name, queue):
         return vals
 
 
-
-
 def solve_ss(data):
     print("Solving %s" % data)
     model = "models/%s" % data["data"]
@@ -103,7 +101,7 @@ def solve_ss(data):
     pm.derive()
     pm.steady_state()
     ss = pm.get_steady_state_vector()
-    return ss
+    return "ok" if ss
 
 def solve_th(data):
     print("Solving %s" % data)
@@ -112,7 +110,7 @@ def solve_th(data):
     pm.derive()
     pm.steady_state()
     th = pm.get_throughoutput()
-    return th
+    return "ok" if th
 
 def get_models():
     global models
@@ -121,7 +119,6 @@ def get_models():
     models = glob.glob("*.pepa")
     os.chdir(cwd)
     print(cwd)
-
 
 if __name__ == '__main__':
 
@@ -142,6 +139,3 @@ if __name__ == '__main__':
     gevent.signal(signal.SIGTERM, server.close)
     gevent.signal(signal.SIGINT, server.close)
     server.serve_forever()
-    
-    # gevent.
-    # server.serve_forever()

@@ -20,7 +20,6 @@ config = {"timing":1}
 def _sendjob(dat,w, queue):
 	queue.put(send_recv(w,dat))
 	return
-    
 
 def expproc(data, ran):
     rid = 1000
@@ -37,14 +36,11 @@ def expproc(data, ran):
         dat["values"] = job
 	p = multiprocessing.Process(target=_sendjob, args=(dat, w,queue))
 	p.start()
-#        jobs.append(gevent.spawn(send_recv, w, dat))
-#    gevent.joinall(jobs)
     for w in range(len(workers)):
-    	result = queue.get()
+        result = queue.get()
     if "timing" in config:
         stop = time.time() - start
     return "%s,%d,%s\n" % ( model, ran, stop)
-
 
 
 def exp(data, ran):
