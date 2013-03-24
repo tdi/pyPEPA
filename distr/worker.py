@@ -63,6 +63,21 @@ def _carousel(sequence, m):
     n = float(len(sequence))
     return [sequence[((i+0)*int(n/m)):((i+1)*int(ceil(n/m)))] for i in range(m)]
 
+
+def _job(task, name, queue):
+    curproc = multiprocessing.current_process().name
+    print("Process %s started"% curproc)
+    actionth = task["actionth"]
+    rate = task["rate"]
+    values = task["values"]
+    print("Process %s Calculating %d values " % (curproc, len(values)))
+    pargs = { "file": task["model"], "solver": "sparse" }
+    pm = PEPAModel(pargs)
+    pm.derive()
+    result = rate_experiment(rate, values, actionth, pm)
+    queue.put(result)
+
+
 def experiment(task, name, queue):
     curproc = multiprocessing.current_process().name
     print("Process %s started"% curproc)
@@ -94,6 +109,8 @@ def experiment(task, name, queue):
         return vals
 
 
+
+
 def solve_ss(data):
     print("Solving %s" % data)
     model = "models/%s" % data["data"]
@@ -101,7 +118,7 @@ def solve_ss(data):
     pm.derive()
     pm.steady_state()
     ss = pm.get_steady_state_vector()
-    return "ok" if ss
+    return "ok" if ss else "error"
 
 def solve_th(data):
     print("Solving %s" % data)
@@ -110,7 +127,7 @@ def solve_th(data):
     pm.derive()
     pm.steady_state()
     th = pm.get_throughoutput()
-    return "ok" if th
+    return "ok" if th else "error"
 
 def get_models():
     global models
@@ -133,7 +150,7 @@ if __name__ == '__main__':
     else:
         print("No models directory")
         exit(1)
-    port = int(sys.argv[1])
+    port = int(sys.argv[1]) if sys.argv[1] else 8000
     server = WorkerServer(('0.0.0.0', port))
     print ('Starting server on port %d' % port)
     gevent.signal(signal.SIGTERM, server.close)

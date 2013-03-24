@@ -124,7 +124,7 @@ class PEPAParser(object):
         first = CoopNode("||", "coop")
         first.cooptype = "par"
         last = first
-        for i in list(range(2, num+1)):
+        for i in range(2, num+1):
             nl = ProcdefNode(procname, "procdef")
             if i == num:
                 nr = ProcdefNode(procname, "procdef")

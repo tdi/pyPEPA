@@ -94,7 +94,6 @@ def send_recv( address, dat):
         print("Protocol mismatch")
         exit(1)
     #TODO: zmienic w petelke
-    print(header[0])
     data_bytes = sock.recv(header[0])
     sock.shutdown(socket.SHUT_RDWR)
     sock.close()

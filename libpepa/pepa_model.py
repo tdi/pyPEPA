@@ -1,11 +1,11 @@
 #/usr/bin/env python
 import sys
 from libpepa.logger import init_log
-from parsing.pepa_treewalker import PEPATreeWalker
-from parsing.comp_state_space_graph import ComponentSSGraph
-from parsing.parser import PEPAParser
-from solvers.solution import CTMCSolution
-from parsing.component_state_visitor import ComponentStateVisitor
+from libpepa.parsing.pepa_treewalker import PEPATreeWalker
+from libpepa.parsing.comp_state_space_graph import ComponentSSGraph
+from libpepa.parsing.parser import PEPAParser
+from libpepa.solvers.solution import CTMCSolution
+from libpepa.parsing.component_state_visitor import ComponentStateVisitor
 
 class PEPAModel():
     """
@@ -72,9 +72,9 @@ class PEPAModel():
             (self.processes, self.rate_definitions,
             self.systemeq) = parser.parse(modelfile)
         except Exception as e:
-            raise
             self.log.debug(e)
             print("Parsing error : " + str(e) )
+            raise
             sys.exit(1)
 
     def _prepare_components(self, rateDef=None):

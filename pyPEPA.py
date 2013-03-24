@@ -91,6 +91,7 @@ if __name__ == "__main__":
                           metavar="action name")
 
     args = parser.parse_args()
+
     logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver}
     if args.gendots:
