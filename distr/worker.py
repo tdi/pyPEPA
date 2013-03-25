@@ -82,6 +82,7 @@ def experiment(task, name, queue):
     curproc = multiprocessing.current_process().name
     print("Process %s started"% curproc)
     actionth = task["actionth"]
+    
     model = "models/%s" % data["data"]
     rate = data["rate"]
     action = data["action"]
@@ -91,6 +92,7 @@ def experiment(task, name, queue):
         pm = PEPAModel({"file": model, "solver": "sparse"})
         pm.derive()
         result = rate_experiment(rate, values, action, pm)
+        # return result
         return "ok"
     else:
         cpus = multiprocessing.cpu_count()
@@ -137,6 +139,7 @@ def get_models():
     os.chdir(cwd)
     print(cwd)
 
+
 if __name__ == '__main__':
 
     doit = {"list_models" : (lambda x: models),
@@ -156,3 +159,6 @@ if __name__ == '__main__':
     gevent.signal(signal.SIGTERM, server.close)
     gevent.signal(signal.SIGINT, server.close)
     server.serve_forever()
+    
+    # gevent.
+    # server.serve_forever()
