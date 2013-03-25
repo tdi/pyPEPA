@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 class ComponentState():
 
     def __init__(self):
@@ -33,13 +32,13 @@ class ComponentSSGraph():
         self.shared = []
 
     def __str__(self):
-        return "Component " + self.name + " " + len(self.ss.keys())
+        return "Component %s %d" % (self.name, len(self.ss.keys()))
 
 
 class ModelSSGraph():
     """
-    self.ss is a hash table, the keys are state names e.g. P1 or resolved where not possible -> ComponenStates
-
+    self.ss is a hash table, the keys are state names
+    e.g. P1 or resolved where not possible -> ComponenStates
     """
     def __init__(self):
         self.name = ""

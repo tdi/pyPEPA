@@ -4,3 +4,4 @@ __licence__ = "GNU General Public License version 3"
 __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
 __version__ = "20130130b"
 
+from libpepa.pepa_model import PEPAModel

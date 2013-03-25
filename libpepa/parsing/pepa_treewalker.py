@@ -38,7 +38,7 @@ class PEPATreeWalker():
     def _name_subtree(self,node):
         """ Names the subtree
         """
-        current = ""
+        # current = ""
         lcurrent,rcurrent = "",""
 
         if node.left is not None:
@@ -55,8 +55,8 @@ class PEPATreeWalker():
                 rcurrent += ")"
             else:
                 rcurrent += self._name_subtree(node.right)
-        current = lcurrent + node.data + rcurrent
-        return current
+        return lcurrent + node.data + rcurrent
+        # return current
 
 
     def derive_systemeq(self, node):
@@ -88,7 +88,6 @@ class PEPATreeWalker():
             node.length = 1
             node.offset = len(self.components)
             self.components.append(c)
-            #self.components.append(node)
         if node.asttype != "procdef":
             c = Operator()
             c.actionset = list(node.actionset) if node.actionset is not None else []
@@ -163,7 +162,6 @@ class PEPATreeWalker():
                 trans.var_rate = node.var_rate
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
-            # self.graph.ss[self._visitstack[-1]].apparent_rates[node.action] = node.rate
             self.log.info("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
             if node.resolved not in self.graph.ss:

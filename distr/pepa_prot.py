@@ -1,6 +1,5 @@
 import  cPickle as pickle
 import struct
-# prepare_to_send = lambda x: struct.pack('!l',len(x)) + x
 
 PROT_VERSION = 1
 PICKLE_PROTOCOL = 2

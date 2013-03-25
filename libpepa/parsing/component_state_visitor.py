@@ -2,10 +2,11 @@
 
 class ComponentStateVisitor():
 
-    def __init__(self, graph):
+    def __init__(self, graph, output_dir = "dots"):
         self.graph = graph
         self.visited = []
         self.dot = ""
+        self.out_dir = output_dir
 
     def generate_ss(self, node, comp):
         self.visited = []
@@ -25,8 +26,8 @@ class ComponentStateVisitor():
 
 
     def get_dot(self, node):
-        with open("dots/"+node + ".dot", "w") as f:
-            self.dot = "digraph " + node + "{\n"
+        with open(self.out_dir + "/"+node + ".dot", "w") as f:
+            self.dot = "digraph %s {\n" % (node)
             self._visit_dot(node)
             self.dot += "}\n"
             f.write(self.dot)
@@ -37,11 +38,13 @@ class ComponentStateVisitor():
         transitions = self.graph.ss[node].transitions
         for tran in transitions:
             if tran.action in self.graph.shared_actions:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + \
-                " [label=\"(" + tran.action + "," + tran.rate + ")\" \
-                fontsize=10, fontcolor=red]\n"
+                self.dot += "\"%s\" -> \"%s\" [label=\"(%s,%s)\"" \
+                            "fontsize=10]\n" % (node,tran.to,
+                                                tran.action, str(tran.rate))
             else:
-                self.dot += "\"" + node + "\" -> \"" + tran.to + "\"" + " [label=\"(" + tran.action + "," + tran.rate + ")\" fontsize=10]\n"
+                self.dot += "\"%s\" -> \"%s\" [label=\"(%s,%s)\"" \
+                            "fontsize=10]\n" % (node, tran.to,
+                                                tran.action, str(tran.rate))
             if tran.to not in self.visited:
                 self._visit_dot(tran.to)
 
