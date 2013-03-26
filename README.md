@@ -5,8 +5,8 @@ pyPEPA is a PEPA library and a toolset for Performance Evaluation Process Algebr
 Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax, i.e. it does not suport hiding operator (e.g. `P\{a,b,}` ), does not support rates as mathematical expressions (`r= 2*x+y`), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
 All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
 
-About
-=====
+**Warning: pyPEPA is under development, this is a beta software**
+
 
 pyPEPA consist of three parts:
 
@@ -108,6 +108,38 @@ pyPEPA allows you to visualize all PEPA components by specifying `-gd` switch. T
 Finally pyPEPA can provide us with a tool for experimentation with rates and actions. Let's check how throughtput of `askManager` action changes when `rateReset` changes from 1 to 50 with step 1. The default result of this command will be a matplotlib graph. You can specify other output options with `-f` argument: graph, console, csv. 
 
     pyPEPA.py --varrate rateReset --range "1,50,1" --actionth askManager -f graph models/bankscenario.pepa
+
+
+![bank example](https://raw.github.com/tdi/pyPEPA/dev/doc/bankexample.png)
+
+
+Instead of --range you can specify `--list ` with a custom comman delimited list of values. 
+
+
+TODO
+====
+
+###Functional
+
+ 1. Implement rate mathematical expressions with functional rates
+ 2. Implement passage time analysis
+ 3. Implememt hiding operator
+ 4. Implement 3d graphs and experiments
+ 5. Implement Kronecker state space and aggrgation
+ 6. Implement genearlised communication PEPA (genPEPA) by Mirco Tribastone
+ 7. Add model manipulation langaue for reducers
+ 8. Add stochastic probes
+ 9. Add distributed version of BU algorithm
+
+###Non functional
+
+ 1. Optimize optimize optimize
+
+
+
+
+
+
 
 
 
