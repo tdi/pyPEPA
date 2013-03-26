@@ -137,7 +137,11 @@ TODO
 
 
 
+Licence and credits
+===================
 
+Copyright (c) Dariusz Dwornikowski and Poznań University of Technology. 
+Distributed under the Apache Commons 2.0. 
 
 
 
