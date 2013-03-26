@@ -1,7 +1,7 @@
 pyPEPA
 ======
 
-pyPEPA is a PEPA library and a toolset for Performance Evaluation Process Algebra (PEPA) by Jane
+pyPEPA is a PEPA library and a toolset for [Performance Evaluation Process Algebra](http://www.dcs.ed.ac.uk/pepa/http://www.dcs.ed.ac.uk/pepa/) (PEPA) by Jane
 Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax, i.e. it does not suport hiding operator (e.g. `P\{a,b,}` ), does not support rates as mathematical expressions (`r= 2*x+y`), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
 All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
 
@@ -126,7 +126,7 @@ TODO
  3. Implememt hiding operator
  4. Implement 3d graphs and experiments
  5. Implement Kronecker state space and aggrgation
- 6. Implement genearlised communication PEPA (genPEPA) by Mirco Tribastone
+ 6. Implement genearlised communication PEPA [genPEPA][genpepa] by Mirco Tribastone
  7. Add model manipulation langaue for reducers
  8. Add stochastic probes
  9. Add distributed version of BU algorithm
@@ -145,6 +145,7 @@ Distributed under the Apache Commons 2.0.
 
 
 
+[genpepa]: http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646 "Generalised Communication for Interacting Agents"
 
 
     
