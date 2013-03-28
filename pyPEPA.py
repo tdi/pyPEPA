@@ -60,7 +60,7 @@ if __name__ == "__main__":
                              choices=["graph", "console", "csv"],
                              help="format for -st -th -varrate", default="console")
     output_args.add_argument("-o", "--output", dest="output", type=str,
-                               action=store,
+                               action="store",
                               help="output file valid when format cvs")
 
     exp_args.add_argument("-vr", "--varrate",
@@ -148,10 +148,17 @@ if __name__ == "__main__":
         pretty_print_vector(tr, pm.get_state_names())
     if args.steady:
         print("Steady state vector")
-        pretty_print_vector(pm.get_steady_state_vector(),
-                             pm.get_state_names(),
-                             fmt=args.format,
-                             )
+        if args.output:
+            pretty_print_vector(pm.get_steady_state_vector(),
+                                 pm.get_state_names(),
+                                 fmt=args.format,
+                                 outfile=args.output
+                                 )
+        else:
+            pretty_print_vector(pm.get_steady_state_vector(),
+                                 pm.get_state_names(),
+                                 fmt=args.format,
+                                 )
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         pretty_print_performance(pm.get_throughoutput())
