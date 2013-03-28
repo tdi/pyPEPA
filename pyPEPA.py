@@ -8,6 +8,7 @@ __version__ = "0.3"
 from pprint import pprint
 from libpepa import __version__ as libpepa_version
 from libpepa import PEPAModel
+from libpepa.utils import pretty_print_vector, pretty_print_performance
 from libpepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
@@ -15,15 +16,6 @@ from libpepa.logger import init_log
 import argparse
 import sys
 
-
-def _pretty_print_performance(actset):
-    for perf in actset:
-        print("{0:<40} {1:>10}".format(perf[0],perf[1]) )
-
-def _pretty_print_vector(vect, vect_names):
-    print("Using ; delimiter")
-    for i, prob in enumerate(vect):
-        print("{};{};{}".format(i+1, vect_names[i], vect[i]))
 
 if __name__ == "__main__":
 
@@ -33,9 +25,9 @@ if __name__ == "__main__":
                                      libpepa_version,__author__, __email__))
     gen_args = parser.add_argument_group("General", "General arguments")
     gen_args.add_argument("--log", action="store", dest="loglevel", 
-                          choices=["DEBUG", "INFO", "ERROR"], 
+                          choices=["DEBUG", "INFO", "ERROR", "NONE"], 
                           help="logging level",
-                          default="INFO", type=str)
+                          default="NONE", type=str)
     sol_args = parser.add_argument_group("Solution",
                                          "Solution related commands")
     exp_args = parser.add_argument_group("Experimentations",
@@ -91,7 +83,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
-    logger.disabled= True
     pargs = {"file": args.file, "solver" : args.solver}
     if args.gendots:
         pm = PEPAModel(**pargs)
@@ -154,13 +145,13 @@ if __name__ == "__main__":
         pm.derive()
         tr = pm.transient(0,int(args.trantime))
         print("Transient analysis from time %d to %d\n" % (0, args.trantime))
-        _pretty_print_vector(tr, pm.get_state_names())
+        pretty_print_vector(tr, pm.get_state_names())
     if args.steady:
         print("Steady state vector")
-        _pretty_print_vector(pm.get_steady_state_vector(),
+        pretty_print_vector(pm.get_steady_state_vector(),
                              pm.get_state_names())
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
-        _pretty_print_performance(pm.get_throughoutput())
+        pretty_print_performance(pm.get_throughoutput())
 
 
