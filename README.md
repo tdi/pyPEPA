@@ -40,7 +40,7 @@ For the current version I recommend installing in a virtualenv.
 pyPEPA
 ======
 
-### Simple usage
+### Basic arguments
 
 Show help command:
 
@@ -49,7 +49,10 @@ Show help command:
 Set logging level (the default is NONE):
 
     ./pyPEPA --log {DEBUG, INFO, ERROR, NONE}
-    
+   
+### Calculations
+
+
 Calculate steady state for bank scenario (http://www.dcs.ed.ac.uk/pepa/group/tmp-downloads/unversioned-pepa/uk.ac.ed.inf.pepa/examples/bankscenario.pepa). The putput is by default directed to your terminal. 
 
     ./pyPEPA -st models/bankscenario.pepa
@@ -114,6 +117,16 @@ Finally pyPEPA can provide us with a tool for experimentation with rates and act
 
 
 Instead of `--range` you can specify `--list ` with a custom comma delimited list of values. 
+
+### Formatting
+
+You can specify formats of `-st`, `-th` and `--varrate` with a `--format` option. 
+Currently we support CSV (although `;` not comma delimited), console (the default) and graph (only
+for varrate experiments). Additionally you can specify `-o|--output` option with a file argument to
+  specify where to save the CSV. 
+
+    ./pyPEPA -st models/bankscenario.pepa -f csv -o bank_steady.csv
+
 
 
 TODO
