@@ -144,23 +144,26 @@ if __name__ == "__main__":
               len(pm.get_steady_state_vector() )))
     if args.trantime:
         tr = pm.transient(0,int(args.trantime))
-        print("Transient analysis from time %d to %d\n" % (0, args.trantime))
-        pretty_print_vector(tr, pm.get_state_names())
+        print("Transient analysis from time %d to %d" % (0, args.trantime))
+        args.output = "{}-transient.csv".format(pm.name)
+        pretty_print_vector(tr,
+                             pm.get_state_names(),
+                             fmt=args.format,
+                             outfile=args.output
+                             )
     if args.steady:
         print("Steady state vector")
-        if args.output:
-            pretty_print_vector(pm.get_steady_state_vector(),
-                                 pm.get_state_names(),
-                                 fmt=args.format,
-                                 outfile=args.output
-                                 )
-        else:
-            pretty_print_vector(pm.get_steady_state_vector(),
-                                 pm.get_state_names(),
-                                 fmt=args.format,
-                                 )
+        args.output = "{}-steady.csv".format(pm.name)
+        pretty_print_vector(pm.get_steady_state_vector(),
+                             pm.get_state_names(),
+                             fmt=args.format,
+                             outfile=args.output
+                             )
     if args.top:
-        print("Throuhoutput (successful action completion in one time unit)\n")
-        pretty_print_performance(pm.get_throughoutput())
+        print("Throuhoutput (successful action completion in one time unit)")
+        print("Output:{}".format(args.format))
+        args.output = "{}-throughput.csv".format(pm.name)
+        pretty_print_performance(pm.get_throughoutput(), fmt=args.format,
+                                                         outfile=args.output)
 
 

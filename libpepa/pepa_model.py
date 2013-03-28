@@ -6,6 +6,7 @@ from libpepa.parsing.comp_state_space_graph import ComponentSSGraph
 from libpepa.parsing.parser import PEPAParser
 from libpepa.solvers.solution import CTMCSolution
 from libpepa.parsing.component_state_visitor import ComponentStateVisitor
+import os
 
 class PEPAModel():
     """
@@ -28,6 +29,7 @@ class PEPAModel():
         self.log = init_log()
         self._solver = None
         self.log.info("Starting got args {}".format(kwargs))
+        self.name = os.path.basename(kwargs["file"])
         self._parse_read_model(kwargs["file"])
 
     def get_rates(self):

@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 
-def pretty_print_performance(actset, fmt="console"):
-    for perf in actset:
-        if fmt == "console":
+def pretty_print_performance(actset, fmt="console", outfile="throughoutput.csv"):
+    if fmt == "console" or fmt == "graph":
+        for perf in actset:
             print("{0:<40} {1:>10}".format(perf[0],perf[1]) )
+    elif fmt == "csv":
+        with open(outfile, "w") as f:
+            f.write("Rate name;Rate throughput\n")
+            for perf in actset:
+                f.write("{};{}\n".format(perf[0],perf[1]))
 
-def pretty_print_vector(vect, vect_names, fmt="console", outfile="steady.state"):
+
+def pretty_print_vector(vect, vect_names, fmt="console", outfile="steady.csv"):
     fmt == "console" and print("Using ; delimiter")
     if fmt == "console" or fmt == "graph":
         for i, prob in enumerate(vect):
