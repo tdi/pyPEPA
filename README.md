@@ -40,16 +40,19 @@ For the current version I recommend installing in a virtualenv.
 pyPEPA
 ======
 
-### Simple usage
+### Basic arguments
 
 Show help command:
 
      ./pyPEPA -h
 
-Set logging level (default is NONE):
+Set logging level (the default is NONE):
 
     ./pyPEPA --log {DEBUG, INFO, ERROR, NONE}
-    
+   
+### Calculations
+
+
 Calculate steady state for bank scenario (http://www.dcs.ed.ac.uk/pepa/group/tmp-downloads/unversioned-pepa/uk.ac.ed.inf.pepa/examples/bankscenario.pepa). The putput is by default directed to your terminal. 
 
     ./pyPEPA -st models/bankscenario.pepa
@@ -113,7 +116,17 @@ Finally pyPEPA can provide us with a tool for experimentation with rates and act
 ![bank example](https://raw.github.com/tdi/pyPEPA/dev/doc/bankexample.png)
 
 
-Instead of --range you can specify `--list ` with a custom comman delimited list of values. 
+Instead of `--range` you can specify `--list ` with a custom comma delimited list of values. 
+
+### Formatting
+
+You can specify formats of `-st`, `-th` and `--varrate` with a `--format` option. 
+Currently we support CSV (although `;` not comma delimited), console (the default) and graph (only
+for varrate experiments). Additionally you can specify `-o|--output` option with a file argument to
+  specify where to save the CSV. 
+
+    ./pyPEPA -st models/bankscenario.pepa -f csv -o bank_steady.csv
+
 
 
 TODO
@@ -123,11 +136,11 @@ TODO
 
  1. Implement rate mathematical expressions with functional rates
  2. Implement passage time analysis
- 3. Implememt hiding operator
+ 3. Implement hiding operator
  4. Implement 3d graphs and experiments
- 5. Implement Kronecker state space and aggrgation
- 6. Implement genearlised communication PEPA [genPEPA][genpepa] by Mirco Tribastone
- 7. Add model manipulation langaue for reducers
+ 5. Implement Kronecker state space and aggregation
+ 6. Implement generalised communication PEPA [genPEPA][genpepa] by Mirco Tribastone
+ 7. Add model manipulation language for reducers
  8. Add stochastic probes
  9. Add distributed version of BU algorithm
 
