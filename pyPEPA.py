@@ -21,11 +21,9 @@ def _pretty_print_performance(actset):
         print("{0:<40} {1:>10}".format(perf[0],perf[1]) )
 
 def _pretty_print_vector(vect, vect_names):
-    i = 1
     print("Using ; delimiter")
-    for prob in vect:
-        print("{};{};{}".format(i, vect_names[i-1], vect[i-1]))
-        i = i + 1
+    for i, prob in enumerate(vect):
+        print("{};{};{}".format(i+1, vect_names[i], vect[i]))
 
 if __name__ == "__main__":
 
@@ -133,9 +131,8 @@ if __name__ == "__main__":
                     with open("varrate-thr-{}-{}.csv"
                               .format(ratename, args.actionth), "w") as exp_f:
                         exp_f.write("{}, {}\n".format(ratename, args.actionth))
-                        x = result[0]
-                        y = result[1]
-                        for i in list(range(0, len(x))):
+                        x,y  = result[0], result[1]
+                        for i in range(0, len(x)):
                             exp_f.write("{}, {}\n".format(x[i], y[i]))
             else:
                 result = rate_experiment_two(ratename, ran, args.actionth,
@@ -165,7 +162,5 @@ if __name__ == "__main__":
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         _pretty_print_performance(pm.get_throughoutput())
-    # if args.util:
-    #     print("NOT IMPLEMENTED YET")
 
 
