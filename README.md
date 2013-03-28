@@ -1,10 +1,8 @@
 pyPEPA
 ======
 
-![logo](http://www.cs.put.poznan.pl/ddwornikowski/data/uploads/pypepa.png)
-
-pyPEPA is a PEPA library and a toolset for Performance Evaluation Process Algebra (PEPA) by Jane
-Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax, i.e. it does not suport hiding operator (e.g. `P\{a,b,}` ), does not support rates as mathematical expressions (`r= 2*x+y`), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
+pyPEPA is a PEPA library and a toolset for [Performance Evaluation Process Algebra](http://www.dcs.ed.ac.uk/pepa/http://www.dcs.ed.ac.uk/pepa/) (PEPA) by Jane
+Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow `<>` operator in system equation), i.e. it does not suport hiding operator (e.g. `P\{a,b,}` ), does not support rates as mathematical expressions (`r= 2*x+y`), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
 All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
 
 **Warning: pyPEPA is under development, this is a beta software**
@@ -48,7 +46,7 @@ Show help command:
 
      ./pyPEPA -h
 
-Set logging level (default is NONE):
+Set logging level (the default is NONE):
 
     ./pyPEPA --log {DEBUG, INFO, ERROR, NONE}
     
@@ -115,7 +113,7 @@ Finally pyPEPA can provide us with a tool for experimentation with rates and act
 ![bank example](https://raw.github.com/tdi/pyPEPA/dev/doc/bankexample.png)
 
 
-Instead of --range you can specify `--list ` with a custom comman delimited list of values. 
+Instead of `--range` you can specify `--list ` with a custom comma delimited list of values. 
 
 
 TODO
@@ -125,11 +123,11 @@ TODO
 
  1. Implement rate mathematical expressions with functional rates
  2. Implement passage time analysis
- 3. Implememt hiding operator
+ 3. Implement hiding operator
  4. Implement 3d graphs and experiments
- 5. Implement Kronecker state space and aggrgation
- 6. Implement genearlised communication PEPA (genPEPA) by Mirco Tribastone
- 7. Add model manipulation langaue for reducers
+ 5. Implement Kronecker state space and aggregation
+ 6. Implement generalised communication PEPA [genPEPA][genpepa] by Mirco Tribastone
+ 7. Add model manipulation language for reducers
  8. Add stochastic probes
  9. Add distributed version of BU algorithm
 
@@ -147,6 +145,7 @@ Distributed under the Apache Commons 2.0.
 
 
 
+[genpepa]: http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646 "Generalised Communication for Interacting Agents"
 
 
     

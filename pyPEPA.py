@@ -3,7 +3,7 @@ __author__= "Dariusz Dwornikowski"
 __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
 __version__ = "0.3"
 
-""" Main file od pyPEPA """
+""" Main file for pyPEPA """
 
 from pprint import pprint
 from libpepa import __version__ as libpepa_version
@@ -41,10 +41,8 @@ if __name__ == "__main__":
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
     output_args.add_argument("-gd", "--generate_dots",
-                             help="generate a graphviz dot file for every"
-                                  "sequential component in a GENDOTS folder."
-                                  "WARNING: this can be very memory consuming"
-                                  "when the state space is big",
+                             help="generate a Graphviz dot file for every"
+                                  "sequential component in a GENDOTS folder.",
                              action="store", dest="gendots", type=str)
     output_args.add_argument("-st", "--steady",
                              help="print steady state probability vector",
@@ -60,7 +58,10 @@ if __name__ == "__main__":
                                # action="store_true", dest="util")
     output_args.add_argument("-f", "--format", dest="format", type=str,
                              choices=["graph", "console", "csv"],
-                             help="format for -st -th -ut", default="console")
+                             help="format for -st -th -varrate", default="console")
+    output_args.add_argument("-o", "--output", dest="output", type=str,
+                               action=store,
+                              help="output file valid when format cvs")
 
     exp_args.add_argument("-vr", "--varrate",
                           help="varyin rate name", dest="varrate",
@@ -133,23 +134,24 @@ if __name__ == "__main__":
                             action="show", xlab=ratename, ylab=args.actionth,
                             zlab=args.actionth2)
         sys.exit(0)
+ 
+    pm = PEPAModel(**pargs)
+    pm.derive()
 
-    if args.steady or args.top:# or args.util:
-        pm = PEPAModel(**pargs)
-        pm.derive()
+    if args.steady or args.top:
         pm.steady_state()
         print("Statespace of {} has {} states \n".format(args.file,
               len(pm.get_steady_state_vector() )))
     if args.trantime:
-        pm = PEPAModel(**pargs)
-        pm.derive()
         tr = pm.transient(0,int(args.trantime))
         print("Transient analysis from time %d to %d\n" % (0, args.trantime))
         pretty_print_vector(tr, pm.get_state_names())
     if args.steady:
         print("Steady state vector")
         pretty_print_vector(pm.get_steady_state_vector(),
-                             pm.get_state_names())
+                             pm.get_state_names(),
+                             fmt=args.format,
+                             )
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)\n")
         pretty_print_performance(pm.get_throughoutput())
