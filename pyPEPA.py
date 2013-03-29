@@ -65,19 +65,17 @@ if __name__ == "__main__":
     exp_args.add_argument("-vr", "--varrate",
                           help="varyin rate name", dest="varrate",
                           action="store", metavar="ratename")
-    exp_args.add_argument("--range",
-                          help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
-                          dest="range", action="store", metavar="range")
-    exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"",
-                          dest="list_range", action="store", metavar="list")
+    exp_args.add_argument("-vr2", "--varrate2",
+                          help="varying rate2 name", dest="varrate2",
+                          action="store", metavar="ratename")
+    # exp_args.add_argument("--range",
+    #                       help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
+    #                       dest="range", action="store", metavar="range")
+    # exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"",
+    #                       dest="list_range", action="store", metavar="list")
     exp_args.add_argument("--actionth",
                           help="throughoutput of action on the Y axis",
                           dest="actionth", action="store",
-                          metavar="action name")
-    exp_args.add_argument("--actionth2",
-                          help="throughoutput of the second action on the Z"
-                               "axis, if this is given 3d graph is created",
-                          dest="actionth2", action="store",
                           metavar="action name")
 
     args = parser.parse_args()
@@ -104,7 +102,7 @@ if __name__ == "__main__":
         if args.actionth is None:
             print("Action name not given")
             sys.exit(1)
-        if args.range:
+        if args.range or args.list_range:
             rran = args.range.split(",")
             if len(rran) != 3:
                 print("Range should be START, STOP, STEP")
@@ -113,7 +111,7 @@ if __name__ == "__main__":
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(**pargs)
             pm.derive()
-            if args.actionth2 is None:
+            if args.varrate2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
                 if args.format == "graph":
                     plot_2d(result[0], result[1], lw=2, action="show",

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import sys
+# import sys
+
 
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
@@ -56,10 +57,12 @@ def rate_experiment_two(rate_x, var_rate, rate_y, rate_z, pepa_model, llist=Fals
             rate_zs.append( get_rate_from_actset(rate_z, pepa_model.get_throughoutput()))
     return (rate_xs, rate_ys, rate_zs)
 
-def range_maker(low, hi, step):
+def range_maker(low, hi, step, lst=None):
     """
     Returns a generator function
     """
+    if lst is not None:
+        return lst
     n = { 'low': low, 'hi':hi, 'step':step}
     def counter():
         low = n['low']
