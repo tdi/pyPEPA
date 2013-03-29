@@ -53,7 +53,7 @@ Set logging level (the default is NONE):
 ### Calculations
 
 
-Calculate steady state for bank scenario (http://www.dcs.ed.ac.uk/pepa/group/tmp-downloads/unversioned-pepa/uk.ac.ed.inf.pepa/examples/bankscenario.pepa). The putput is by default directed to your terminal. 
+Calculate steady state for bank scenario. The putput is by default directed to your terminal. 
 
     ./pyPEPA -st models/bankscenario.pepa
     
