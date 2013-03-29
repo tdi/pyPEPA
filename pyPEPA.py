@@ -68,11 +68,11 @@ if __name__ == "__main__":
     exp_args.add_argument("-vr2", "--varrate2",
                           help="varying rate2 name", dest="varrate2",
                           action="store", metavar="ratename")
-    # exp_args.add_argument("--range",
-    #                       help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
-    #                       dest="range", action="store", metavar="range")
-    # exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"",
-    #                       dest="list_range", action="store", metavar="list")
+    exp_args.add_argument("--range",
+                          help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
+                          dest="range", action="store", metavar="range")
+    exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"",
+                          dest="list_range", action="store", metavar="list")
     exp_args.add_argument("--actionth",
                           help="throughoutput of action on the Y axis",
                           dest="actionth", action="store",
