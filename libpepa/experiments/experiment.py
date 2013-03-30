@@ -1,7 +1,20 @@
 #!/usr/bin/env python
+import numpy
+from sys import exit
 
-# import sys
-
+def experiment(variables, yvar, pepa_model, format="graph"):
+    if len(variables) == 1:
+        var = variables[0]
+        if var[2] == "range":
+            start, stop, step = var[3].split(",")
+            ran = range_maker(float(start), float(stop), float(step))
+        elif var[2] == "list":
+            lst = var[3].split(",")
+            ran = range_maker(float(start), float(stop), float(step))
+        result = rate_experiment(var[1], ran, yvar, pepa_model)
+        return result
+    elif len(variables) == 2:
+        pass
 
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
@@ -61,16 +74,10 @@ def range_maker(low, hi, step, lst=None):
     """
     Returns a generator function
     """
-    if lst is not None:
-        return lst
-    n = { 'low': low, 'hi':hi, 'step':step}
-    def counter():
-        low = n['low']
-        hi = n['hi']
-        step = n['step']
-        cur = low
-        while cur <= hi:
-            yield cur
-            cur += step
-    return counter
+    return numpy.arange(low, hi, step)
+    # r = low
+    # while r< hi:
+    #     yield r
+    #     r += step
+
 

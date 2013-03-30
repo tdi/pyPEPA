@@ -12,6 +12,8 @@ from libpepa.utils import pretty_print_vector, pretty_print_performance
 from libpepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
+from libpepa.experiments.experiment import experiment
+from libpepa.utils import decode_variables
 from libpepa.logger import init_log
 import argparse
 import sys
@@ -63,12 +65,18 @@ if __name__ == "__main__":
                                action="store",
                               help="output file valid when format cvs")
 
-    exp_args.add_argument("-vr", "--varrate",
-                          help="varyin rate name", dest="varrate",
-                          action="store", metavar="ratename")
-    exp_args.add_argument("-vr2", "--varrate2",
-                          help="varying rate2 name", dest="varrate2",
-                          action="store", metavar="ratename")
+    # exp_args.add_argument("-vr", "--varrate",
+    #                       help="varyin rate name", dest="varrate",
+    #                       action="store", metavar="ratename")
+    # exp_args.add_argument("-vr2", "--varrate2",
+    #                       help="varying rate2 name", dest="varrate2",
+    #                       action="store", metavar="ratename")
+    exp_args.add_argument("-var", "--variable",
+                          help="more or one variables in format"
+                               "rate:RATENAME:r:START,STOP,STEP"
+                               "or rate:RATENAME:l:val1,val2,val3",
+                          action="append", dest="variables")
+    exp_args.add_argument("-val", "--value", action="store", dest="yvar") 
     # exp_args.add_argument("--range",
     #                       help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
     #                       dest="range", action="store", metavar="range")
@@ -82,7 +90,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
+
     pargs = {"file": args.file, "solver" : args.solver}
+ 
     if args.gendots:
         pm = PEPAModel(**pargs)
         import os
@@ -95,44 +105,57 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # mutual exclusion
-    if args.list_range and args.range:
-        print("Cannot use range and list")
-        sys.exit(1)
-    if args.varrate:
-        ratename = args.varrate
-        if args.actionth is None:
-            print("Action name not given")
-            sys.exit(1)
-        if args.range or args.list_range:
-            rran = args.range.split(",")
-            if len(rran) != 3:
-                print("Range should be START, STOP, STEP")
-                sys.exit(1)
-            start, stop, step = rran[0], rran[1], rran[2]
-            ran = range_maker(float(start), float(stop), float(step))
-            pm = PEPAModel(**pargs)
-            pm.derive()
-            if args.varrate2 is None:
-                result = rate_experiment(ratename, ran, args.actionth, pm)
-                if args.format == "graph":
-                    plot_2d(result[0], result[1], lw=2, action="show",
-                            xlab=ratename, ylab=args.actionth)
-                elif args.format == "csv":
-                    with open("varrate-thr-{}-{}.csv"
-                              .format(ratename, args.actionth), "w") as exp_f:
-                        exp_f.write("{}, {}\n".format(ratename, args.actionth))
-                        x,y  = result[0], result[1]
-                        for i in range(0, len(x)):
-                            exp_f.write("{}, {}\n".format(x[i], y[i]))
-            else:
-                result = rate_experiment_two(ratename, ran, args.actionth,
-                                             args.actionth2, pm)
-                if args.format == "graph":
-                    plot_3d(result[0], result[1], result[2], lw=2,
-                            action="show", xlab=ratename, ylab=args.actionth,
-                            zlab=args.actionth2)
-        sys.exit(0)
- 
+    # if args.list_range and args.range:
+    #     print("Cannot use range and list")
+    #     sys.exit(1)
+    if args.variables and args.yvar:
+        variables = decode_variables(args.variables)
+        pm = PEPAModel(**pargs)
+        pm.derive()
+        result = experiment(variables, args.yvar, pm)
+        plot_2d(result[0], result[1], lw=2, action="show",
+                xlab=args.yvar, ylab=variables[0].varval)
+
+
+
+
+        pass
+
+
+    sys.exit(0)
+        # ratename = args.varrate
+        # if args.actionth is None:
+        #     print("Action name not given")
+        #     sys.exit(1)
+        # if args.range or args.list_range:
+        #     rran = args.range.split(",")
+        #     if len(rran) != 3:
+        #         print("Range should be START, STOP, STEP")
+        #         sys.exit(1)
+        #     start, stop, step = rran[0], rran[1], rran[2]
+        #     ran = range_maker(float(start), float(stop), float(step))
+        #     pm = PEPAModel(**pargs)
+        #     pm.derive()
+        #     if args.varrate2 is None:
+        #         result = rate_experiment(ratename, ran, args.actionth, pm)
+        #         if args.format == "graph":
+        #             plot_2d(result[0], result[1], lw=2, action="show",
+        #                     xlab=ratename, ylab=args.actionth)
+        #         elif args.format == "csv":
+        #             with open("varrate-thr-{}-{}.csv"
+        #                       .format(ratename, args.actionth), "w") as exp_f:
+        #                 exp_f.write("{}, {}\n".format(ratename, args.actionth))
+        #                 x,y  = result[0], result[1]
+        #                 for i in range(0, len(x)):
+        #                     exp_f.write("{}, {}\n".format(x[i], y[i]))
+        #     else:
+        #         result = rate_experiment_two(ratename, ran, args.actionth,
+        #                                      args.actionth2, pm)
+        #         if args.format == "graph":
+        #             plot_3d(result[0], result[1], result[2], lw=2,
+        #                     action="show", xlab=ratename, ylab=args.actionth,
+        #                     zlab=args.actionth2)
+        # sys.exit(0)
     pm = PEPAModel(**pargs)
     pm.derive()
 

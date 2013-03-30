@@ -3,6 +3,8 @@ dots/
 tags
 tags/*
 htmlcov/
+models/
+external/
 external/
 .coverage
 .ropeproject
