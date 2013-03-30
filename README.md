@@ -108,9 +108,15 @@ pyPEPA allows you to visualize all PEPA components by specifying `-gd` switch. T
     ./pyPEPA -gd bankdots models/bankscenario.pepa
 
 
-Finally pyPEPA can provide us with a tool for experimentation with rates and actions. Let's check how throughtput of `askManager` action changes when `rateReset` changes from 1 to 50 with step 1. The default result of this command will be a matplotlib graph. You can specify other output options with `-f` argument: graph, console, csv. 
+Finally pyPEPA can provide us with a tool for experimentation with rates and actions. 
+Let's check how throughtput of `askManager` action changes when `rateReset` changes from 1 to 50 with step 1. The default result of this command will be a matplotlib graph.
+The format of `-var` is "vartype:varname:value range specifier:value range value". The one valid
+vartype for now is `rate`, for value range specifiers you can choose: `range` or `list`. For `range`
+you need to provide START, STOP, STEP, whereas for `list` a comma separated list of values. 
+You can specify other output options with `-f` argument: graph, console, csv. 
 
-    pyPEPA.py --varrate rateReset --range "1,50,1" --actionth askManager -f graph models/bankscenario.pepa
+
+    pyPEPA.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
 
 
 ![bank example](https://raw.github.com/tdi/pyPEPA/dev/doc/bankexample.png)
