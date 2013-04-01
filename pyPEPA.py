@@ -9,8 +9,6 @@ from pprint import pprint
 from libpepa import __version__ as libpepa_version
 from libpepa import PEPAModel
 from libpepa.utils import pretty_print_vector, pretty_print_performance
-from libpepa.experiments.experiment import rate_experiment, range_maker,\
-                                            rate_experiment_two
 from libpepa.experiments.graphing import plot_2d, plot_3d
 from libpepa.experiments.experiment import experiment
 from libpepa.utils import decode_variables
@@ -64,24 +62,12 @@ if __name__ == "__main__":
     output_args.add_argument("-o", "--output", dest="output", type=str,
                                action="store",
                               help="output file valid when format cvs")
-
-    # exp_args.add_argument("-vr", "--varrate",
-    #                       help="varyin rate name", dest="varrate",
-    #                       action="store", metavar="ratename")
-    # exp_args.add_argument("-vr2", "--varrate2",
-    #                       help="varying rate2 name", dest="varrate2",
-    #                       action="store", metavar="ratename")
     exp_args.add_argument("-var", "--variable",
                           help="more or one variables in format"
                                "rate:RATENAME:r:START,STOP,STEP"
                                "or rate:RATENAME:l:val1,val2,val3",
                           action="append", dest="variables")
     exp_args.add_argument("-val", "--value", action="store", dest="yvar") 
-    # exp_args.add_argument("--range",
-    #                       help="\"START,STOP,STEP\" e.g. \"1.0,10,0.1\"",
-    #                       dest="range", action="store", metavar="range")
-    # exp_args.add_argument("--list", help="List of values e.g. \"1,2,3,5.0,4\"",
-    #                       dest="list_range", action="store", metavar="list")
     exp_args.add_argument("--actionth",
                           help="throughoutput of action on the Y axis",
                           dest="actionth", action="store",
@@ -104,10 +90,6 @@ if __name__ == "__main__":
         pm.generate_dots(args.gendots)
         sys.exit(0)
 
-    # mutual exclusion
-    # if args.list_range and args.range:
-    #     print("Cannot use range and list")
-    #     sys.exit(1)
     if args.variables and args.yvar:
         variables = decode_variables(args.variables)
         pm = PEPAModel(**pargs)
