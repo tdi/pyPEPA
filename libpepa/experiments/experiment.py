@@ -9,8 +9,8 @@ def experiment(variables, yvar, pepa_model, format="graph"):
             start, stop, step = var[3].split(",")
             ran = range_maker(float(start), float(stop), float(step))
         elif var[2] == "list":
-            lst = var[3].split(",")
-        result = rate_experiment(var[1],lst, yvar, pepa_model)
+            ran = var[3].split(",")
+        result = rate_experiment(var[1],ran, yvar, pepa_model)
         return result
     elif len(variables) == 2:
         pass
