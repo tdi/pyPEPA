@@ -13,7 +13,9 @@ def experiment(variables, yvar, pepa_model, format="graph"):
         result = rate_experiment(var[1],ran, yvar, pepa_model)
         return result
     elif len(variables) == 2:
-        pass
+        var1, var2 = variables[0]. variables[1]
+
+
 
 def get_rate_from_actset(action, actset):
     """ Returns rate from actset returned from solver """
