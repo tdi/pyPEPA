@@ -19,8 +19,7 @@ def plot_3d(xs, ys, zs, lw=1, xlab="X", ylab="Y", zlab="Z", action="show", name=
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     X, Y = np.meshgrid(xs, ys)
-    Z, Y = np.meshgrid(zs,ys)
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1)
+    surf = ax.plot_surface(X, Y, zs, rstride=1, cstride=1)
     plt.show()
 
 

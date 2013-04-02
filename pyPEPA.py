@@ -92,16 +92,27 @@ if __name__ == "__main__":
 
     if args.variables and args.yvar:
         variables = decode_variables(args.variables)
-        pm = PEPAModel(**pargs)
-        pm.derive()
-        result = experiment(variables, args.yvar, pm)
-        if args.format == "graph":
-            plot_2d(result[0], result[1], lw=2, action="show",
+        if len(variables) == 1:
+            pm = PEPAModel(**pargs)
+            pm.derive()
+            result = experiment(variables, args.yvar, pm)
+            if args.format == "graph":
+                plot_2d(result[0], result[1], lw=2, action="show",
+                        xlab=args.yvar, ylab=variables[0].varval)
+            elif args.format == "csv":
+                with open("{}.csv".format(args.output), "w") as f:
+                    for i in range(0, len(result[0])):
+                            f.write("{}, {}\n".format(result[0][i], result[1][i]))
+        elif len(variables) == 2:
+            pm = PEPAModel(**pargs)
+            pm.derive()
+            result = experiment(variables, args.yvar, pm)
+            plot_3d(result[0], result[1], result[2], action="show",
                     xlab=args.yvar, ylab=variables[0].varval)
-        elif args.format == "csv":
-            with open("{}.csv".format(args.output), "w") as f:
-                for i in range(0, len(result[0])):
-                        f.write("{}, {}\n".format(result[0][i], result[1][i]))
+        else:
+            print("Wrong number of -var, either one or two")
+            sys.exit(1)
+
     sys.exit(0)
         # ratename = args.varrate
         # if args.actionth is None:
