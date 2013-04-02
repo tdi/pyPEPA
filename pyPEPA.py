@@ -113,40 +113,6 @@ if __name__ == "__main__":
             print("Wrong number of -var, either one or two")
             sys.exit(1)
 
-    # sys.exit(0)
-        # ratename = args.varrate
-        # if args.actionth is None:
-        #     print("Action name not given")
-        #     sys.exit(1)
-        # if args.range or args.list_range:
-        #     rran = args.range.split(",")
-        #     if len(rran) != 3:
-        #         print("Range should be START, STOP, STEP")
-        #         sys.exit(1)
-        #     start, stop, step = rran[0], rran[1], rran[2]
-        #     ran = range_maker(float(start), float(stop), float(step))
-        #     pm = PEPAModel(**pargs)
-        #     pm.derive()
-        #     if args.varrate2 is None:
-        #         result = rate_experiment(ratename, ran, args.actionth, pm)
-        #         if args.format == "graph":
-        #             plot_2d(result[0], result[1], lw=2, action="show",
-        #                     xlab=ratename, ylab=args.actionth)
-        #         elif args.format == "csv":
-        #             with open("varrate-thr-{}-{}.csv"
-        #                       .format(ratename, args.actionth), "w") as exp_f:
-        #                 exp_f.write("{}, {}\n".format(ratename, args.actionth))
-        #                 x,y  = result[0], result[1]
-        #                 for i in range(0, len(x)):
-        #                     exp_f.write("{}, {}\n".format(x[i], y[i]))
-        #     else:
-        #         result = rate_experiment_two(ratename, ran, args.actionth,
-        #                                      args.actionth2, pm)
-        #         if args.format == "graph":
-        #             plot_3d(result[0], result[1], result[2], lw=2,
-        #                     action="show", xlab=ratename, ylab=args.actionth,
-        #                     zlab=args.actionth2)
-        # sys.exit(0)
     pm = PEPAModel(**pargs)
     pm.derive()
 
