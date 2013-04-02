@@ -31,8 +31,8 @@ def rate_experiment(rate_x, var_rate, rate_y, pepa_model, llist=False):
     rate_ys = []
     rate_xs = []
     rates = pepa_model.get_rates()
-    if rate_x not in rates:
-        print("No such rate {}".format(rate_x))
+    if rate_x not in rates or rate_y not in pepa_model.actions:
+        print("No such rate or action")
         exit(1)
     if hasattr(var_rate, '__call__'):
         for i in var_rate():

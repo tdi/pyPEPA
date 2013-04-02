@@ -16,6 +16,7 @@ class PEPAParser(object):
         self.log_pa = init_log()
         self._processes = {}
         self._var_stack = {}
+        self._actions = []
         self.systemeq = None
 
 
@@ -23,6 +24,7 @@ class PEPAParser(object):
         self.log_pa.debug("Token: "+tok[0])
         n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
         n.action = tok[0]
+        self._actions.append(n.action)
         n.rate = tok[1]
         return n
 
@@ -237,7 +239,7 @@ class PEPAParser(object):
 
     def parse(self,string):
         self.gramma().parseString(string)
-        return (self._processes, self._var_stack, self._systemeq)
+        return (self._processes, self._var_stack, self._systemeq, self._actions)
 
 
 

@@ -72,7 +72,7 @@ class PEPAModel():
         try:
             parser = PEPAParser()
             (self.processes, self.rate_definitions,
-            self.systemeq) = parser.parse(modelfile)
+            self.systemeq, self.actions) = parser.parse(modelfile)
         except Exception as e:
             self.log.debug(e)
             print("Parsing error : " + str(e) )
