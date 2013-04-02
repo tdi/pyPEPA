@@ -113,7 +113,7 @@ if __name__ == "__main__":
             print("Wrong number of -var, either one or two")
             sys.exit(1)
 
-    sys.exit(0)
+    # sys.exit(0)
         # ratename = args.varrate
         # if args.actionth is None:
         #     print("Action name not given")
