@@ -154,7 +154,7 @@ class PEPATreeWalker():
             # adding to ss dict
             self.graph.ss[node.process] = compnode
             # first node for sure
-            self.log.info("(COMPONENT) {} = {}".format(node.process,node.resolved))
+            self.log.debug("(COMPONENT) {} = {}".format(node.process,node.resolved))
             self._visitstack.append(node.process)
         elif node.data == ".":
             trans = Transition(node.action, node.rate, node.resolved)
@@ -162,7 +162,7 @@ class PEPATreeWalker():
                 trans.var_rate = node.var_rate
             # add transition to the last state (in the graph)
             self.graph.ss[self._visitstack[-1]].transitions.append( trans )
-            self.log.info("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
+            self.log.debug("(TR) " + self._visitstack[-1] + " -(" + node.action +","+ node.rate +")-> " + node.resolved)
             # new state again, but if it exists...
             if node.resolved not in self.graph.ss:
                 # new state - append
