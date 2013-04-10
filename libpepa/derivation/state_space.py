@@ -54,7 +54,7 @@ class StateSpace():
             if self._gs_to_string(state) in visited:
               continue
             state_num = state_num + 1
-            self.log.info("{} STATE {}".format(state_num, state))
+            self.log.debug("{} STATE {}".format(state_num, state))
             resulting_states[self._gs_to_string(state)] = ([],state_num)
             visited.append(self._gs_to_string(state))
             # update components table (same refs are in operators) -->
@@ -81,7 +81,7 @@ class StateSpace():
                                     new_state = state[:]
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
-                                self.log.info("{}\trate={} \t-> {}".format(news.action, news.arate, news.to_s))
+                                self.log.debug("{}\trate={} \t-> {}".format(news.action, news.arate, news.to_s))
                                 resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
