@@ -72,8 +72,8 @@ class StateSpace():
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
                                 self.log.error("DEADLOCK in {}".format(state))
+                                print("DEADLOCK in {}".format(state))
                                 exit(1)
-                            #dostaje w tej samej i combinuje
                             new_states = self._combine_states(new_states[:])
                             for news in new_states:
                                 # aggregate
