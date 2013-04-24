@@ -149,7 +149,7 @@ class PEPAParser(object):
             if tok[0].asttype == "procdef":
                 n = ProcdefNode(tok[0].data, tok[0].asttype)
                 # TODO create subtree
-                if tok[0].aggregation == True:
+                if tok[0].aggregation == True and n.aggr_num > 1:
                     n.aggregation = True
                     n.aggr_num = tok[0].aggr_num
                     n = self._create_subtree_aggregation(tok[0].aggr_num, tok[0].data)
