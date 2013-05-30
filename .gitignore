@@ -6,3 +6,4 @@ htmlcov/
 external/
 .coverage
 .ropeproject
+.*.swp
