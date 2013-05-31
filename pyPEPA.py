@@ -109,7 +109,6 @@ if __name__ == "__main__":
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(**pargs)
-            # pm.derive()
             if args.varrate2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
                 if args.format == "graph":
