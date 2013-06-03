@@ -37,7 +37,7 @@ class WorkerServer(StreamServer):
 
         data_bytes = socket.recv(header[0])
         data = pepa_prot.extract_data(data_bytes)
-        ret = dict()
+        ret = {}
         try:
             print("Command : %s" % data["cmd"])
             ret["data"] = doit[ data["cmd"] ](data)

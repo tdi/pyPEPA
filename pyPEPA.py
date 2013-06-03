@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-__author__= "Dariusz Dwornikowski"
-__email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
+__author__ = "Dariusz Dwornikowski"
+__email__  = "dariusz.dwornikowski@cs.put.poznan.pl"
 __version__ = "0.3"
 
-""" Main file for pyPEPA """
-
-from pprint import pprint
 from libpepa import __version__ as libpepa_version
 from libpepa import PEPAModel
 from libpepa.utils import pretty_print_vector, pretty_print_performance
@@ -121,7 +118,7 @@ if __name__ == "__main__":
         print("Statespace of {} has {} states \n".format(args.file,
               len(pm.get_steady_state_vector() )))
     if args.trantime:
-        tr = pm.transient(0,int(args.trantime))
+        tr = pm.transient(0, int(args.trantime))
         print("Transient analysis from time %d to %d" % (0, args.trantime))
         args.output = "{}-transient.csv".format(pm.name)
         pretty_print_vector(tr,
