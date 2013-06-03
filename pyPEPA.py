@@ -89,7 +89,6 @@ if __name__ == "__main__":
             pass
         else:
             os.makedirs(args.gendots)
-        pm.derive()
         pm.generate_dots(args.gendots)
         sys.exit(0)
 
@@ -110,7 +109,6 @@ if __name__ == "__main__":
             start, stop, step = rran[0], rran[1], rran[2]
             ran = range_maker(float(start), float(stop), float(step))
             pm = PEPAModel(**pargs)
-            pm.derive()
             if args.varrate2 is None:
                 result = rate_experiment(ratename, ran, args.actionth, pm)
                 if args.format == "graph":
@@ -133,7 +131,6 @@ if __name__ == "__main__":
         sys.exit(0)
  
     pm = PEPAModel(**pargs)
-    pm.derive()
 
     if args.steady or args.top:
         pm.steady_state()

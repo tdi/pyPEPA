@@ -35,8 +35,17 @@ class PEPAModel():
     def get_rates(self):
         return self.rate_definitions
 
-    def derive(self):
-        self._prepare_components()
+    def derive(self, force=False):
+        # Rather than having logic for when you have and have not
+        # derived the state space outside of this module, instead we
+        # can simply have all procedures which require it call this
+        # method. This then lazily only calls the statespace if only
+        # if it hasn't been called prior. We have a force argument to
+        # force it to be recomputed should we ever require that, but
+        # frankly in that case it would easier just to create a new
+        # PEPA model.
+        if self.ss is None or force:
+          self._prepare_components()
 
     def recalculate(self, rates=None):
         self._parse_read_model(self.args["file"])
@@ -46,6 +55,7 @@ class PEPAModel():
         self._derive_steady_state()
 
     def transient(self, timestop, timestart=0):
+        self.derive()
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
         return self._solver.solve_transient(timestop, timestart)
@@ -61,6 +71,7 @@ class PEPAModel():
 
     def _derive_steady_state(self):
         """ Derives global state space """
+        self.derive()
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
         self._solver.solve_steady()
@@ -100,6 +111,7 @@ class PEPAModel():
         pip install xdot
         """
         self.log.info("Generating dot files in: %s" % out_dir)
+        self.derive()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
             comptmp = ComponentSSGraph(comp.data)
