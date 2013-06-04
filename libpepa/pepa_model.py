@@ -14,7 +14,6 @@ class PEPAModel():
         - state spaces of components that are present in a system equation
         - rate definitions
         - system equation
-        TODO: keyword arguments
     """
     def __init__(self, **kwargs):
         """ Create PEPA model instance and fill the fields """
