@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from libpepa.logger import init_log
+from pypepa.logger import init_log
 
 class StateSpace():
     operators = []

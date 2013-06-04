@@ -4,8 +4,8 @@ PEPA Parser
 """
 from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional, ZeroOrMore, Forward, restOfLine
 import sys
-from libpepa.parsing.pepa_ast import *
-from libpepa.logger import init_log
+from pypepa.parsing.pepa_ast import *
+from pypepa.logger import init_log
 
 class PEPAParser(object):
     """

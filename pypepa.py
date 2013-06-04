@@ -6,20 +6,20 @@ __version__ = "0.3"
 """ Main file for pyPEPA """
 
 from pprint import pprint
-from libpepa import __version__ as libpepa_version
-from libpepa import PEPAModel
-from libpepa.utils import pretty_print_vector, pretty_print_performance
-from libpepa.experiments.experiment import rate_experiment, range_maker,\
+from pypepa import __version__ as libpepa_version
+from pypepa import PEPAModel
+from pypepa.utils import pretty_print_vector, pretty_print_performance
+from pypepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
-from libpepa.experiments.graphing import plot_2d, plot_3d
-from libpepa.logger import init_log
+from pypepa.experiments.graphing import plot_2d, plot_3d
+from pypepa.logger import init_log
 import argparse
 import sys
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="pyPEPA v{}, libpepa v{},"
+    parser = argparse.ArgumentParser(description="pyPEPA v{}, pypepa v{},"
                                      " author {}, {}".format(__version__,
                                      libpepa_version,__author__, __email__))
     gen_args = parser.add_argument_group("General", "General arguments")

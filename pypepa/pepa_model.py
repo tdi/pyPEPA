@@ -1,11 +1,11 @@
 #/usr/bin/env python
 import sys
-from libpepa.logger import init_log
-from libpepa.parsing.pepa_treewalker import PEPATreeWalker
-from libpepa.parsing.comp_state_space_graph import ComponentSSGraph
-from libpepa.parsing.parser import PEPAParser
-from libpepa.solvers.solution import CTMCSolution
-from libpepa.parsing.component_state_visitor import ComponentStateVisitor
+from pypepa.logger import init_log
+from pypepa.parsing.pepa_treewalker import PEPATreeWalker
+from pypepa.parsing.comp_state_space_graph import ComponentSSGraph
+from pypepa.parsing.parser import PEPAParser
+from pypepa.solvers.solution import CTMCSolution
+from pypepa.parsing.component_state_visitor import ComponentStateVisitor
 import os
 
 class PEPAModel():
