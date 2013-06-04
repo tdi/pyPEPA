@@ -1,11 +1,11 @@
 #/usr/bin/env python
 import sys
-from libpepa.logger import init_log
-from libpepa.parsing.pepa_treewalker import PEPATreeWalker
-from libpepa.parsing.comp_state_space_graph import ComponentSSGraph
-from libpepa.parsing.parser import PEPAParser
-from libpepa.solvers.solution import CTMCSolution
-from libpepa.parsing.component_state_visitor import ComponentStateVisitor
+from pypepa.logger import init_log
+from pypepa.parsing.pepa_treewalker import PEPATreeWalker
+from pypepa.parsing.comp_state_space_graph import ComponentSSGraph
+from pypepa.parsing.parser import PEPAParser
+from pypepa.solvers.solution import CTMCSolution
+from pypepa.parsing.component_state_visitor import ComponentStateVisitor
 import os
 
 class PEPAModel():
@@ -14,7 +14,6 @@ class PEPAModel():
         - state spaces of components that are present in a system equation
         - rate definitions
         - system equation
-        TODO: keyword arguments
     """
     def __init__(self, **kwargs):
         """ Create PEPA model instance and fill the fields """
@@ -35,8 +34,17 @@ class PEPAModel():
     def get_rates(self):
         return self.rate_definitions
 
-    def derive(self):
-        self._prepare_components()
+    def derive(self, force=False):
+        # Rather than having logic for when you have and have not
+        # derived the state space outside of this module, instead we
+        # can simply have all procedures which require it call this
+        # method. This then lazily only calls the statespace if only
+        # if it hasn't been called prior. We have a force argument to
+        # force it to be recomputed should we ever require that, but
+        # frankly in that case it would easier just to create a new
+        # PEPA model.
+        if self.ss is None or force:
+          self._prepare_components()
 
     def recalculate(self, rates=None):
         self._parse_read_model(self.args["file"])
@@ -46,6 +54,7 @@ class PEPAModel():
         self._derive_steady_state()
 
     def transient(self, timestop, timestart=0):
+        self.derive()
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
         return self._solver.solve_transient(timestop, timestart)
@@ -61,6 +70,7 @@ class PEPAModel():
 
     def _derive_steady_state(self):
         """ Derives global state space """
+        self.derive()
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
         self._solver.solve_steady()
@@ -100,6 +110,7 @@ class PEPAModel():
         pip install xdot
         """
         self.log.info("Generating dot files in: %s" % out_dir)
+        self.derive()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
             comptmp = ComponentSSGraph(comp.data)

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from libpepa.parsing.comp_state_space_graph import Transition, ModelSSGraph, ComponentState
-from libpepa.derivation.state_space import StateSpace, Operator, Component
-from libpepa.parsing.pepa_ast import *
-from libpepa.logger import init_log
+from pypepa.parsing.comp_state_space_graph import Transition, ModelSSGraph, ComponentState
+from pypepa.derivation.state_space import StateSpace, Operator, Component
+from pypepa.parsing.pepa_ast import *
+from pypepa.logger import init_log
 
 
 class PEPATreeWalker():

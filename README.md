@@ -37,25 +37,25 @@ For the current version I recommend installing in a virtualenv.
     `pip install pyparsing colorama numpy scipy matplotlib`
 
 
-pyPEPA
+pypepa
 ======
 
 ### Basic arguments
 
 Show help command:
 
-     ./pyPEPA -h
+     ./pypepa -h
 
 Set logging level (the default is NONE):
 
-    ./pyPEPA --log {DEBUG, INFO, ERROR, NONE}
+    ./pypepa --log {DEBUG, INFO, ERROR, NONE}
    
 ### Calculations
 
 
 Calculate steady state for bank scenario. The putput is by default directed to your terminal. 
 
-    ./pyPEPA -st models/bankscenario.pepa
+    ./pypepa -st models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
     
@@ -71,7 +71,7 @@ Calculate steady state for bank scenario. The putput is by default directed to y
     
 Calculate actions' throughput:
 
-    ./pyPEPA -th models/bankscenario.pepa
+    ./pypepa -th models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
 
@@ -88,7 +88,7 @@ Calculate actions' throughput:
     
 You can calculate transient time proability for some number of time steps:
 
-    ./pyPEPA --transient 5 models/bankscenario.pepa
+    ./pypepa --transient 5 models/bankscenario.pepa
     
     Transient analysis from time 0 to 10
 
@@ -103,12 +103,12 @@ You can calculate transient time proability for some number of time steps:
     
 You can choose a solver by specifying `--solver|-s {direct, sparse}`. By defalt we use sparse solver with LIL matrix becuase it is faster and in overall matrices generated from PEPA models are sparse. There is also an insignificant difference in results. 
 
-pyPEPA allows you to visualize all PEPA components by specifying `-gd` switch. The generated graphiz dot files are by deault saved in `dots` folder in the current directory. You can browse dot files with `xdot`, which you need to install first. 
+pypepa allows you to visualize all PEPA components by specifying `-gd` switch. The generated graphiz dot files are by deault saved in `dots` folder in the current directory. You can browse dot files with `xdot`, which you need to install first. 
 
-    ./pyPEPA -gd bankdots models/bankscenario.pepa
+    ./pypepa -gd bankdots models/bankscenario.pepa
 
 
-Finally pyPEPA can provide us with a tool for experimentation with rates and actions. 
+Finally pypepa can provide us with a tool for experimentation with rates and actions. 
 Let's check how throughtput of `askManager` action changes when `rateReset` changes from 1 to 50 with step 1. The default result of this command will be a matplotlib graph.
 The format of `-var` is "vartype:varname:value range specifier:value range value". The one valid
 vartype for now is `rate`, for value range specifiers you can choose: `range` or `list`. For `range`
@@ -116,10 +116,9 @@ you need to provide START, STOP, STEP, whereas for `list` a comma separated list
 You can specify other output options with `-f` argument: graph, console, csv. 
 
 
-    pyPEPA.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
+    pypepa.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
 
-
-![bank example](https://raw.github.com/tdi/pyPEPA/dev/doc/bankexample.png)
+![bank example](https://raw.github.com/tdi/pypepa/dev/doc/bankexample.png)
 
 
 Instead of `--range` you can specify `--list ` with a custom comma delimited list of values. 
@@ -131,7 +130,7 @@ Currently we support CSV (although `;` not comma delimited), console (the defaul
 for varrate experiments). Additionally you can specify `-o|--output` option with a file argument to
   specify where to save the CSV. 
 
-    ./pyPEPA -st models/bankscenario.pepa -f csv -o bank_steady.csv
+    ./pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
 
 
 

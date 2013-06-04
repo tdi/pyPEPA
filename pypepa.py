@@ -1,23 +1,25 @@
 #!/usr/bin/env python
-__author__ = "Dariusz Dwornikowski"
-__email__  = "dariusz.dwornikowski@cs.put.poznan.pl"
-__version__ = "0.3"
+__author__= "Dariusz Dwornikowski"
+__email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
+__version__ = "0.4dev"
 
-from libpepa import __version__ as libpepa_version
-from libpepa import PEPAModel
-from libpepa.utils import pretty_print_vector, pretty_print_performance
-from libpepa.experiments.graphing import plot_2d, plot_3d
-from libpepa.experiments.experiment import experiment
-from libpepa.utils import decode_variables
-from libpepa.logger import init_log
+""" Main file for pyPEPA """
+
+from pprint import pprint
+from pypepa import __version__ as libpepa_version
+from pypepa import PEPAModel
+from pypepa.utils import pretty_print_vector, pretty_print_performance
+from pypepa.experiments.experiment import rate_experiment, range_maker,\
+                                            rate_experiment_two
+from pypepa.experiments.graphing import plot_2d, plot_3d
+from pypepa.logger import init_log
 import argparse
 import sys
 
 
 if __name__ == "__main__":
 
-
-    parser = argparse.ArgumentParser(description="pyPEPA v{}, libpepa v{},"
+    parser = argparse.ArgumentParser(description="pypepa v{}, pypepa v{},"
                                      " author {}, {}".format(__version__,
                                      libpepa_version,__author__, __email__))
     gen_args = parser.add_argument_group("General", "General arguments")
@@ -73,9 +75,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
-
     pargs = {"file": args.file, "solver" : args.solver}
- 
     if args.gendots:
         pm = PEPAModel(**pargs)
         import os
@@ -83,7 +83,6 @@ if __name__ == "__main__":
             pass
         else:
             os.makedirs(args.gendots)
-        pm.derive()
         pm.generate_dots(args.gendots)
         sys.exit(0)
 
@@ -111,7 +110,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
     pm = PEPAModel(**pargs)
-    pm.derive()
+
 
     if args.steady or args.top:
         pm.steady_state()

@@ -1,5 +1,6 @@
 *.pyc
 *.orig
+.idea/
 dots/
 tags
 tags/*
@@ -9,3 +10,4 @@ external/
 external/
 .coverage
 .ropeproject
+.*.swp
