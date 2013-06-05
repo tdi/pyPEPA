@@ -1,5 +1,5 @@
 pypepa
-======
+------
 
 pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
 Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not support rates as mathematical expressions (``r= 2*x+y``), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
@@ -10,9 +10,9 @@ All these features, plus more, are planned to be added in next versions. Current
 
 pyPEPA consist of three parts:
 
- 1. libpepa - a library written in python (mostly 3.3+ conformant)
- 2. pyPEPA - a command line tool for solving and graphing
- 3. distr/ - map reduce tools for solving large PEPA experiments
+1. libpepa - a library written in Python,
+2. pyPEPA - a command line tool for solving and graphing,
+3. distr/ - map reduce tools for solving large PEPA experiments.
 
 
 Installation
@@ -85,7 +85,7 @@ Calculate steady state for bank scenario. The putput is by default directed to y
 
 .. code-block:: bash
 
-    pypepa -st models/bankscenario.pepa
+    $ pypepa -st models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
     
@@ -103,7 +103,7 @@ Calculate actions' throughput:
 
 .. code-block:: bash
 
-    pypepa -th models/bankscenario.pepa
+    $ pypepa -th models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
 
@@ -122,7 +122,7 @@ You can calculate transient time proability for some number of time steps:
 
 .. code-block:: bash
 
-    pypepa --transient 5 models/bankscenario.pepa
+    $ pypepa --transient 5 models/bankscenario.pepa
     
     Transient analysis from time 0 to 10
 
@@ -141,7 +141,7 @@ pypepa allows you to visualize all PEPA components by specifying ``-gd`` switch.
 
 .. code-block:: bash
 
-    pypepa -gd bankdots models/bankscenario.pepa
+    $ pypepa -gd bankdots models/bankscenario.pepa
 
 
 Finally pypepa can provide us with a tool for experimentation with rates and actions. 
@@ -153,23 +153,24 @@ You can specify other output options with `-f` argument: graph, console, csv.
 
 .. code-block:: bash
 
-    pypepa.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
+    $ pypepa.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
 
 .. image:: https://raw.github.com/tdi/pypepa/dev/doc/bankexample.png
+   :width: 350pt 
 
 
 Instead of ``--range`` you can specify ``--list`` with a custom comma delimited list of values. 
 
-### Formatting
+Formatting
+~~~~~~~~~~
 
 You can specify formats of ``-st``, ``-th`` and  ``--varrate`` with a ``--format`` option. 
 Currently we support CSV (although `;` not comma delimited), console (the default) and graph (only
-for varrate experiments). Additionally you can specify ``-o|--output`` option with a file argument to
-  specify where to save the CSV. 
+for varrate experiments). Additionally you can specify ``-o|--output`` option with a file argument to specify where to save the CSV. 
 
 .. code-block:: bash
 
-    pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
+    $ pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
 
 
 
@@ -179,32 +180,25 @@ TODO
 Functional
 ~~~~~~~~~~
 
- 1. Implement rate mathematical expressions with functional rates
- 2. Implement passage time analysis
- 3. Implement hiding operator
- 4. Implement 3d graphs and experiments
- 5. Implement Kronecker state space and aggregation
- 6. Implement generalised communication PEPA [genPEPA][genpepa] by Mirco Tribastone
- 7. Add model manipulation language for reducers
- 8. Add stochastic probes
- 9. Add distributed version of BU algorithm
+1. Implement rate mathematical expressions with functional rates
+2. Implement passage time analysis
+3. Implement hiding operator
+4. Implement 3d graphs and experiments
+5. Implement Kronecker state space and aggregation
+6. Implement generalised communication PEPA `genPEPA <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646>`_  by Mirco Tribastone
+7. Add model manipulation language for reducers
+8. Add stochastic probes
+9. Add distributed version of BU algorithm
 
 Non functional
 ~~~~~~~~~~~~~~
 
- 1. Optimize optimize optimize
+1. Optimize optimize optimize
 
 Licence and credits
 -------------------
 
 Copyright (c) Dariusz Dwornikowski and Poznań University of Technology. 
 Distributed under the Apache Commons 2.0. 
-
-
-
-.. [genpepa]: http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646 "Generalised Communication for Interacting Agents"
-
-
-    
 
 

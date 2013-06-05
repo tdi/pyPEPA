@@ -8,16 +8,16 @@ except ImportError:
         from distutils.core import setup
 
 requires = ["matplotlib >= 1.2.0", 
-            "numpy>= 1.6.0", 
-            "scipy>=0.10", 
-            "pyparsing>=1.5.4",
-            "colorama>=0.2.4"]
+            "numpy >= 1.6.0", 
+            "scipy >= 0.10", 
+            "pyparsing >= 1.5.4",
+            "colorama >= 0.2.4"]
 
 setup (
         name = "pypepa",
         version = pypepa.__version__,
         description = "pypepa is a PEPA library and a toolset for PEPA.",
-        long_description = open("README.md").read() + '\n\n' +
+        long_description = open("README.rst").read() + '\n\n' +
                            open("HISTORY.rst").read(),
         author = "Dariusz Dwornikowski", 
         author_email = "dariusz.dwornikowski@cs.put.poznan.pl",
