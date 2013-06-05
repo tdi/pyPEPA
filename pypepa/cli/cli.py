@@ -12,6 +12,7 @@ from pypepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
 from pypepa.experiments.graphing import plot_2d, plot_3d
 from pypepa.logger import init_log
+from pypepa import __version__
 import argparse
 import sys
 

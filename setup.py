@@ -19,6 +19,7 @@ setup (
         author_email = "dariusz.dwornikowski@cs.put.poznan.pl",
         url = "https://github.com/tdi/pyPEPA",
         packages = ["pypepa",
+                    "pypepa.cli",
                     "pypepa.parsing",
                     "pypepa.derivation",
                     "pypepa.experiments",
@@ -28,8 +29,9 @@ setup (
         install_requires = requires,
         license = open("LICENCE.txt").read(),
         zip_safe = False,
+
         entry_points = {
-            'console_scripts': ['pypepa=pypepa.py',]
+            'console_scripts': ['pypepa=pypepa.cli.cli:main',]
             },
         classifiers = (
             'Environment :: Console',
