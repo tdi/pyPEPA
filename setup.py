@@ -25,11 +25,11 @@ setup (
             ],
         package_data={'': ['LICENCE.txt']},
         requires = [
-           'numpy==1.6.2',
-            'scipy==0.11', 
-            'pyparsing==1.5.6',
-            'matplotlib==1.2.1',
-            'colorama',
+           'numpy (==1.6.2)',
+            'scipy (==0.11)', 
+            'pyparsing (==1.5.6)',
+            'matplotlib (==1.2.1)',
+            'colorama (>=0.2.3)',
             ],
         license = "Apache Common 2.0",
         entry_points = {
