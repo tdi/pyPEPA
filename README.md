@@ -17,6 +17,20 @@ pyPEPA consist of three parts:
 
 Installation
 ============
+### Package
+
+1. Clone the project
+
+    `git clone git@github.com:tdi/pyPEPA.git pypepa`
+    
+    `cd pypepa`
+
+2. Run install
+
+    `python setup.py install` 
+
+
+### Virtualenv and pip
 
 For the current version I recommend installing in a virtualenv. 
 
@@ -44,18 +58,18 @@ pypepa
 
 Show help command:
 
-     ./pypepa -h
+     pypepa -h
 
 Set logging level (the default is NONE):
 
-    ./pypepa --log {DEBUG, INFO, ERROR, NONE}
+    pypepa --log {DEBUG, INFO, ERROR, NONE}
    
 ### Calculations
 
 
 Calculate steady state for bank scenario. The putput is by default directed to your terminal. 
 
-    ./pypepa -st models/bankscenario.pepa
+    pypepa -st models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
     
@@ -71,7 +85,7 @@ Calculate steady state for bank scenario. The putput is by default directed to y
     
 Calculate actions' throughput:
 
-    ./pypepa -th models/bankscenario.pepa
+    pypepa -th models/bankscenario.pepa
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
 
@@ -88,7 +102,7 @@ Calculate actions' throughput:
     
 You can calculate transient time proability for some number of time steps:
 
-    ./pypepa --transient 5 models/bankscenario.pepa
+    pypepa --transient 5 models/bankscenario.pepa
     
     Transient analysis from time 0 to 10
 
@@ -105,7 +119,7 @@ You can choose a solver by specifying `--solver|-s {direct, sparse}`. By defalt 
 
 pypepa allows you to visualize all PEPA components by specifying `-gd` switch. The generated graphiz dot files are by deault saved in `dots` folder in the current directory. You can browse dot files with `xdot`, which you need to install first. 
 
-    ./pypepa -gd bankdots models/bankscenario.pepa
+    pypepa -gd bankdots models/bankscenario.pepa
 
 
 Finally pypepa can provide us with a tool for experimentation with rates and actions. 
@@ -130,7 +144,7 @@ Currently we support CSV (although `;` not comma delimited), console (the defaul
 for varrate experiments). Additionally you can specify `-o|--output` option with a file argument to
   specify where to save the CSV. 
 
-    ./pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
+    pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
 
 
 
