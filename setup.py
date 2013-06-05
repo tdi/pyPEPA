@@ -7,7 +7,6 @@ try:
 except ImportError:
         from distutils.core import setup
 
-requires = 
 
 setup (
         name = "pypepa",
@@ -25,7 +24,7 @@ setup (
                     "pypepa.solvers",
             ],
         package_data={'': ['LICENCE.txt']},
-        install_requires = [
+        requires = [
            'numpy==1.6.2',
             'scipy==0.11', 
             'pyparsing==1.5.6',
