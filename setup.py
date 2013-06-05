@@ -7,7 +7,11 @@ try:
 except ImportError:
         from distutils.core import setup
 
-requires = ["matplotlib >= 1.2.0", "numpy>= 1.6.0", "scipy>=0.10", "colorama>=0.2.4"]
+requires = ["matplotlib >= 1.2.0", 
+            "numpy>= 1.6.0", 
+            "scipy>=0.10", 
+            "pyparsing>=1.5.4",
+            "colorama>=0.2.4"]
 
 setup (
         name = "pypepa",
