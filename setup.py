@@ -7,12 +7,6 @@ try:
 except ImportError:
         from distutils.core import setup
 
-requires = ["matplotlib >= 1.2.0", 
-            "numpy >= 1.6.0", 
-            "scipy >= 0.10", 
-            "pyparsing >= 1.5.4",
-            "colorama >= 0.2.4"]
-
 setup (
         name = "pypepa",
         version = pypepa.__version__,
@@ -30,21 +24,25 @@ setup (
                     "pypepa.solvers",
             ],
         package_data={'': ['LICENCE.txt']},
-        install_requires = requires,
-        license = open("LICENCE.txt").read(),
-        zip_safe = False,
-
+        install_requires = ["matplotlib", 
+            "numpy", 
+            "scipy", 
+            "pyparsing",
+            "colorama"],
+        license = "Apache Common 2.0",
         entry_points = {
             'console_scripts': ['pypepa=pypepa.cli.cli:main',]
             },
-        classifiers = (
+        classifiers = [
             'Environment :: Console',
             'Development Status :: 4 - Beta',
+            'Programming Language :: Python',
             'Programming Language :: Python :: 3.3',
             'Programming Language :: Python :: 2.7',
             'License :: OSI Approved :: Apache Software License',
-            'Intended Audience :: Science/Research'
-            ),
-        )
+            'Intended Audience :: Science/Research',
+            'Operating System :: POSIX',
+            ],
+)
 
 

@@ -135,7 +135,8 @@ You can calculate transient time proability for some number of time steps:
     6;WaitingBankResponse,WaitingManagerResponse,EvaluatingOffer;0.08328947039778702
     7;OfferReceived,WaitingForCustomer,WaitingForEmployee;0.08340579639566591
     
-You can choose a solver by specifying ``--solver|-s {direct, sparse}``. By defalt we use sparse solver with LIL matrix becuase it is faster and in overall matrices generated from PEPA models are sparse. There is also an insignificant difference in results. 
+You can choose a solver by specifying ``--solver|-s {direct, sparse}``. 
+By defalt we use sparse solver with LIL matrix becuase it is faster and in overall matrices generated from PEPA models are sparse. There is also an insignificant difference in results. 
 
 pypepa allows you to visualize all PEPA components by specifying ``-gd`` switch. The generated graphiz dot files are by deault saved in ``dots`` folder in the current directory. You can browse dot files with ``xdot``, which you need to install first. 
 
@@ -148,8 +149,8 @@ Finally pypepa can provide us with a tool for experimentation with rates and act
 Let's check how throughtput of ``askManager`` action changes when ``rateReset`` changes from 1 to 50 with step 1. The default result of this command will be a matplotlib graph.
 The format of ``-var`` is "vartype:varname:value range specifier:value range value". The one valid
 vartype for now is ``rate``, for value range specifiers you can choose: ``range`` or ``list``. For ``range``
-you need to provide START, STOP, STEP, whereas for `list` a comma separated list of values. 
-You can specify other output options with `-f` argument: graph, console, csv. 
+you need to provide START, STOP, STEP, whereas for ``list`` a comma separated list of values. 
+You can specify other output options with ``-f`` argument: graph, console, csv. 
 
 .. code-block:: bash
 
@@ -198,7 +199,7 @@ Non functional
 Licence and credits
 -------------------
 
-Copyright (c) Dariusz Dwornikowski and Poznań University of Technology. 
+Copyright (c) Dariusz Dwornikowski and Poznan University of Technology. 
 Distributed under the Apache Commons 2.0. 
 
 

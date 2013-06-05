@@ -5,7 +5,6 @@ __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
 """ Main file for pyPEPA """
 
 from pprint import pprint
-from pypepa import __version__ as libpepa_version
 from pypepa import PEPAModel
 from pypepa.utils import pretty_print_vector, pretty_print_performance
 from pypepa.experiments.experiment import rate_experiment, range_maker,\
@@ -18,9 +17,9 @@ import sys
 
 
 def main():
-    parser = argparse.ArgumentParser(description="pypepa v{}, pypepa v{},"
+    parser = argparse.ArgumentParser(description="pypepa v{},"
                                      " author {}, {}".format(__version__,
-                                     libpepa_version,__author__, __email__))
+                                     __author__, __email__))
     gen_args = parser.add_argument_group("General", "General arguments")
     gen_args.add_argument("--log", action="store", dest="loglevel", 
                           choices=["DEBUG", "INFO", "ERROR", "NONE"], 

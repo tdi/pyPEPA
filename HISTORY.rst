@@ -3,7 +3,7 @@
 History
 -------
 
-0.4.1dev (05.06.2013)
+0.4.2dev (05.06.2013)
 +++++++++++++++++++
 
  - Merge with Allan Clark's pull request providing better API
