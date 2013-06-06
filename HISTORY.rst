@@ -1,4 +1,3 @@
-.. :changelog:
 
 History
 -------
@@ -7,7 +6,7 @@ History
 +++++++++++++++++++
 
  - Fixes of some of typos
- - Many changes to setup.py
+ - Many changes to setup.py (requirements work at last)
 
 0.4.2dev (05.06.2013)
 +++++++++++++++++++
