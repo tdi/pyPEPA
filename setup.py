@@ -1,6 +1,5 @@
 import os
 import sys
-import pypepa
 
 try:
         from setuptools import setup
@@ -10,7 +9,7 @@ except ImportError:
 
 setup (
         name = "pypepa",
-        version = pypepa.__version__,
+        version = "0.4.7dev",
         description = "pypepa is a PEPA library and a toolset for PEPA.",
         long_description = open("README.rst").read(),
         author = "Dariusz Dwornikowski", 
@@ -25,10 +24,10 @@ setup (
             ],
         package_data={'': ['LICENCE.txt']},
         requires = [
-           'numpy (==1.6.2)',
-            'scipy (==0.11)', 
+           'numpy (>=1.6.7)',
+            'scipy (>=0.11)', 
             'pyparsing (==1.5.6)',
-            'matplotlib (==1.2.1)',
+            'matplotlib (>=1.2.1)',
             'colorama (>=0.2.3)',
             ],
         license = "Apache Common 2.0",
