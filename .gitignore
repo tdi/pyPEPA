@@ -3,6 +3,7 @@
 .idea/
 dots/
 tags
+tmp/
 tags/*
 htmlcov/
 models/
