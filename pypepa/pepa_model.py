@@ -18,6 +18,16 @@ class PEPAModel():
     def __init__(self, **kwargs):
         """ Create PEPA model instance and fill the fields """
         self.args = kwargs
+
+        # Set up model_filename and model_string depending upon which is
+        # is set in the arguments.
+        self.model_filename = kwargs.get("file", None)
+        self.model_string = kwargs.get("modelstring", None)
+        self.name = kwargs.get("name", self.model_filename)
+        # In case the name is still None, we set it to a default
+        if self.name == None:
+          self.name = "model"
+
         self.processes = {}
         self.systemeq = None
         self.rate_definitions = {}
@@ -28,8 +38,34 @@ class PEPAModel():
         self.log = init_log()
         self._solver = None
         self.log.info("Starting got args {}".format(kwargs))
-        self.name = os.path.basename(kwargs["file"])
-        self._parse_read_model(kwargs["file"])
+        self._parse_model()
+
+    def _parse_model(self):
+        """ Parses the model into the abstract syntax tree and sets the name
+            of the model. Both of these depend slightly on whether we are
+            parsing the model from a string or a file.
+        """
+        # If self.model_filename has been set then we assume that we should
+        # read that in, as the file may have been updated. However we may never
+        # have received a model_filename in which case we should use the
+        # model_string. If neither of these two things exist we are in trouble.
+        if self.model_filename:
+            with open(self.model_filename, "r") as f:
+                model_string = f.read()
+        elif self.model_string:
+            model_string = self.model_string
+        else:
+            raise Exception("No model file or model string present.")
+        try:
+            parser = PEPAParser()
+            (self.processes, self.rate_definitions,
+            self.systemeq, self.actions) = parser.parse(model_string)
+        except Exception as e:
+            self.log.debug(e)
+            print("Parsing error : " + str(e) )
+            raise
+            sys.exit(1)
+
 
     def get_rates(self):
         return self.rate_definitions
@@ -44,10 +80,10 @@ class PEPAModel():
         # frankly in that case it would easier just to create a new
         # PEPAModel.
         if self.ss is None or force:
-          self._prepare_components()
+            self._prepare_components()
 
     def recalculate(self, rates=None):
-        self._parse_read_model(self.args["file"])
+        self._parse_model()
         self._prepare_components(rates)
 
     def steady_state(self):
@@ -74,20 +110,6 @@ class PEPAModel():
         self.ss.comp_ss = self.tw.graph.ss
         self._solver = CTMCSolution(self.ss, self.args["solver"])
         self._solver.solve_steady()
-
-    def _parse_read_model(self, modelfile):
-        """ Reads model file and parses it."""
-        with open(modelfile, "r") as f:
-            modelfile = f.read()
-        try:
-            parser = PEPAParser()
-            (self.processes, self.rate_definitions,
-            self.systemeq, self.actions) = parser.parse(modelfile)
-        except Exception as e:
-            self.log.debug(e)
-            print("Parsing error : " + str(e) )
-            raise
-            sys.exit(1)
 
     def _prepare_components(self, rateDef=None):
         """ Here ss graphs of every process is derived from AST trees
