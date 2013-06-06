@@ -11,3 +11,4 @@ external/
 .coverage
 .ropeproject
 .*.swp
+*~
