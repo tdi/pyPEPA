@@ -9,7 +9,7 @@ except ImportError:
 
 setup (
         name = "pypepa",
-        version = "0.4.7dev",
+        version = "0.4.7dev2",
         description = "pypepa is a PEPA library and a toolset for PEPA.",
         long_description = open("README.rst").read(),
         author = "Dariusz Dwornikowski", 
@@ -30,6 +30,8 @@ setup (
             'matplotlib (>=1.2.1)',
             'colorama (>=0.2.3)',
             ],
+        install_requires = ['numpy>=1.6.7', 'scipy>=0.11', 'pyparsing==1.5.6',
+                             'matplotlib>=1.2.1'],
         license = "Apache Common 2.0",
         entry_points = {
             'console_scripts': ['pypepa=pypepa.cli.cli:main',]
