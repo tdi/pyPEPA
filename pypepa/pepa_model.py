@@ -38,11 +38,11 @@ class PEPAModel():
         # Rather than having logic for when you have and have not
         # derived the state space outside of this module, instead we
         # can simply have all procedures which require it call this
-        # method. This then lazily only calls the statespace if only
-        # if it hasn't been called prior. We have a force argument to
+        # method. So, this method lazily only calls the statespace
+        # if it hasn't been called previously. We have a force argument to
         # force it to be recomputed should we ever require that, but
         # frankly in that case it would easier just to create a new
-        # PEPA model.
+        # PEPAModel.
         if self.ss is None or force:
           self._prepare_components()
 
