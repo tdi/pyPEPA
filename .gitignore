@@ -12,3 +12,6 @@ external/
 .ropeproject
 .*.swp
 *~
+build/
+dist/
+pypepa.egg-info/
