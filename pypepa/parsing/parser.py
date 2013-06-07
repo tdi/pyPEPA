@@ -2,9 +2,9 @@
 """
 PEPA Parser
 """
-from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional, ZeroOrMore, Forward, restOfLine
-import sys
+from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional ,ZeroOrMore, Forward, restOfLine
 from pypepa.parsing.pepa_ast import *
+from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
 
 class PEPAParser(object):
@@ -18,6 +18,7 @@ class PEPAParser(object):
         self._var_stack = {}
         self._actions = []
         self.systemeq = None
+        self.rate_parser = RateParser()
 
 
     def _create_activity(self, string, loc,tok):
@@ -70,7 +71,6 @@ class PEPAParser(object):
             return tok[0]
 
     def _create_choice(self,string,loc,tok):
-        self.log_pa.debug("Start")
         self.log_pa.debug("Tokens: "+str( len(tok) ))
         if not tok[0] is None:
             if len(tok) <3:
@@ -173,12 +173,16 @@ class PEPAParser(object):
         self._systemeq = tok[0]
 
 
+    # def _assign_var(self,toks):
+    #     self._var_stack[toks[0]] = toks[2]
+
     def _assign_var(self,toks):
-        self._var_stack[toks[0]] = toks[2]
+        result = self.rate_parser.parse_rate_expr("".join(toks))
+        print(result)
+        self._var_stack[toks[0]] = str(result)
 
     def _check_var(self,str,loc,tok):
         try:
-            # just a number
             float(tok[0])
         except:
             try:
@@ -211,13 +215,14 @@ class PEPAParser(object):
         pound = Literal('#').suppress()
         percent = Literal('%').suppress()
         peparate = (ratename | floatnumber | internalrate | passiverate).setParseAction(self._check_var)
-        peparate_indef = floatnumber | internalrate | passiverate
+        # peparate_indef = floatnumber | internalrate | passiverate
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
         activity = (ratename + col + peparate).setParseAction(self._create_activity)
         procdef = (Word(alphas.upper(), alphanums+"_"+"`"+"'") + Optional(lsqpar + peparate + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
-        ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
+        # ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
+        ratedef = Optional(percent)+(self.rate_parser.BNF()).setParseAction(self._assign_var) + semicol
 
         prefix = Forward()
         choice = Forward()
