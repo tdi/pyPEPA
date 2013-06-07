@@ -172,13 +172,9 @@ class PEPAParser(object):
         self.log_pa.debug("Creating system EQ")
         self._systemeq = tok[0]
 
-
-    # def _assign_var(self,toks):
-    #     self._var_stack[toks[0]] = toks[2]
-
     def _assign_var(self,toks):
+        print(toks)
         result = self.rate_parser.parse_rate_expr("".join(toks))
-        print(result)
         self._var_stack[toks[0]] = str(result)
 
     def _check_var(self,str,loc,tok):
@@ -222,7 +218,7 @@ class PEPAParser(object):
         procdef = (Word(alphas.upper(), alphanums+"_"+"`"+"'") + Optional(lsqpar + peparate + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
         # ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
-        ratedef = Optional(percent)+(self.rate_parser.BNF()).setParseAction(self._assign_var) + semicol
+        ratedef = Optional(percent)+(self.rate_parser.grammar()).setParseAction(self._assign_var) + semicol
 
         prefix = Forward()
         choice = Forward()

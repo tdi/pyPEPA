@@ -28,25 +28,25 @@ class RateParser(object):
 
 
     def _pushFirst(self, string, loc, toks):
+        print(toks)
         self.expr_stack.append(toks[0])
 
     def _assignVar(self, str, loc, toks):
         self.var_stack.append(toks[0])
 
-    def BNF(self):
+    def grammar(self):
         if not self.bnf:
             point = Literal( "." )
-            fnumber = Combine( Word( "+-"+nums, nums ) + 
+            fnumber = Combine( Word( nums ) + 
                                Optional( point + Optional( Word( nums ) ) ) 
                                )
-            ident = Word(alphas, alphanums+"_")
+            ident = Word(alphas.lower()+"_", alphanums+"_")
             plus  = Literal( "+" )
             minus = Literal( "-" )
             mult  = Literal( "*" )
-            passiverate = Word('infty') | Word('T')
-            internalrate = Word('tau')
+            # passiverate = Word('infty') | Word('T')
+            # internalrate = Word('tau')
             div   = Literal( "/" )
-            comma = Literal(",")
             lpar  = Literal( "(" ).suppress()
             rpar  = Literal( ")" ).suppress()
             addop  = plus | minus
@@ -54,7 +54,6 @@ class RateParser(object):
             assign = Literal('=')
             expop = Literal( "^" )
             expr = Forward()
-            args = ident + ZeroOrMore(ident + comma)| fnumber + ZeroOrMore(ident + comma)
             atom = Optional("-") + ( fnumber | ident + lpar + expr + rpar | ident).setParseAction(self._pushFirst ) | lpar + expr.suppress() + rpar 
             factor = Forward()
             factor << atom + ZeroOrMore( ( expop + factor )
@@ -63,14 +62,13 @@ class RateParser(object):
                     .setParseAction(self._pushFirst) )
             expr << term + ZeroOrMore( ( addop + term )
                     .setParseAction(self._pushFirst ) )
-            bnf = internalrate | passiverate | (ident + assign).setParseAction(self._assignVar) + expr
+            bnf = (ident + assign).setParseAction(self._assignVar) + expr 
+            # | internalrate | passiverate 
             self.bnf = bnf
         return self.bnf
 
 
     def parse_rate_expr(self, rate):
-        # var_stack = []
-        # L = self.BNF().parseString(rate)
         result = self.evaluate(self.expr_stack)
         self.expr_stack = []
         if len(self.var_stack) == 1:
@@ -84,7 +82,7 @@ class RateParser(object):
             op2 = self.evaluate(s)
             op1 = self.evaluate(s)
             return self.opn[op](op1, op2)
-        elif  re.search('^[a-zA-Z][a-zA-Z0-9_]*$',op):
+        elif  re.search('^[a-z][a-zA-Z0-9_]*$',op):
             return self.variables.get(op, float(0))
         elif op[0].isalpha():
             return 0
