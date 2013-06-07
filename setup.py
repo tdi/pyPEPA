@@ -25,9 +25,9 @@ setup (
         package_data={'': ['LICENCE.txt']},
         requires = [
            'numpy (>=1.6.7)',
-            'scipy (>=0.11)', 
-            'pyparsing (==1.5.6)',
-            'matplotlib (>=1.2.1)',
+            'scipy (>=0.10)', 
+            'pyparsing (==1.5.7)',
+            'matplotlib (>=1.2.0)',
             'colorama (>=0.2.3)',
             ],
         install_requires = ['numpy>=1.6.7', 'scipy>=0.11', 'pyparsing==1.5.6',
