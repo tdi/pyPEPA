@@ -24,6 +24,13 @@ Installation
 
 Package
 ~~~~~~~
+Using pip:
+
+.. code-block:: bash
+
+   $ pip install pypepa
+
+Manually:
 
 1. Clone the project
 
@@ -37,6 +44,7 @@ Package
 .. code-block:: bash
 
     $ python setup.py install
+
 
 From the source
 ~~~~~~~~~~~~~~~~
