@@ -4,11 +4,10 @@ pypepa
 .. image:: https://raw.github.com/tdi/pypepa/dev/doc/pypepa.png
 
 pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
-Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not support rates as mathematical expressions (``r= 2*x+y``), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
+Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
 All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
 
 **Warning: pyPEPA is under development, this is a beta software**
-
 
 pyPEPA consist of three parts:
 
@@ -16,12 +15,22 @@ pyPEPA consist of three parts:
 2. pyPEPA - a command line tool for solving and graphing,
 3. distr/ - map reduce tools for solving large PEPA experiments.
 
+News
+----
+(07.06.2013) Added support for defining rates as mathematical expressions, e.g. r=2*3+7*n;
 
 Installation
 ------------
 
 Package
 ~~~~~~~
+Using pip:
+
+.. code-block:: bash
+
+   $ pip install pypepa
+
+Manually:
 
 1. Clone the project
 
@@ -35,6 +44,7 @@ Package
 .. code-block:: bash
 
     $ python setup.py install
+
 
 From the source
 ~~~~~~~~~~~~~~~~
@@ -183,7 +193,7 @@ TODO
 Functional
 ~~~~~~~~~~
 
-1. Implement rate mathematical expressions with functional rates
+1. Implement rate mathematical expressions with functional rates (DONE)
 2. Implement passage time analysis
 3. Implement hiding operator
 4. Implement 3d graphs and experiments
