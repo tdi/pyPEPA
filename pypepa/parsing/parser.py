@@ -173,7 +173,6 @@ class PEPAParser(object):
         self._systemeq = tok[0]
 
     def _assign_var(self,toks):
-        print(toks)
         result = self.rate_parser.parse_rate_expr("".join(toks))
         self._var_stack[toks[0]] = str(result)
 
