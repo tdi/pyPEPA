@@ -28,7 +28,6 @@ class RateParser(object):
 
 
     def _pushFirst(self, string, loc, toks):
-        print(toks)
         self.expr_stack.append(toks[0])
 
     def _assignVar(self, str, loc, toks):
@@ -96,7 +95,6 @@ if __name__ == "__main__":
     while input_string != 'quit':
         if input_string != '':
             result = parser.parse_rate_expr(input_string)
-            print(result)
         input_string = input("> ")
 
 
