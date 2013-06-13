@@ -10,7 +10,7 @@ import operator
 import re
 
 class RateParser(object):
-    """ 
+    """
     Parses and evaluates expresssions mathematical
     expressions, ops supported: +, -, *, /, ^
     """
@@ -44,7 +44,6 @@ class RateParser(object):
             minus = Literal( "-" )
             mult  = Literal( "*" )
             # passiverate = Word('infty') | Word('T')
-            # internalrate = Word('tau')
             div   = Literal( "/" )
             lpar  = Literal( "(" ).suppress()
             rpar  = Literal( ")" ).suppress()
@@ -62,7 +61,6 @@ class RateParser(object):
             expr << term + ZeroOrMore( ( addop + term )
                     .setParseAction(self._pushFirst ) )
             bnf = (ident + assign).setParseAction(self._assignVar) + expr 
-            # | internalrate | passiverate 
             self.bnf = bnf
         return self.bnf
 

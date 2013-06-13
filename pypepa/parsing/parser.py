@@ -1,25 +1,20 @@
 #!/usr/bin/env python
-"""
-PEPA Parser
-"""
-from pyparsing import Word, Literal, alphas, alphanums, nums, Combine, Optional ,ZeroOrMore, Forward, restOfLine
+from pyparsing import Word, Literal, alphas, alphanums, Combine, Optional,\
+                      ZeroOrMore, Forward, restOfLine, nums, lineno, col
 from pypepa.parsing.pepa_ast import *
 from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
 
 class PEPAParser(object):
-    """
-    TODO: change to dicts
-    """
 
     def __init__(self):
         self.log_pa = init_log()
         self._processes = {}
         self._var_stack = {}
         self._actions = []
+        self._seen = {}
         self.systemeq = None
         self.rate_parser = RateParser()
-
 
     def _create_activity(self, string, loc,tok):
         self.log_pa.debug("Token: "+tok[0])
@@ -32,6 +27,7 @@ class PEPAParser(object):
     def _create_procdef(self, s, loc, toks):
         self.log_pa.debug("Token: "+toks[0])
         n = ProcdefNode(toks[0], "procdef")
+        self._seen[toks[0]] = (loc, s)
         if len(toks) > 1:
             n.aggregation = True
             if toks[1] in self._var_stack:
@@ -84,7 +80,6 @@ class PEPAParser(object):
                 n.left = tok[0]
                 n.right = tok[2]
                 return n
-
 
     def _create_coop(self,string, loc, tok):
         if not tok[0] is None:
@@ -148,7 +143,6 @@ class PEPAParser(object):
         else:
             if tok[0].asttype == "procdef":
                 n = ProcdefNode(tok[0].data, tok[0].asttype)
-                # TODO create subtree
                 if tok[0].aggregation == True and n.aggr_num > 1:
                     n.aggregation = True
                     n.aggr_num = tok[0].aggr_num
@@ -167,7 +161,6 @@ class PEPAParser(object):
             self.log_pa.debug("Token: "+tok[0].data)
         return n
 
-
     def _create_system_equation(self, string, loc, tok):
         self.log_pa.debug("Creating system EQ")
         self._systemeq = tok[0]
@@ -180,11 +173,12 @@ class PEPAParser(object):
         try:
             float(tok[0])
         except:
-            try:
-                if tok[0] not in ("infty", "T", "tau"):
-                    self._var_stack[tok[0]]
-            except:
-                self.log_pa.error("Rate " + tok[0]+ " not defined")
+            pass
+        else:
+            return
+        if tok[0] not in ("infty", "T"):
+            if tok[0] not in self._var_stack:
+                raise Exception("Rate {} not defined in {}".format(tok[0], loc))
                 exit(1)
 
     def gramma(self):
@@ -206,10 +200,9 @@ class PEPAParser(object):
         integer = number
         floatnumber = Combine( integer + Optional( point + Optional(number)))
         passiverate = Word('infty') | Word('T')
-        internalrate = Word('tau')
         pound = Literal('#').suppress()
         percent = Literal('%').suppress()
-        peparate = (ratename | floatnumber | internalrate | passiverate).setParseAction(self._check_var)
+        peparate = (ratename | floatnumber | passiverate).setParseAction(self._check_var)
         # peparate_indef = floatnumber | internalrate | passiverate
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
@@ -239,6 +232,13 @@ class PEPAParser(object):
 
     def parse(self,string):
         self.gramma().parseString(string)
+        seen_procs = [str(x) for x in self._processes]
+        for seen in self._seen:
+            if seen not in seen_procs:
+                line = lineno(self._seen[seen][0], self._seen[seen][1])
+                column =col(self._seen[seen][0], self._seen[seen][1])
+                raise Exception("{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column))
+                sys.exit(1)
         return (self._processes, self._var_stack, self._systemeq, self._actions)
 
 
