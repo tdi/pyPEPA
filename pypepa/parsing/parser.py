@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from pyparsing import Word, Literal, alphas, alphanums, Combine, Optional,\
-                      ZeroOrMore, Forward, restOfLine, nums, lineno, col
+                      ZeroOrMore, Forward, restOfLine, nums, lineno, col, ParseException
 from pypepa.parsing.pepa_ast import *
 from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
@@ -47,7 +47,7 @@ class PEPAParser(object):
         for key in self._processes.keys():
             if self._processes[key].process == tok[0].data:
                 self.log_pa.error("Process "+tok[0].data+" already defined")
-                exit(1)
+                raise Exception("Process {} already defined".format(tok[0].data))
         self._processes[tok[0]] = n
         return n
 
@@ -179,7 +179,6 @@ class PEPAParser(object):
         if tok[0] not in ("infty", "T"):
             if tok[0] not in self._var_stack:
                 raise Exception("Rate {} not defined in {}".format(tok[0], loc))
-                exit(1)
 
     def gramma(self):
 ## Tokens
@@ -231,14 +230,16 @@ class PEPAParser(object):
         return pepa
 
     def parse(self,string):
-        self.gramma().parseString(string)
+        try:
+            self.gramma().parseString(string, parseAll=True)
+        except ParseException as e:
+            raise
         seen_procs = [str(x) for x in self._processes]
         for seen in self._seen:
             if seen not in seen_procs:
                 line = lineno(self._seen[seen][0], self._seen[seen][1])
                 column =col(self._seen[seen][0], self._seen[seen][1])
                 raise Exception("{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column))
-                sys.exit(1)
         return (self._processes, self._var_stack, self._systemeq, self._actions)
 
 

@@ -1,5 +1,4 @@
 #/usr/bin/env python
-import sys
 from pypepa.logger import init_log
 from pypepa.parsing.pepa_treewalker import PEPATreeWalker
 from pypepa.parsing.comp_state_space_graph import ComponentSSGraph
@@ -60,11 +59,8 @@ class PEPAModel():
             parser = PEPAParser()
             (self.processes, self.rate_definitions,
             self.systemeq, self.actions) = parser.parse(model_string)
-        except Exception as e:
-            self.log.debug(e)
-            print("Parsing error : " + str(e) )
+        except:
             raise
-            sys.exit(1)
 
 
     def get_rates(self):
