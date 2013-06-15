@@ -167,7 +167,10 @@ class PEPAParser(object):
 
     def _assign_var(self,toks):
         result = self.rate_parser.parse_rate_expr("".join(toks))
-        self._var_stack[toks[0]] = str(result)
+        if toks[0] not in self._var_stack:
+            self._var_stack[toks[0]] = str(result)
+        else:
+            raise Exception("Variable {} has been already defined".format(toks[0]))
 
     def _check_var(self,str,loc,tok):
         try:

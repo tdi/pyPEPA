@@ -87,14 +87,14 @@ class RateParser(object):
         else:
             return float( op )
 
-if __name__ == "__main__":
-    parser = RateParser()
-    input_string = ''
-    input_string = input("> ")
-    while input_string != 'quit':
-        if input_string != '':
-            result = parser.parse_rate_expr(input_string)
-        input_string = input("> ")
+# if __name__ == "__main__":
+#     parser = RateParser()
+#     input_string = ''
+#     input_string = input("> ")
+#     while input_string != 'quit':
+#         if input_string != '':
+#             result = parser.parse_rate_expr(input_string)
+#         input_string = input("> ")
 
 
 
