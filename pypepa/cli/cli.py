@@ -24,7 +24,7 @@ def main():
     gen_args.add_argument("--log", action="store", dest="loglevel", 
                           choices=["DEBUG", "INFO", "ERROR", "NONE"], 
                           help="logging level",
-                          default="NONE", type=str)
+                          default="ERROR", type=str)
     sol_args = parser.add_argument_group("Solution",
                                          "Solution related commands")
     exp_args = parser.add_argument_group("Experimentations",

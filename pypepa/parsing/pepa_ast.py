@@ -15,7 +15,7 @@ class BaseNode(object):
         self.asttype = asttype
 
     def __str__(self):
-        print(self.asttype)
+        return self.data
 
 class ChoiceNode(BaseNode):
     lhs, rhs = None, None

@@ -10,11 +10,10 @@ import operator
 import re
 
 class RateParser(object):
-    """ 
+    """
     Parses and evaluates expresssions mathematical
     expressions, ops supported: +, -, *, /, ^
     """
-
     def __init__(self):
         self.bnf = None
         self.expr_stack = []
@@ -25,7 +24,6 @@ class RateParser(object):
                 "*" : operator.mul,
                 "/" : operator.truediv,
                 "^" : operator.pow }
-
 
     def _pushFirst(self, string, loc, toks):
         self.expr_stack.append(toks[0])
@@ -44,7 +42,6 @@ class RateParser(object):
             minus = Literal( "-" )
             mult  = Literal( "*" )
             # passiverate = Word('infty') | Word('T')
-            # internalrate = Word('tau')
             div   = Literal( "/" )
             lpar  = Literal( "(" ).suppress()
             rpar  = Literal( ")" ).suppress()
@@ -62,7 +59,6 @@ class RateParser(object):
             expr << term + ZeroOrMore( ( addop + term )
                     .setParseAction(self._pushFirst ) )
             bnf = (ident + assign).setParseAction(self._assignVar) + expr 
-            # | internalrate | passiverate 
             self.bnf = bnf
         return self.bnf
 
@@ -82,20 +78,23 @@ class RateParser(object):
             op1 = self.evaluate(s)
             return self.opn[op](op1, op2)
         elif  re.search('^[a-z][a-zA-Z0-9_]*$',op):
-            return self.variables.get(op, float(0))
-        elif op[0].isalpha():
-            return 0
+            if op in self.variables:
+                return self.variables[op]
+            else:
+                raise Exception("Variable {} not defined".format(op))
+        # elif op[0].isalpha():
+        #     return 0
         else:
             return float( op )
 
-if __name__ == "__main__":
-    parser = RateParser()
-    input_string = ''
-    input_string = input("> ")
-    while input_string != 'quit':
-        if input_string != '':
-            result = parser.parse_rate_expr(input_string)
-        input_string = input("> ")
+# if __name__ == "__main__":
+#     parser = RateParser()
+#     input_string = ''
+#     input_string = input("> ")
+#     while input_string != 'quit':
+#         if input_string != '':
+#             result = parser.parse_rate_expr(input_string)
+#         input_string = input("> ")
 
 
 

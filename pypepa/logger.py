@@ -4,7 +4,7 @@ import sys
 _levels = {"INFO": logging.INFO, "DEBUG": logging.DEBUG, "ERROR" :logging.ERROR}
 logger = None
 
-def init_log(log_level="NONE", logger_name="pypepa"):
+def init_log(log_level="ERROR", logger_name="pypepa"):
     global logger
     if logger is not None:
         return logger

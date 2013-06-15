@@ -72,8 +72,7 @@ class StateSpace():
                             new_states = op.compose(self.comp_ss, state, True)
                             if not new_states:
                                 self.log.error("DEADLOCK in {}".format(state))
-                                print("DEADLOCK in {}".format(state))
-                                exit(1)
+                                raise Exception("Deadlock in state: {}".format(state))
                             new_states = self._combine_states(new_states[:])
                             for news in new_states:
                                 # aggregate
@@ -99,7 +98,7 @@ class StateSpace():
     def _add_to_actions_set(self, action, rate,actions_to_state, state_num):
         if rate == "infty":
             self.log.error("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
-            exit(1)
+            raise Exception("Resulting rate cannot be infty in {} in state {}".format(action, state_num))
         if (action,state_num) not in actions_to_state:
             actions_to_state[ (action, state_num) ] = float(rate)
         else:
