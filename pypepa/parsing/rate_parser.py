@@ -14,7 +14,6 @@ class RateParser(object):
     Parses and evaluates expresssions mathematical
     expressions, ops supported: +, -, *, /, ^
     """
-
     def __init__(self):
         self.bnf = None
         self.expr_stack = []
@@ -25,7 +24,6 @@ class RateParser(object):
                 "*" : operator.mul,
                 "/" : operator.truediv,
                 "^" : operator.pow }
-
 
     def _pushFirst(self, string, loc, toks):
         self.expr_stack.append(toks[0])
@@ -80,9 +78,12 @@ class RateParser(object):
             op1 = self.evaluate(s)
             return self.opn[op](op1, op2)
         elif  re.search('^[a-z][a-zA-Z0-9_]*$',op):
-            return self.variables.get(op, float(0))
-        elif op[0].isalpha():
-            return 0
+            if op in self.variables:
+                return self.variables[op]
+            else:
+                raise Exception("Variable {} not defined".format(op))
+        # elif op[0].isalpha():
+        #     return 0
         else:
             return float( op )
 
