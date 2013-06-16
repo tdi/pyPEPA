@@ -3,7 +3,7 @@ pypepa
 
 .. image:: https://raw.github.com/tdi/pypepa/dev/doc/pypepa.png
 
-pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
+pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
 Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
 All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
 
