@@ -166,13 +166,11 @@ You can specify other output options with ``-f`` argument: graph, console, csv.
 
 .. code-block:: bash
 
-    $ pypepa.py -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
+    $ pypepa -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
 
 .. image:: https://raw.github.com/tdi/pypepa/dev/doc/bankexample.png
    :width: 350pt 
 
-
-Instead of ``--range`` you can specify ``--list`` with a custom comma delimited list of values. 
 
 Formatting
 ~~~~~~~~~~
@@ -184,7 +182,6 @@ for varrate experiments). Additionally you can specify ``-o|--output`` option wi
 .. code-block:: bash
 
     $ pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
-
 
 
 TODO

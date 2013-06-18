@@ -75,7 +75,11 @@ def main():
     logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver}
     if args.gendots:
-        pm = PEPAModel(**pargs)
+        try:
+            pm = PEPAModel(**pargs)
+        except Exception as e:
+            print("Exception occured:", e)
+            sys.exit(1)
         import os
         if os.path.isdir(args.gendots):
             pass
@@ -106,8 +110,12 @@ def main():
         else:
             print("Wrong number of -var, either one or two")
             sys.exit(1)
+    try:
+        pm = PEPAModel(**pargs)
+    except Exception as e:
+        print("Exception occured: ", e)
+        sys.exit(1)
 
-    pm = PEPAModel(**pargs)
 
 
     if args.steady or args.top:
