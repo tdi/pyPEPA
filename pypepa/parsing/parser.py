@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 from pyparsing import Word, Literal, alphas, alphanums, Combine, Optional,\
-                      ZeroOrMore, Forward, restOfLine, nums, lineno, col, ParseException
+                      ZeroOrMore, Forward, restOfLine, nums, lineno, col, \
+                      ParseException
 from pypepa.parsing.pepa_ast import *
 from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
+from pypepa.exceptions import VariableNotDefinedError, VariableAlreadyDefinedError, \
+                               ProcessNotDefinedError, ProcessNotDefinedError, \
+                               ProcessAlreadyDefinedError
 
 class PEPAParser(object):
 
@@ -47,7 +51,7 @@ class PEPAParser(object):
         for key in self._processes.keys():
             if self._processes[key].process == tok[0].data:
                 self.log_pa.error("Process "+tok[0].data+" already defined")
-                raise Exception("Process {} already defined".format(tok[0].data))
+                raise ProcessAlreadyDefinedError("Process {} already defined".format(tok[0].data))
         self._processes[tok[0]] = n
         return n
 
@@ -170,7 +174,7 @@ class PEPAParser(object):
         if toks[0] not in self._var_stack:
             self._var_stack[toks[0]] = str(result)
         else:
-            raise Exception("Variable {} has been already defined".format(toks[0]))
+            raise VariableAlreadyDefinedError("Variable {} has been already defined".format(toks[0]))
 
     def _check_var(self,str,loc,tok):
         try:
@@ -181,7 +185,7 @@ class PEPAParser(object):
             return
         if tok[0] not in ("infty", "T"):
             if tok[0] not in self._var_stack:
-                raise Exception("Rate {} not defined in {}".format(tok[0], loc))
+                raise VariableNotDefinedError("Rate {} not defined in {}".format(tok[0], loc))
 
     def gramma(self):
 ## Tokens
@@ -205,13 +209,11 @@ class PEPAParser(object):
         pound = Literal('#').suppress()
         percent = Literal('%').suppress()
         peparate = (ratename | floatnumber | passiverate).setParseAction(self._check_var)
-        # peparate_indef = floatnumber | internalrate | passiverate
         sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
         activity = (ratename + col + peparate).setParseAction(self._create_activity)
         procdef = (Word(alphas.upper(), alphanums+"_"+"`"+"'") + Optional(lsqpar + peparate + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
-        # ratedef = (Optional(percent)+ratename + define + peparate_indef).setParseAction(self._assign_var) + semicol
         ratedef = Optional(percent)+(self.rate_parser.grammar()).setParseAction(self._assign_var) + semicol
 
         prefix = Forward()
@@ -242,7 +244,7 @@ class PEPAParser(object):
             if seen not in seen_procs:
                 line = lineno(self._seen[seen][0], self._seen[seen][1])
                 column =col(self._seen[seen][0], self._seen[seen][1])
-                raise Exception("{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column))
+                raise ProcessNotDefinedError("{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column))
         return (self._processes, self._var_stack, self._systemeq, self._actions)
 
 

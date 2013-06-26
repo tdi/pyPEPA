@@ -5,6 +5,7 @@ for amazing pyparsing library.
 """
 from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
         ZeroOrMore,Forward,nums,alphas, alphanums
+from pypepa.exceptions import VariableNotDefinedError
 import readline
 import operator
 import re
@@ -81,7 +82,7 @@ class RateParser(object):
             if op in self.variables:
                 return self.variables[op]
             else:
-                raise Exception("Variable {} not defined".format(op))
+                raise VariableNotDefinedError("Variable {} not defined".format(op))
         # elif op[0].isalpha():
         #     return 0
         else:

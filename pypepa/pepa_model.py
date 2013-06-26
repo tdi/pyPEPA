@@ -54,7 +54,7 @@ class PEPAModel():
         elif self.model_string:
             model_string = self.model_string
         else:
-            raise Exception("No model file or model string present.")
+            raise IOError("No model file or model string present.")
         try:
             parser = PEPAParser()
             (self.processes, self.rate_definitions,
