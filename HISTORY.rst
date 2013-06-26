@@ -2,6 +2,12 @@
 History
 -------
 
+0.4.9dev1 (26.05.2013)
+++++++++++++++++++++++
+ - Added custom exceptions
+ - pypepa can be now tested (nose or pytest2)
+ - first travis integration attempt
+
 0.4.8dev1 (15.6.2013)
 +++++++++++++++++++++
  - Added some verification of model sanity, redundant rate definitions, etc
