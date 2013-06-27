@@ -9,6 +9,7 @@ virtualenv:
 before_install:
   - pip install numpy
   - pip install python-dateutil
+  - pip install pytz
   - sudo apt-get update -qq
   - sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran
   - sudo apt-get install -qq python3-scipy 
