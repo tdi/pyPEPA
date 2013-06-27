@@ -2,7 +2,9 @@ language: python
 python:
   - "3.3"
 install: 
-  - pip install -r requirements.txt --use-mirrors
+  - pip install colorama
+  - pip install pyparsing
+  - pip install matplotlib
 script: nosetests
 virtualenv:
   system_site_packages: true
