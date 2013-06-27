@@ -2,9 +2,9 @@ language: python
 python:
   - "3.3"
 install: 
-  - pip install colorama
-  - pip install pyparsing
-  - pip install matplotlib
+  - pip install --use-mirrors colorama
+  - pip install --use-mirrors pyparsing
+  - pip install --use-mirrors matplotlib
 script: nosetests
 virtualenv:
   system_site_packages: true
