@@ -8,7 +8,6 @@ class StateSpace():
     components = []
     comp_ss = None
 
-
     def __init__(self):
         self.max_length = 0
         self.log = init_log()
@@ -34,9 +33,13 @@ class StateSpace():
         states = [i for i in states if i is not None]
         return states
 
+    def derive(self, alg="BU", dotdir=None):
+        if alg == "BU":
+            return self.derive_bu(dotdir=dotdir)
 
-    def derive(self):
-        """ Derives the whole state space according to BU"""
+
+    def derive_bu(self,dotdir=None):
+        """ Derives the whole state space using Bottom-up algorithm""" 
         initial_state = []
         queue = []
         visited = []

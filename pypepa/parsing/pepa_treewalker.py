@@ -20,10 +20,6 @@ class PEPATreeWalker():
         self.ss = StateSpace()
         self.rates = rates
 
-    def prepare(self):
-        pass
-
-
     def derive_process_state_space(self, node, rates):
         """ Takes node returns state space of a single
             process (here process is P = (a,r).P;
@@ -38,7 +34,6 @@ class PEPATreeWalker():
     def _name_subtree(self,node):
         """ Names the subtree
         """
-        # current = ""
         lcurrent,rcurrent = "",""
 
         if node.left is not None:
@@ -56,7 +51,6 @@ class PEPATreeWalker():
             else:
                 rcurrent += self._name_subtree(node.right)
         return lcurrent + node.data + rcurrent
-        # return current
 
 
     def derive_systemeq(self, node):
@@ -169,7 +163,6 @@ class PEPATreeWalker():
                 compnode = ComponentState()
                 compnode.resolved = node.resolved
                 self.graph.ss[node.resolved] = compnode
-#            print("Appending " + node.resolved)
             self._visitstack.append(node.resolved)
         elif node.data == "+":
             pass
@@ -177,7 +170,7 @@ class PEPATreeWalker():
             self._visit_tree2(node.left)
         if node.right is not None:
             self._visit_tree2(node.right)
-        if node.data !="+":
+        if node.data != "+":
             self._visitstack.pop()
 
 

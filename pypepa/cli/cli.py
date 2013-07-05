@@ -41,6 +41,10 @@ def main():
                              help="generate a Graphviz dot file for every"
                                   "sequential component in a GENDOTS folder.",
                              action="store", dest="gendots", type=str)
+    output_args.add_argument("-g", "--generate_dot",
+                             help="generate a Graphviz dot file for every"
+                                  "sequential component in a GENDOTS folder.",
+                             action="store", dest="gendot_ss", type=str)
     output_args.add_argument("-st", "--steady",
                              help="print steady state probability vector",
                              action="store_true")
@@ -60,20 +64,28 @@ def main():
                                action="store",
                               help="output file valid when format cvs")
     exp_args.add_argument("-var", "--variable",
-                          help="more or one variables in format"
+                          help="one or more variables in format"
                                "rate:RATENAME:r:START,STOP,STEP"
                                "or rate:RATENAME:l:val1,val2,val3",
                           action="append", dest="variables")
     exp_args.add_argument("-val", "--value", action="store", dest="yvar") 
-    exp_args.add_argument("--actionth",
-                          help="throughoutput of action on the Y axis",
-                          dest="actionth", action="store",
-                          metavar="action name")
+    # exp_args.add_argument("--actionth",
+    #                       help="throughoutput of action on the Y axis",
+    #                       dest="actionth", action="store",
+    #                       metavar="action name")
 
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver}
+    if args.gendot_ss:
+        try:
+            pm  = PEPAModel(**pargs)
+        except Exception as e:
+            print("Exception occured:", e)
+        pm.generate_dot_space(args.gendot_ss)
+        sys.exit(0)
+
     if args.gendots:
         try:
             pm = PEPAModel(**pargs)
