@@ -128,10 +128,10 @@ class PEPAModel():
         self._prepare_components()
         res, act = self.ss.derive(dotdir=out_dir)
         dotmodel = []
-        dotmodel.append("digraph {} {{\n".format(self.name))
+        dotmodel.append('digraph "{}" {{\n'.format(self.name))
         for state in res:
             for tos in res[state][0]:
-                dotmodel.append('"{}" -> "{}"\n'.format(state,tos[1]))
+                dotmodel.append('"{}" -> "{}" [label="{}" fontsize=10]\n'.format(state,tos[1], tos[2]))
         dotmodel.append("}")
         with open("{}/{}.dot".format(out_dir, self.name), "w") as f:
             [f.write(x) for x in dotmodel]

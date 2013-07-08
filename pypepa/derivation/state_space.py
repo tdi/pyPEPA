@@ -85,7 +85,7 @@ class StateSpace():
                                     new_state[news.offset] = news.to_s[0]
                                     news.to_s = new_state
                                 self.log.debug("{}\trate={} \t-> {}".format(news.action, news.arate, news.to_s))
-                                resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s)))
+                                resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s), news.action))
                                 #handle combines actions, not very elegant so to be changed
                                 if news.combined:
                                     for act in news.actions:
