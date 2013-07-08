@@ -150,7 +150,7 @@ You can calculate transient time proability for some number of time steps:
 You can choose a solver by specifying ``--solver|-s {direct, sparse}``. 
 By defalt we use sparse solver with LIL matrix becuase it is faster and in overall matrices generated from PEPA models are sparse. There is also an insignificant difference in results. 
 
-pypepa allows you to visualize all PEPA components by specifying ``-gd`` switch. The generated graphiz dot files are by deault saved in ``dots`` folder in the current directory. You can browse dot files with ``xdot``, which you need to install first. 
+pypepa allows you to visualize all PEPA components and the whole state space of a model by specifying ``-gd`` switch. The generated graphiz dot files are by deault saved in ``dots`` folder in the current directory. You can browse dot files with ``xdot``, which you need to install first. 
 
 .. code-block:: bash
 
@@ -193,7 +193,7 @@ Functional
 1. Implement rate mathematical expressions with functional rates (DONE)
 2. Implement passage time analysis
 3. Implement hiding operator
-4. Implement 3d graphs and experiments
+4. Implement 3d graphs and experiments (DONE)
 5. Implement Kronecker state space and aggregation
 6. Implement generalised communication PEPA `genPEPA <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646>`_  by Mirco Tribastone
 7. Add model manipulation language for reducers
