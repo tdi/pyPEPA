@@ -17,12 +17,11 @@ class PEPAModel():
     def __init__(self, **kwargs):
         """ Create PEPA model instance and fill the fields """
         self.args = kwargs
-
         # Set up model_filename and model_string depending upon which is
         # is set in the arguments.
         self.model_filename = kwargs.get("file", None)
         self.model_string = kwargs.get("modelstring", None)
-        self.name = kwargs.get("name", self.model_filename)
+        self.name = os.path.basename(kwargs.get("name", self.model_filename))
         # In case the name is still None, we set it to a default
         if self.name == None:
           self.name = "model"
@@ -61,7 +60,6 @@ class PEPAModel():
             self.systemeq, self.actions) = parser.parse(model_string)
         except:
             raise
-
 
     def get_rates(self):
         return self.rate_definitions
@@ -121,6 +119,8 @@ class PEPAModel():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
 
+
+
     def generate_dots(self, out_dir = "dots"):
         """
         Generates dot files to a specified directory.
@@ -128,7 +128,7 @@ class PEPAModel():
         pip install xdot
         """
         self.log.info("Generating dot files in: %s" % out_dir)
-        self.derive()
+        self._prepare_components()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
             comptmp = ComponentSSGraph(comp.data)
@@ -136,6 +136,15 @@ class PEPAModel():
                                                              comptmp)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
+        res, act = self.ss.derive(dotdir=out_dir)
+        dotmodel = []
+        dotmodel.append('digraph "{}" {{\n'.format(self.name))
+        for state in res:
+            for tos in res[state][0]:
+                dotmodel.append('"{}" -> "{}" [label="{}" fontsize=10]\n'.format(state,tos[1], tos[2]))
+        dotmodel.append("}")
+        with open("{}/{}.dot".format(out_dir, self.name), "w") as f:
+            [f.write(x) for x in dotmodel]
 
 
 

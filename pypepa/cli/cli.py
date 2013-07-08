@@ -38,8 +38,9 @@ def main():
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
     output_args.add_argument("-gd", "--generate_dots",
-                             help="generate a Graphviz dot file for every"
-                                  "sequential component in a GENDOTS folder.",
+                             help="generate a graphviz dot file for every"
+                                  "sequential component in a GENDOTS folder and"
+                                  "for the whole state space",
                              action="store", dest="gendots", type=str)
     output_args.add_argument("-st", "--steady",
                              help="print steady state probability vector",
@@ -60,20 +61,21 @@ def main():
                                action="store",
                               help="output file valid when format cvs")
     exp_args.add_argument("-var", "--variable",
-                          help="more or one variables in format"
+                          help="one or more variables in format"
                                "rate:RATENAME:r:START,STOP,STEP"
                                "or rate:RATENAME:l:val1,val2,val3",
                           action="append", dest="variables")
     exp_args.add_argument("-val", "--value", action="store", dest="yvar") 
-    exp_args.add_argument("--actionth",
-                          help="throughoutput of action on the Y axis",
-                          dest="actionth", action="store",
-                          metavar="action name")
+    # exp_args.add_argument("--actionth",
+    #                       help="throughoutput of action on the Y axis",
+    #                       dest="actionth", action="store",
+    #                       metavar="action name")
 
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver}
+
     if args.gendots:
         try:
             pm = PEPAModel(**pargs)
