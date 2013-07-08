@@ -1,6 +1,9 @@
 
 History
 -------
+0.4.10dev1 (8.7.2013)
++++++++++++++++++++++
+ - --generate_dots generates now also the whole state space
 
 0.4.9dev1 (26.05.2013)
 ++++++++++++++++++++++
