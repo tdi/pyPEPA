@@ -119,22 +119,6 @@ class PEPAModel():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
 
-    def generate_dot_space(self, out_dir = "dots"):
-        """
-        Generates dot file for a whole state space to a specified
-        directory.
-        """
-        self.log.info("Generating the whole state space dot file in {}".format(out_dir))
-        self._prepare_components()
-        res, act = self.ss.derive(dotdir=out_dir)
-        dotmodel = []
-        dotmodel.append('digraph "{}" {{\n'.format(self.name))
-        for state in res:
-            for tos in res[state][0]:
-                dotmodel.append('"{}" -> "{}" [label="{}" fontsize=10]\n'.format(state,tos[1], tos[2]))
-        dotmodel.append("}")
-        with open("{}/{}.dot".format(out_dir, self.name), "w") as f:
-            [f.write(x) for x in dotmodel]
 
 
     def generate_dots(self, out_dir = "dots"):
@@ -144,7 +128,7 @@ class PEPAModel():
         pip install xdot
         """
         self.log.info("Generating dot files in: %s" % out_dir)
-        self.derive()
+        self._prepare_components()
         visitor = ComponentStateVisitor(self.tw.graph, output_dir = out_dir)
         for comp in set(self.ss.components):
             comptmp = ComponentSSGraph(comp.data)
@@ -152,6 +136,15 @@ class PEPAModel():
                                                              comptmp)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
+        res, act = self.ss.derive(dotdir=out_dir)
+        dotmodel = []
+        dotmodel.append('digraph "{}" {{\n'.format(self.name))
+        for state in res:
+            for tos in res[state][0]:
+                dotmodel.append('"{}" -> "{}" [label="{}" fontsize=10]\n'.format(state,tos[1], tos[2]))
+        dotmodel.append("}")
+        with open("{}/{}.dot".format(out_dir, self.name), "w") as f:
+            [f.write(x) for x in dotmodel]
 
 
 
