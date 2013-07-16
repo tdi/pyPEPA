@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import collections
 from pypepa.solvers.ctmc import ctmc, ctmc_sparse, create_matrix, \
                                  vector_mult, create_lil_matrix, ctmc_transient
 
@@ -52,6 +53,21 @@ class CTMCSolution():
         for action in act_vectors.keys():
             ret_list.append( (action, vector_mult(v, act_vectors[action])))
         return ret_list
+
+    def get_utilisations(self):
+        """ We work out for each component a dictionary which maps the local
+            states of the component to the value of its utilisation.
+        """
+        all_utilisations = []
+        for (i, component) in enumerate(self._ss.components):
+            utilisations = collections.Counter()
+            name = component.name
+            name_value_pairs = zip(self._vect_names, self._steady_state_vector)
+            for (state_name, steady_vector_value) in name_value_pairs:
+                comp_state = state_name.split(",")[i]
+                utilisations[comp_state] += steady_vector_value
+            all_utilisations.append(utilisations)
+        return all_utilisations
 
     def get_actions_throughoutput(self):
         act_vectors = {}

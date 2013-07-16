@@ -95,6 +95,9 @@ class PEPAModel():
     def get_state_names(self):
         return self._solver.get_vect_names()
 
+    def get_utilisations(self):
+        return self._solver.get_utilisations()
+
     def get_throughoutput(self):
         return self._solver.get_actions_throughoutput()
 
