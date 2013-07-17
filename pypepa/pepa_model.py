@@ -1,4 +1,5 @@
 #/usr/bin/env python
+import collections
 from pypepa.logger import init_log
 from pypepa.parsing.pepa_treewalker import PEPATreeWalker
 from pypepa.parsing.comp_state_space_graph import ComponentSSGraph
@@ -94,6 +95,22 @@ class PEPAModel():
 
     def get_state_names(self):
         return self._solver.get_vect_names()
+
+    def get_utilisations(self):
+        """ We work out for each component a dictionary which maps the local
+            states of the component to the value of its utilisation.
+        """
+        all_utilisations = []
+        for (i, component) in enumerate(self.ss.components):
+            utilisations = collections.Counter()
+            name = component.name
+            name_value_pairs = zip(self.get_state_names(), 
+                                   self.get_steady_state_vector())
+            for (state_name, steady_vector_value) in name_value_pairs:
+                comp_state = state_name.split(",")[i]
+                utilisations[comp_state] += steady_vector_value
+            all_utilisations.append(utilisations)
+        return all_utilisations
 
     def get_throughoutput(self):
         return self._solver.get_actions_throughoutput()

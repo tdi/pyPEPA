@@ -69,7 +69,7 @@ For the current version I recommend installing in a virtualenv.
 
 .. code-block:: bash
 
-    $ pip install pyparsing colorama numpy scipy matplotlib
+    $ pip install pyparsing numpy scipy matplotlib
 
 
 Using pypepa

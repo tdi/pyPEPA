@@ -6,7 +6,8 @@ __email__ = "dariusz.dwornikowski@cs.put.poznan.pl"
 
 from pprint import pprint
 from pypepa import PEPAModel
-from pypepa.utils import pretty_print_vector, pretty_print_performance
+from pypepa.utils import pretty_print_vector, pretty_print_performance,\
+                           pretty_print_utilisations
 from pypepa.experiments.experiment import rate_experiment, range_maker,\
                                             rate_experiment_two
 from pypepa.experiments.graphing import plot_2d, plot_3d
@@ -44,6 +45,9 @@ def main():
                              action="store", dest="gendots", type=str)
     output_args.add_argument("-st", "--steady",
                              help="print steady state probability vector",
+                             action="store_true")
+    output_args.add_argument("-ut", "--utilisations",
+                             help="print steady state utilisations",
                              action="store_true")
     output_args.add_argument("-th", "--performance",
                              help="print throughoutput of actions",
@@ -120,7 +124,7 @@ def main():
 
 
 
-    if args.steady or args.top:
+    if args.steady or args.top or args.utilisations:
         pm.steady_state()
         print("Statespace of {} has {} states \n".format(args.file,
               len(pm.get_steady_state_vector() )))
@@ -141,6 +145,12 @@ def main():
                              fmt=args.format,
                              outfile=args.output
                              )
+    if args.utilisations:
+        print ("Steady State utilisations")
+        pretty_print_utilisations(pm.get_utilisations(),
+                                  fmt=args.format,
+                                  outfile=args.output
+                                 )
     if args.top:
         print("Throuhoutput (successful action completion in one time unit)")
         print("Output:{}".format(args.format))
