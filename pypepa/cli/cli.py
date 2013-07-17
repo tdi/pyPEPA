@@ -144,6 +144,7 @@ def main():
                              )
     if args.utilisations:
         print ("Steady State utilisations")
+        args.output = "{}-utilisations.csv".format(pm.name)
         pretty_print_utilisations(pm.get_utilisations(),
                                   fmt=args.format,
                                   outfile=args.output

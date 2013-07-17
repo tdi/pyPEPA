@@ -14,37 +14,44 @@ def decode_variables(variables):
         varlist.append(_vartup(split[0], split[1], split[2], split[3]))
     return varlist
 
-def pretty_print_performance(actset, fmt="console", outfile="throughoutput.csv"):
-    if fmt == "console" or fmt == "graph":
-        for perf in actset:
-            print("{0:<40} {1:>10}".format(perf[0],perf[1]) )
-    elif fmt == "csv":
-        with open(outfile, "w") as f:
-            f.write("Rate name;Rate throughput\n")
-            for perf in actset:
-                f.write("{};{}\n".format(perf[0],perf[1]))
+class OutputFile(object):
+   """A simple output file class to allow us to use the 'with' syntax for all
+      pretty print methods below, even when outputting to the console.
+      We wouldn't even need this were it not for the fact that __exit__ calls
+      close on the file value by default, hence we would otherwise call close on
+      sys.stdout. Even this would be fine if users only ever did one kind of
+      analysis, but since a user might do "pypepa myfile.pepa -st -ut -th" we
+      require this simple class to avoid closing the stdout after the pretty
+      printing of the first results.
+   """
+   def __init__(self, fmt, outfile):
+       self.fmt = fmt
+       self.outfile = outfile
 
+   def __enter__(self):
+       self.file = open(self.outfile, "w") if self.fmt == "csv" else sys.stdout
+       return self.file
+
+   def __exit__(self, arg1, arg2, arg3):
+       if self.fmt == "csv":
+           self.file.close()
+
+def pretty_print_performance(actset, fmt="console", outfile="throughoutput.csv"):
+    with OutputFile(fmt, outfile) as f:
+      f.write("# Rate name; Rate throughput\n")
+      for perf in actset:
+          f.write("{0:<40} {1:>10}\n".format(perf[0],perf[1]) )
 
 def pretty_print_vector(vect, vect_names, fmt="console", outfile="steady.csv"):
-    if fmt == "console" or fmt == "graph":
-        for i, prob in enumerate(vect):
-            print("{};{};{}".format(i+1, vect_names[i], vect[i]))
-    elif fmt == "csv":
-        with open(outfile, "w") as f:
-            f.write("State number;State name;result\n")
-            for i, prob in enumerate(vect):
-                f.write("{};{};{}\n".format(i+1, vect_names[i], vect[i]))
+    with OutputFile(fmt, outfile) as f:
+      f.write("# State number; State name; Result\n")
+      for i, prob in enumerate(vect):
+        f.write("{};{};{}\n".format(i+1, vect_names[i], vect[i]))
 
-def pretty_print_utilisations(utilisations, fmt="console", outfile="steady.csv"):
-    if fmt == "console" or fmt == "graph":
+def pretty_print_utilisations(utilisations, fmt="console", outfile="utilisations.csv"):
+    with OutputFile(fmt, outfile) as f:
         for (i, component_utils) in enumerate(utilisations):
-          print ("States for component: " + str(i))
-          for state_name, utilisation in component_utils.items():
-            print("    {};{}".format(state_name, utilisation))
-    elif fmt == "csv":
-        with open(outfile, "w") as f:
-            f.write("State name; utilisation\n")
-            for state_name, utilisation in component_utils.items():
-                f.write("# States for component: " + str(i))
-                f.write("    {};{}".format(state_name, utilisation))
+           f.write("# States for component:{}\n".format(i))
+           for state_name, utilisation in component_utils.items():
+               f.write("    {};{}\n".format(state_name, utilisation))
 
