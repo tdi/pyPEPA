@@ -36,5 +36,16 @@ def pretty_print_vector(vect, vect_names, fmt="console", outfile="steady.csv"):
             for i, prob in enumerate(vect):
                 f.write("{};{};{}\n".format(i+1, vect_names[i], vect[i]))
 
-
+def pretty_print_utilisations(utilisations, fmt="console", outfile="steady.csv"):
+    if fmt == "console" or fmt == "graph":
+        for (i, component_utils) in enumerate(utilisations):
+          print ("States for component: " + str(i))
+          for state_name, utilisation in component_utils.items():
+            print("    {};{}".format(state_name, utilisation))
+    elif fmt == "csv":
+        with open(outfile, "w") as f:
+            f.write("State name; utilisation\n")
+            for state_name, utilisation in component_utils.items():
+                f.write("# States for component: " + str(i))
+                f.write("    {};{}".format(state_name, utilisation))
 
