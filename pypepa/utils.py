@@ -4,7 +4,6 @@ import sys
 
 _vartup = namedtuple("VarTup", "vartype, varval, modtype, modval")
 
-# rate:nazwa:mode:costam
 def decode_variables(variables):
     varlist = []
     for var in variables:
