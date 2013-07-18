@@ -12,20 +12,25 @@ class PEPAModel():
     """
         Representation of a final PEPA model, everything needed to derive CTMC
         - state spaces of components that are present in a system equation
-        - rate definitions
+        - rate desfinitions
         - system equation
     """
     def __init__(self, **kwargs):
         """ Create PEPA model instance and fill the fields """
         self.args = kwargs
         # Set up model_filename and model_string depending upon which is
-        # is set in the arguments.
+        # set in the arguments.
         self.model_filename = kwargs.get("file", None)
         self.model_string = kwargs.get("modelstring", None)
-        self.name = os.path.basename(kwargs.get("name", os.path.splitext(self.model_filename)[0]))
-        # In case the name is still None, we set it to a default
-        if self.name == None:
-          self.name = "model"
+
+        # If 'name' is set in the kwargs then obviously that is the name of the
+        # model, otherwise if there is a model filename set use that as the
+        # basis for the name. If there is no name and no model filename then we
+        # have little choice but to fall back on a generic default of "model"
+        if self.model_filename == None:
+          self.name = kwargs.get("name", "model")
+        else:
+          self.name = os.path.basename(kwargs.get("name", self.model_filename))
 
         self.processes = {}
         self.systemeq = None
