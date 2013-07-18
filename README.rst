@@ -1,7 +1,7 @@
 pypepa
 ------
 
-.. image:: https://raw.github.com/tdi/pypepa/dev/doc/pypepa.png
+.. image:: https://raw.github.com/tdi/pypepa/dev/docs/pypepa.png
 
 pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
 Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
@@ -170,7 +170,7 @@ You can specify other output options with ``-f`` argument: graph, console, csv.
 
     $ pypepa -var "rate:rateReset:range:1,50,1" -val askManager  models/bankscenario.pepa
 
-.. image:: https://raw.github.com/tdi/pypepa/dev/doc/bankexample.png
+.. image:: https://raw.github.com/tdi/pypepa/dev/docs/bankexample.png
    :width: 350pt 
 
 
