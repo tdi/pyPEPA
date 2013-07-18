@@ -4,8 +4,8 @@ pypepa
 .. image:: https://raw.github.com/tdi/pypepa/dev/doc/pypepa.png
 
 pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
-Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate utilization or passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
-All these features, plus more, are planned to be added in next versions. Currently I am working on pyPEPA by myself only but if you are willing to help, just send an email to me or put a pull request. 
+Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
+All these features, plus more, are planned to be added in next versions. If you are willing to help, just email me or put a pull request. 
 
 **Warning: pyPEPA is under development, this is a beta software**
 
@@ -152,7 +152,7 @@ You can calculate transient time proability for some number of time steps:
 You can choose a solver by specifying ``--solver|-s {direct, sparse}``. 
 By defalt we use sparse solver with LIL matrix becuase it is faster and in overall matrices generated from PEPA models are sparse. There is also an insignificant difference in results. 
 
-pypepa allows you to visualize all PEPA components and the whole state space of a model by specifying ``-gd`` switch. The generated graphiz dot files are by deault saved in ``dots`` folder in the current directory. You can browse dot files with ``xdot``, which you need to install first. 
+pypepa allows you to visualise all PEPA components and the whole state space of a model by specifying ``-gd`` switch. The generated graphiz dot files are by deault saved in ``dots`` folder in the current directory. You can browse dot files with ``xdot``, which you need to install first. 
 
 .. code-block:: bash
 
@@ -205,7 +205,7 @@ Functional
 Non functional
 ~~~~~~~~~~~~~~
 
-1. Optimize optimize optimize
+1. Optimise optimise optimise
 
 Licence and credits
 -------------------
