@@ -111,7 +111,8 @@ def main():
             sys.exit(1)
     try:
         pm = PEPAModel(**pargs)
-        name = args.output if args.output else pm.name
+        name = os.path.splitext(args.output)[0] \
+                    if args.output else os.path.splitext(pm.name)
     except Exception as e:
         raise
         print("Exception occured: ", e)
@@ -123,10 +124,9 @@ def main():
               len(pm.get_steady_state_vector() )))
 
     if args.trantime:
-        tr = pm.transient(0, int(args.trantime))
         print("Transient analysis from time %d to %d" % (0, args.trantime))
         args.output = "{}-transient.csv".format(name)
-        pretty_print_vector(tr,
+        pretty_print_vector(pm.transient(0, int(args.trantime)),
                              pm.get_state_names(),
                              fmt=args.format,
                              outfile=args.output
