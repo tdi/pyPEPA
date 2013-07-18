@@ -17,6 +17,8 @@ pyPEPA consist of three parts:
 
 News
 ----
+(18.07.2013) pypepa can now calculate utilisations of components' states, output argument works
+again
 (07.06.2013) Added support for defining rates as mathematical expressions, e.g. r=2*3+7*n;
 
 Installation
