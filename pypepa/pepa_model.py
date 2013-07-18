@@ -22,7 +22,7 @@ class PEPAModel():
         # is set in the arguments.
         self.model_filename = kwargs.get("file", None)
         self.model_string = kwargs.get("modelstring", None)
-        self.name = os.path.basename(kwargs.get("name", self.model_filename))
+        self.name = os.path.basename(kwargs.get("name", os.path.splitext(self.model_filename)[0]))
         # In case the name is still None, we set it to a default
         if self.name == None:
           self.name = "model"
