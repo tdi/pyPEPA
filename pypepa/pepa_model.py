@@ -40,7 +40,7 @@ class PEPAModel():
         self.tw = None
         self.ss = None
         self.log = init_log()
-        self._solver = None
+        self._solver = kwargs.get("solver", "sparse")
         self.log.info("Starting got args {}".format(kwargs))
         self._parse_model()
 
