@@ -112,3 +112,24 @@ for varrate experiments). Additionally you can specify ``-o|--output`` option wi
 The command will output a ``bank_steady-steady.csv``, analogically for utilisation it will be
 ``-utilisation`` postfix and for transient analysis ``-transient``
 
+Generating state space graphs
+-----------------------------
+
+By specifying ``-gd|--gendots DIR`` you tell pypepa to generate dot files for graphiz in a directory
+DIR. Dot files can be processed by graphiz package or displayed more interactively using ``xdot`` package that can be
+installed from PyPI (``pip install xdot``).
+
+.. code-block:: bash
+   
+   $ pypepa -gd dots tests/simple.pepa 
+
+This command will generate a dot file representing state space of each component, as well as for of
+the whole state space. Below you can see an exemplary output:
+
++-------------------------------+--------------------------+-------------------------------+
+| Component P                   | Component Q              | Whole state space             |
++===============================+==========================+===============================+
+| .. image:: _static/P.png      | .. image:: _static/Q.png | .. image:: _static/simple.png |            
++-------------------------------+--------------------------+-------------------------------+
+
+
