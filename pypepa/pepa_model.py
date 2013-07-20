@@ -141,8 +141,6 @@ class PEPAModel():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
 
-
-
     def generate_dots(self, out_dir = "dots"):
         """
         Generates dot files to a specified directory.
