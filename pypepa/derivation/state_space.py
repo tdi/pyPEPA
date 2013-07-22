@@ -124,7 +124,6 @@ class Component():
         """
         Update with new name
         """
-        self.name
         self.name = name
         self.data = name #TODO: wyjebac
         self.derivatives = []
