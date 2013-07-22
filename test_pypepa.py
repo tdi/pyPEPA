@@ -34,7 +34,7 @@ class PyPEPATestCase(unittest.TestCase):
         pargs = {"file": "tests/simple.pepa", "solver" : "direct"}
         pm = PEPAModel(**pargs)
         pm.steady_state()
-        ss = pm.get_throughoutput()
+        ss = pm.get_throughput()
         assert self.compare_up_to(float(ss[0][1]), 1.166666666, 0.1)
         assert self.compare_up_to(float(ss[1][1]), 1.166666666, 0.1)
 
@@ -79,7 +79,7 @@ class PyPEPATestCase(unittest.TestCase):
         pm = PEPAModel(**pargs)
         pm.derive()
         pm.steady_state()
-        ss = pm.get_throughoutput()
+        ss = pm.get_throughput()
         assert self.compare_up_to(float(ss[0][1]), 1.166666666, 0.1)
         assert self.compare_up_to(float(ss[1][1]), 1.166666666, 0.1)
 

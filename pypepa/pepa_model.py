@@ -117,8 +117,8 @@ class PEPAModel():
             all_utilisations.append(utilisations)
         return all_utilisations
 
-    def get_throughoutput(self):
-        return self._solver.get_actions_throughoutput()
+    def get_throughput(self):
+        return self._solver.get_actions_throughput()
 
     def _derive_steady_state(self):
         """ Derives global state space """

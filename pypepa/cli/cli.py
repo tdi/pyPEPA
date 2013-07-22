@@ -51,10 +51,10 @@ def main():
                              help="print steady state utilisations",
                              action="store_true")
     output_args.add_argument("-th", "--performance",
-                             help="print throughoutput of actions",
+                             help="print throughput of actions",
                              action="store_true", dest="top")
     output_args.add_argument("-tr", "--transient",
-                             help="print throughoutput of actions",
+                             help="print throughput of actions",
                              action="store", dest="trantime", type=int)
     output_args.add_argument("-f", "--format", dest="format", type=str,
                              choices=["graph", "console", "csv"],
@@ -147,10 +147,10 @@ def main():
                                   outfile=args.output
                                  )
     if args.top:
-        print("Throuhoutput (successful action completion in a time unit)")
+        print("Throughput (successful action completion in a time unit)")
         print("Output:{}".format(args.format))
         args.output = "{}-throughput.csv".format(name)
-        pretty_print_performance(pm.get_throughoutput(), fmt=args.format,
+        pretty_print_performance(pm.get_throughput(), fmt=args.format,
                                                          outfile=args.output)
 
 
