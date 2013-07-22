@@ -1,6 +1,9 @@
 Installation
 ============
 
+pypepa is being developed under Python version 3.3 but it also should work with 
+Python 2.7. 
+
 
 From Package
 ------------
