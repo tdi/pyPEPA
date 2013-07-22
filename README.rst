@@ -15,8 +15,12 @@ pyPEPA consist of three parts:
 2. pyPEPA - a command line tool for solving and graphing,
 3. distr/ - map reduce tools for solving large PEPA experiments.
 
+More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest/>_`.
+
+
 News
 ----
+(22.07.2013) Docs added, pypepa has now docs on rtd.org
 (18.07.2013) pypepa can now calculate utilisations of components' states, output argument works
 again
 (07.06.2013) Added support for defining rates as mathematical expressions, e.g. r=2*3+7*n;
@@ -121,7 +125,7 @@ Calculate actions' throughput:
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
 
-    Throuhoutput (successful action completion in one time unit)
+    Throuhput (successful action completion in one time unit)
     
     readInformation                          0.08333333333333337
     createLoanRequest                              0.25
