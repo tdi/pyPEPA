@@ -39,6 +39,7 @@ class PEPAModel():
         # from BU alg, get rid of it
         self.tw = None
         self.ss = None
+        self.derive_algorithm = kwargs.get("derive_algorithm", "BU")
         self.log = init_log()
         self._solver = None
         self.log.info("Starting got args {}".format(kwargs))
@@ -158,7 +159,7 @@ class PEPAModel():
                                                              comptmp)
         for comp in set(self.ss.components):
             visitor.get_dot(comp.data)
-        res, act = self.ss.derive(dotdir=out_dir)
+        res, act = self.ss.derive(alg=self.derive_algorithm, dotdir=out_dir)
         dotmodel = []
         dotmodel.append('digraph "{}" {{\n'.format(self.name))
         for state in res:

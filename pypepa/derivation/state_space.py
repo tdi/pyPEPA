@@ -36,7 +36,12 @@ class StateSpace():
     def derive(self, alg="BU", dotdir=None):
         if alg == "BU":
             return self.derive_bu(dotdir=dotdir)
+        elif alg == "TD":
+            return self.derive_td()
 
+
+    def derive_td(self):
+        raise Exception("Top down derivation currently unimplemented")
 
     def derive_bu(self,dotdir=None):
         """ Derives the whole state space using Bottom-up algorithm""" 

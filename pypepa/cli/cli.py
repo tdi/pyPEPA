@@ -36,6 +36,10 @@ def main():
                           choices=['direct', 'sparse'],
                           help="choose solver type DEFAULT: sparse",
                           default="sparse")
+    sol_args.add_argument("-da", "--derive-algorithm", action="store",
+                          type=str, choices=["BU", "TD"],
+                          help="Choose the algorithm to use for deriving the statespace",
+                          default="BU")
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
     output_args.add_argument("-gd", "--generate_dots",
@@ -75,7 +79,8 @@ def main():
     args = parser.parse_args()
 
     logger = init_log(log_level=args.loglevel)
-    pargs = {"file": args.file, "solver" : args.solver}
+    pargs = {"file": args.file, "solver" : args.solver,
+             "derive_algorithm": args.derive_algorithm}
 
     if args.gendots:
         try:
