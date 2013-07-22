@@ -15,7 +15,7 @@ pyPEPA consist of three parts:
 2. pyPEPA - a command line tool for solving and graphing,
 3. distr/ - map reduce tools for solving large PEPA experiments.
 
-More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest/>_`.
+More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest/>`_.
 
 
 News

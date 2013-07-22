@@ -9,7 +9,7 @@ except ImportError:
 
 setup (
         name = "pypepa",
-        version = "0.4.11dev1",
+        version = "0.4.11dev2",
         description = "pypepa is a PEPA library and a toolset for PEPA.",
         long_description = open("README.rst").read(),
         author = "Dariusz Dwornikowski", 
