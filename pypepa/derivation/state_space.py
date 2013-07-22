@@ -4,13 +4,13 @@ from pypepa.logger import init_log
 from pypepa.exceptions import DeadlockError
 
 class StateSpace():
-    operators = []
-    components = []
-    comp_ss = None
 
     def __init__(self):
         self.max_length = 0
         self.log = init_log()
+        self.operators = []
+        self.components = []
+        self.comp_ss = None
 
     def _combine_states(self, states):
         """ When more than one transition leads to the same state,
@@ -113,12 +113,26 @@ class StateSpace():
         return ','.join( map( str, gs_list ) )
 
 class Component():
-    length = None
-    offset = None
-    name = None
-    ss = None
-    data = None
 
+    def __init__(self, ss, name,offset):
+        self.name = name
+        self.ss = ss
+        self.offset = offset
+        self.derivatives = []
+        arates = {}
+        for der in self.ss[self.name].transitions:
+            if der.action not in arates:
+                if der.rate == "infty":
+                    arates[der.action] = float(-1)
+                else:
+                    arates[der.action] = float(der.rate)
+            else:
+                arates[der.action] += float(der.rate)
+
+        for der in self.ss[self.name].transitions:
+            if der.rate == "infty":
+                der.rate = -1
+            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate, aprates=arates))
 
     def update(self, name):
         """
@@ -142,28 +156,6 @@ class Component():
             if der.rate == "infty":
                 der.rate = -1
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, arates[der.action], aprates=arates))
-
-
-
-    def __init__(self, ss, name,offset):
-        self.name = name
-        self.ss = ss
-        self.offset = offset
-        self.derivatives = []
-        arates = {}
-        for der in self.ss[self.name].transitions:
-            if der.action not in arates:
-                if der.rate == "infty":
-                    arates[der.action] = float(-1)
-                else:
-                    arates[der.action] = float(der.rate)
-            else:
-                arates[der.action] += float(der.rate)
-
-        for der in self.ss[self.name].transitions:
-            if der.rate == "infty":
-                der.rate = -1
-            self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate, aprates=arates))
 
     def get_derivatives(self):
         return self.derivatives
@@ -189,14 +181,13 @@ class Derivative():
         return " T:" + str(self.to_s) \
                 + " Act:"+self.action+" R:"+self.rate+" O:"+str(self.offset)+" Sh:"+str(self.shared)
 
-class Operator(Component):
-    length = None
-    offset = 0
-    actionset = []
-    lhs = None
-    rhs = None
-
+class Operator():
+    
     def __init__(self):
+        self.offset = 0
+        self.length = None
+        self.lhs = None
+        self.rhs = None
         self.actionset = []
         self.derivatives = []
         self.log = init_log()
