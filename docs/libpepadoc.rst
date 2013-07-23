@@ -69,7 +69,7 @@ Utlisations
    usabilities = pm.get_utilisations()
 
 Here ``usabilities`` is a list of `Counter
-<http://docs.python.org/3.3/library/collections.html#collections.Counter>_` objects, each being a
+<http://docs.python.org/3.3/library/collections.html#collections.Counter>`_ objects, each being a
 dict, corresponding to a component in a model, where keys are state names and values are usabilities. Example:
 
 .. code-block:: python

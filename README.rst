@@ -17,12 +17,15 @@ pyPEPA consist of three parts:
 
 More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest/>`_.
 
+.. image:: https://api.travis-ci.org/tdi/pyPEPA.png
 
 News
 ----
 (22.07.2013) Docs added, pypepa has now docs on rtd.org
+
 (18.07.2013) pypepa can now calculate utilisations of components' states, output argument works
 again
+
 (07.06.2013) Added support for defining rates as mathematical expressions, e.g. r=2*3+7*n;
 
 Installation
