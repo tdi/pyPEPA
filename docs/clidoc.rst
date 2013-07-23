@@ -1,91 +1,8 @@
-pypepa
-------
-
-.. image:: https://raw.github.com/tdi/pypepa/dev/docs/pypepa.png
-
-pypepa is a PEPA library and a toolset for `Performance Evaluation Process Algebra <http://www.dcs.ed.ac.uk/pepa/>`_ (PEPA) by Jane
-Hillston. pyPEPA is not a fully PEPA compatible tool, it supports a limited (for now) PEPA syntax (we only allow ``<>`` operator in system equation), i.e. it does not suport hiding operator (e.g. ``P\{a,b,}``), does not calculate passage time. pyPEPA also does not use Kronecker state space representation and Hillston's aggregation algorithms, so it can have worse performance than the PEPA Eclipse Plugin.
-All these features, plus more, are planned to be added in next versions. If you are willing to help, just email me or put a pull request. 
-
-**Warning: pyPEPA is under development, this is a beta software**
-
-pyPEPA consist of three parts:
-
-1. libpepa - a library written in Python,
-2. pyPEPA - a command line tool for solving and graphing,
-3. distr/ - map reduce tools for solving large PEPA experiments.
-
-More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest/>`_.
-
-.. image:: https://api.travis-ci.org/tdi/pyPEPA.png
-
-News
-----
-(22.07.2013) Docs added, pypepa has now docs on rtd.org
-
-(18.07.2013) pypepa can now calculate utilisations of components' states, output argument works
-again
-
-(07.06.2013) Added support for defining rates as mathematical expressions, e.g. r=2*3+7*n;
-
-Installation
-------------
-
-Package
-~~~~~~~
-Using pip:
-
-.. code-block:: bash
-
-   $ pip install pypepa
-
-Manually:
-
-1. Clone the project
-
-.. code-block:: bash
-
-    $ git clone git@github.com:tdi/pyPEPA.git pypepa
-    $ cd pypepa
-
-2. Run install
-
-.. code-block:: bash
-
-    $ python setup.py install
-
-
-From the source
-~~~~~~~~~~~~~~~~
-
-For the current version I recommend installing in a virtualenv. 
-
-1. Clone the project
-
-.. code-block:: bash
-
-    $ git clone git@github.com:tdi/pyPEPA.git pypepa
-    $ cd pypepa
-
-2. Make a virtualenv
-
-.. code-block:: bash
-
-    $ mkvirtualenv -p /usr/bin/python3 pypepa
-    $ workon pypepa
-
-3. Install all requirements
-
-.. code-block:: bash
-
-    $ pip install pyparsing numpy scipy matplotlib
-
-
-Using pypepa
-------------
+CLI documentation
+=================
 
 Basic arguments
-~~~~~~~~~~~~~~~
+---------------
 
 Show help command:
 
@@ -100,7 +17,7 @@ Set logging level (the default is NONE):
     $ pypepa --log {DEBUG, INFO, ERROR, NONE}
    
 Calculations
-~~~~~~~~~~~~
+------------
 
 Calculate steady state for bank scenario. The putput is by default directed to your terminal. 
 
@@ -128,7 +45,7 @@ Calculate actions' throughput:
     
     Statespace of models/bankscenario.pepa.1 has 7 states 
 
-    Throuhput (successful action completion in one time unit)
+    Throuhoutput (successful action completion in one time unit)
     
     readInformation                          0.08333333333333337
     createLoanRequest                              0.25
@@ -182,7 +99,7 @@ You can specify other output options with ``-f`` argument: graph, console, csv.
 
 
 Formatting
-~~~~~~~~~~
+----------
 
 You can specify formats of ``-st``, ``-th`` and  ``--varrate`` with a ``--format`` option. 
 Currently we support CSV (although `;` not comma delimited), console (the default) and graph (only
@@ -192,32 +109,27 @@ for varrate experiments). Additionally you can specify ``-o|--output`` option wi
 
     $ pypepa -st models/bankscenario.pepa -f csv -o bank_steady.csv
 
+The command will output a ``bank_steady-steady.csv``, analogically for utilisation it will be
+``-utilisation`` postfix and for transient analysis ``-transient``
 
-TODO
-----
+Generating state space graphs
+-----------------------------
 
-Functional
-~~~~~~~~~~
+By specifying ``-gd|--gendots DIR`` you tell pypepa to generate dot files for graphiz in a directory
+DIR. Dot files can be processed by graphiz package or displayed more interactively using ``xdot`` package that can be
+installed from PyPI (``pip install xdot``).
 
-1. Implement rate mathematical expressions with functional rates (DONE)
-2. Implement passage time analysis
-3. Implement hiding operator
-4. Implement 3d graphs and experiments (DONE)
-5. Implement Kronecker state space and aggregation
-6. Implement generalised communication PEPA `genPEPA <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6354646>`_  by Mirco Tribastone
-7. Add model manipulation language for reducers
-8. Add stochastic probes
-9. Add distributed version of BU algorithm
+.. code-block:: bash
+   
+   $ pypepa -gd dots tests/simple.pepa 
 
-Non functional
-~~~~~~~~~~~~~~
+This command will generate a dot file representing state space of each component, as well as for of
+the whole state space. Below you can see an exemplary output:
 
-1. Optimise optimise optimise
-
-Licence and credits
--------------------
-
-Copyright (c) Dariusz Dwornikowski and Poznan University of Technology. 
-Distributed under the Apache Commons 2.0. 
++-------------------------------+--------------------------+-------------------------------+
+| Component P                   | Component Q              | Whole state space             |
++===============================+==========================+===============================+
+| .. image:: _static/P.png      | .. image:: _static/Q.png | .. image:: _static/simple.png |            
++-------------------------------+--------------------------+-------------------------------+
 
 

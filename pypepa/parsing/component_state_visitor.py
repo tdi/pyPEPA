@@ -24,10 +24,10 @@ class ComponentStateVisitor():
                 self._visit_for_ss(tran.to, comp)
         return comp
 
-
     def get_dot(self, node):
         with open(self.out_dir + "/"+node + ".dot", "w") as f:
             self.dot = "digraph %s {\n" % (node)
+            self.visited = []
             self._visit_dot(node)
             self.dot += "}\n"
             f.write(self.dot)

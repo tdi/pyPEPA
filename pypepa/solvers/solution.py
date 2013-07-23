@@ -40,8 +40,8 @@ class CTMCSolution():
     def get_steady_state_vector(self):
         return self._steady_state_vector
 
-    def get_actions_throughoutput_from_vector(self, v):
-        """ Calculates throughoutput of vector """
+    def get_actions_throughput_from_vector(self, v):
+        """ Calculates throughput of vector """
         act_vectors = {}
         ret_list = []
         vect_len = len(v)
@@ -53,7 +53,7 @@ class CTMCSolution():
             ret_list.append( (action, vector_mult(v, act_vectors[action])))
         return ret_list
 
-    def get_actions_throughoutput(self):
+    def get_actions_throughput(self):
         act_vectors = {}
         ret_list = []
         vect_len = len(self._steady_state_vector)

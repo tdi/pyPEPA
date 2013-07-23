@@ -12,7 +12,7 @@ class PEPAModel():
     """
         Representation of a final PEPA model, everything needed to derive CTMC
         - state spaces of components that are present in a system equation
-        - rate definitions
+        - rate desfinitions
         - system equation
     """
     def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class PEPAModel():
         self.ss = None
         self.derive_algorithm = kwargs.get("derive_algorithm", "BU")
         self.log = init_log()
-        self._solver = None
+        self._solver = kwargs.get("solver", "sparse")
         self.log.info("Starting got args {}".format(kwargs))
         self._parse_model()
 
@@ -118,8 +118,8 @@ class PEPAModel():
             all_utilisations.append(utilisations)
         return all_utilisations
 
-    def get_throughoutput(self):
-        return self._solver.get_actions_throughoutput()
+    def get_throughput(self):
+        return self._solver.get_actions_throughput()
 
     def _derive_steady_state(self):
         """ Derives global state space """
@@ -141,8 +141,6 @@ class PEPAModel():
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
-
-
 
     def generate_dots(self, out_dir = "dots"):
         """

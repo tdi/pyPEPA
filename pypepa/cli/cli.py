@@ -15,6 +15,7 @@ from pypepa.logger import init_log
 from pypepa import __version__
 import argparse
 import sys
+import os
 
 
 def main():
@@ -54,10 +55,10 @@ def main():
                              help="print steady state utilisations",
                              action="store_true")
     output_args.add_argument("-th", "--performance",
-                             help="print throughoutput of actions",
+                             help="print throughput of actions",
                              action="store_true", dest="top")
     output_args.add_argument("-tr", "--transient",
-                             help="print throughoutput of actions",
+                             help="print throughput of actions",
                              action="store", dest="trantime", type=int)
     output_args.add_argument("-f", "--format", dest="format", type=str,
                              choices=["graph", "console", "csv"],
@@ -71,10 +72,6 @@ def main():
                                "or rate:RATENAME:l:val1,val2,val3",
                           action="append", dest="variables")
     exp_args.add_argument("-val", "--value", action="store", dest="yvar") 
-    # exp_args.add_argument("--actionth",
-    #                       help="throughoutput of action on the Y axis",
-    #                       dest="actionth", action="store",
-    #                       metavar="action name")
 
     args = parser.parse_args()
 
@@ -88,7 +85,6 @@ def main():
         except Exception as e:
             print("Exception occured:", e)
             sys.exit(1)
-        import os
         if os.path.isdir(args.gendots):
             pass
         else:
@@ -120,28 +116,29 @@ def main():
             sys.exit(1)
     try:
         pm = PEPAModel(**pargs)
+        name = os.path.splitext(args.output)[0] \
+                    if args.output else os.path.splitext(pm.name)
     except Exception as e:
+        raise
         print("Exception occured: ", e)
         sys.exit(1)
-
-
 
     if args.steady or args.top or args.utilisations:
         pm.steady_state()
         print("Statespace of {} has {} states \n".format(args.file,
               len(pm.get_steady_state_vector() )))
+
     if args.trantime:
-        tr = pm.transient(0, int(args.trantime))
         print("Transient analysis from time %d to %d" % (0, args.trantime))
-        args.output = "{}-transient.csv".format(pm.name)
-        pretty_print_vector(tr,
+        args.output = "{}-transient.csv".format(name)
+        pretty_print_vector(pm.transient(0, int(args.trantime)),
                              pm.get_state_names(),
                              fmt=args.format,
                              outfile=args.output
                              )
     if args.steady:
         print("Steady state vector")
-        args.output = "{}-steady.csv".format(pm.name)
+        args.output = "{}-steady.csv".format(name)
         pretty_print_vector(pm.get_steady_state_vector(),
                              pm.get_state_names(),
                              fmt=args.format,
@@ -149,16 +146,16 @@ def main():
                              )
     if args.utilisations:
         print ("Steady State utilisations")
-        args.output = "{}-utilisations.csv".format(pm.name)
+        args.output = "{}-utilisations.csv".format(name)
         pretty_print_utilisations(pm.get_utilisations(),
                                   fmt=args.format,
                                   outfile=args.output
                                  )
     if args.top:
-        print("Throuhoutput (successful action completion in a time unit)")
+        print("Throughput (successful action completion in a time unit)")
         print("Output:{}".format(args.format))
-        args.output = "{}-throughput.csv".format(pm.name)
-        pretty_print_performance(pm.get_throughoutput(), fmt=args.format,
+        args.output = "{}-throughput.csv".format(name)
+        pretty_print_performance(pm.get_throughput(), fmt=args.format,
                                                          outfile=args.output)
 
 
