@@ -46,12 +46,14 @@ class StateSpace():
         resulting_states = {}
         actions_to_state = {}
         state_num = 0
-        for x in list(range(0,self.max_length+1,1)):
-            for op in self.operators:
-                if op.length == x:
-                    op.update_offset()
-        for comp in self.components:
-            initial_state.append(comp.name)
+        [op.update_offset() for op in sorted(self.operators, key=lambda x: x.length)]
+        # for x in list(range(0,self.max_length+1,1)):
+        #     for op in self.operators:
+        #         if op.length == x:
+        #             op.update_offset()
+        [initial_state.append(comp.name) for comp in self.components]
+        # for comp in self.components:
+        #     initial_state.append(comp.name)
         queue.append(initial_state)
         while(queue):
             state = queue.pop(0)
@@ -175,7 +177,10 @@ class Derivative():
         self.offset = offset
         self.combined = False
         self.arate = arate
-        self.apparent_rates = aprates
+        if aprates is not None:
+            self.apparent_rates = aprates 
+        else:
+            self.appparent_rates = {}
 
     def __str__(self):
         return " T:" + str(self.to_s) \
@@ -214,7 +219,7 @@ class Operator():
         lR = float(left) * float(right)
         new_rate = lR * float(self._min(tran_r.arate, tran_l.arate))
         # print("%s %s %s %s"% (left, right, lR, new_rate))
-        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset, new_rate,True)
+        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset, new_rate,True, {})
         return ddd
 
     def _create_left_transition(self, state, tran_l):
