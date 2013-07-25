@@ -43,6 +43,48 @@ class StateSpace():
     def derive_td(self):
         raise Exception("Top down derivation currently unimplemented")
 
+    def _derive_state_from_one_component(self):
+        """ Derives state space with BU algorithm when system equation is just one 
+        component """
+        initial_state = []
+        queue = []
+        visited = []
+        resulting_states = {}
+        actions_to_state = {}
+        state_num = 0
+        initial_state.append(self.components[0].name)
+        queue.append(initial_state)
+        while(queue):
+            state = queue.pop(0)
+            if self._gs_to_string(state) in visited:
+                continue
+            state_num = state_num + 1
+            self.log.debug("{} STATE {}".format(state_num, state))
+            resulting_states[self._gs_to_string(state)] = ([],state_num)
+            visited.append(self._gs_to_string(state))
+            self.components[0].update( state[0] )
+            new_states = []
+            for transition in self.components[0].get_derivatives():
+                new_states.append(transition)
+            if not new_states:
+                self.log.error("DEADLOCK in {}".format(state))
+                raise DeadlockError("Deadlock in state: {}".format(state))
+            new_states = self._combine_states(new_states[:])
+            for news in new_states:
+                self.log.debug("{}\trate={} \t-> {}".format(news.action, news.arate, news.to_s))
+                resulting_states[self._gs_to_string(state)][0].append( (news.rate, self._gs_to_string(news.to_s), news.action))
+                if news.combined:
+                    for act in news.actions:
+                        self._add_to_actions_set(act, news.actions[act], actions_to_state, state_num)
+                else:
+                    self._add_to_actions_set(news.action, news.rate, actions_to_state, state_num)
+
+                if self._gs_to_string(news.to_s) not in visited:
+                    queue.append(news.to_s)
+        return (resulting_states, actions_to_state)
+
+        
+
     def derive_bu(self,dotdir=None):
         """ Derives the whole state space using Bottom-up algorithm""" 
         initial_state = []
@@ -51,14 +93,12 @@ class StateSpace():
         resulting_states = {}
         actions_to_state = {}
         state_num = 0
+        if len(self.operators) == 0:
+            self.log.debug("System equation has no operators")
+            return  self._derive_state_from_one_component()
+
         [op.update_offset() for op in sorted(self.operators, key=lambda x: x.length)]
-        # for x in list(range(0,self.max_length+1,1)):
-        #     for op in self.operators:
-        #         if op.length == x:
-        #             op.update_offset()
         [initial_state.append(comp.name) for comp in self.components]
-        # for comp in self.components:
-        #     initial_state.append(comp.name)
         queue.append(initial_state)
         while(queue):
             state = queue.pop(0)
@@ -73,6 +113,7 @@ class StateSpace():
             for i in list( range(0, len( state ),1)):
                 self.components[i].update( state[i] )
             # for every length can be changed
+
             for x in list(range(0,self.max_length+1,1)):
                 for op in self.operators:
                     if op.length == x:
