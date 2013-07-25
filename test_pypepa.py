@@ -98,7 +98,23 @@ class PyPEPATestCase(unittest.TestCase):
     def test_process_already_defined(self):
         pargs = {"file": "tests/already_process.pepa", "solver" : "direct"}
         self.assertRaises(ProcessAlreadyDefinedError, PEPAModel, **pargs)
-    
-        
+
+    def test_single_component_syseq(self):
+        pargs = {"file": "tests/single_comp.pepa", "solver" : "direct"}
+        pm = PEPAModel(**pargs)
+        pm.steady_state()
+        ss = pm.get_steady_state_vector()
+        assert len(ss) == 2
+        assert self.compare_up_to(float(ss[0]), 0.5, 0.1)
+        assert self.compare_up_to(float(ss[1]), 0.5, 0.1)
+
+    def test_nested_coop(self):
+        pargs = {"file": "tests/nested_coop.pepa", "solver" : "direct"}
+        pm = PEPAModel(**pargs)
+        pm.steady_state()
+        ss = pm.get_steady_state_vector()
+        assert len(ss) == 8
+        assert self.compare_up_to(float(ss[0]), 0.2222222, 0.1)
+        assert self.compare_up_to(float(ss[1]), 0.1111111, 0.1)
 
 
