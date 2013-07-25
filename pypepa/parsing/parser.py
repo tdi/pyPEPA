@@ -145,7 +145,7 @@ class PEPAParser(object):
             self.log_pa.debug("Non terminal - passing")
             return tok[0]
         else:
-            if tok[0].asttype == "procdef":
+            if tok[0].asttype == ProcdefNode.asttype:
                 n = ProcdefNode(tok[0].data)
                 if tok[0].aggregation == True and n.aggr_num > 1:
                     n.aggregation = True
@@ -155,7 +155,7 @@ class PEPAParser(object):
                     n.data = "||"
                     n.cooptype = "par"
                     n.actionset = None
-            elif tok[0].asttype == "activity":
+            elif tok[0].asttype == ActivityNode.asttype:
                 n = ActivityNode(tok[0].data)
                 n.rate = tok[0].rate
                 n.action = tok[0].action
