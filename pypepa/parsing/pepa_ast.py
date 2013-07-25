@@ -16,44 +16,44 @@ class BaseNode(object):
         return self.data
 
 class ChoiceNode(BaseNode):
-
-    def __init__(self, data, asttype):
-        super(ChoiceNode, self).__init__(data, asttype)
+    asttype = "choice"
+    def __init__(self, data):
+        super(ChoiceNode, self).__init__(data, self.asttype)
 
 class PrefixNode(BaseNode):
-
-    def __init__(self, data, asttype):
-        super(PrefixNode, self).__init__(data, asttype)
+    asttype = "prefix"
+    def __init__(self, data):
+        super(PrefixNode, self).__init__(data, self.asttype)
 
 class DefNode(BaseNode):
-
-    def __init__(self, data, asttype):
-        super(DefNode, self).__init__(data, asttype)
+    asttype = "definition"
+    def __init__(self, data):
+        super(DefNode, self).__init__(data, self.asttype)
 
 class ActivityNode(BaseNode):
-
-    def __init__(self, data, asttype):
+    asttype = "activity"
+    def __init__(self, data):
         self.action = ""
         self.rate = ""
-        super(ActivityNode, self).__init__(data, asttype)
+        super(ActivityNode, self).__init__(data, self.asttype)
 
 class ProcdefNode(BaseNode):
-
-    def __init__(self, data, asttype):
+    asttype = "procdef"
+    def __init__(self, data):
         self.aggregation = None
         self.aggr_num = 0
-        super(ProcdefNode, self).__init__(data, asttype)
+        super(ProcdefNode, self).__init__(data, self.asttype)
 
 class CoopNode(BaseNode):
-
-    def __init__(self, data, asttype):
+    asttype = "coop"
+    def __init__(self, data):
         self.actionset = None
         self.cooptype = None
-        super(CoopNode, self).__init__(data, asttype)
+        super(CoopNode, self).__init__(data, self.asttype)
 
 class SyncsetNode(BaseNode):
-
-    def __init__(self, data, asttype):
+    asttype = "syncset"
+    def __init__(self, data):
         self.actionset = None
-        super(SyncsetNode, self).__init__(data, asttype)
+        super(SyncsetNode, self).__init__(data, self.asttype)
 

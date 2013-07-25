@@ -22,7 +22,7 @@ class PEPAParser(object):
 
     def _create_activity(self, string, loc,tok):
         self.log_pa.debug("Token: "+tok[0])
-        n = ActivityNode("(" + tok[0] + "," + tok[1] + ")", "activity")
+        n = ActivityNode("(" + tok[0] + "," + tok[1] + ")")
         n.action = tok[0]
         self._actions.append(n.action)
         n.rate = tok[1]
@@ -30,7 +30,7 @@ class PEPAParser(object):
 
     def _create_procdef(self, s, loc, toks):
         self.log_pa.debug("Token: "+toks[0])
-        n = ProcdefNode(toks[0], "procdef")
+        n = ProcdefNode(toks[0])
         self._seen[toks[0]] = (loc, s)
         if len(toks) > 1:
             n.aggregation = True
@@ -44,7 +44,7 @@ class PEPAParser(object):
     def _create_definition(self, string, loc, tok):
         self.log_pa.debug("Left token: "+tok[0].data)
         self.log_pa.debug("Right token: "+tok[2].data)
-        n = DefNode("=", "definition")
+        n = DefNode("=")
         n.left = tok[0]
         n.right = tok[2]
         n.process = tok[0].data
@@ -60,7 +60,7 @@ class PEPAParser(object):
         if len(tok) > 1:
             self.log_pa.debug("Left token: "+tok[0].data)
             self.log_pa.debug("Right token: "+tok[2].data)
-            n = PrefixNode(".", "prefix")
+            n = PrefixNode(".")
             lhs = tok[0]
             rhs = tok[2]
             n.left = lhs
@@ -80,7 +80,7 @@ class PEPAParser(object):
                 self.log_pa.debug("Left token: "+tok[0].data)
                 self.log_pa.debug("Right token: "+tok[2].data)
 
-                n = ChoiceNode("+", "choice")
+                n = ChoiceNode("+")
                 n.left = tok[0]
                 n.right = tok[2]
                 return n
@@ -94,12 +94,12 @@ class PEPAParser(object):
                 self.log_pa.debug("Number of tokens" + str(len(tok)))
                 self.log_pa.debug("Left token: "+tok[0].data)
                 if tok[1].actionset is not None:
-                    n = CoopNode("<"+str(tok[1].actionset)+">", "coop")
+                    n = CoopNode("<"+str(tok[1].actionset)+">")
                     n.cooptype = "sync"
                     n.actionset = tok[1].actionset
                     self.log_pa.debug(n.actionset)
                 else:
-                    n = CoopNode("||", "coop")
+                    n = CoopNode("||")
                     n.cooptype = "par"
                 if type(tok[2]).__name__ == "str":
                     self.log_pa.debug("String: "+tok[2])
@@ -112,26 +112,26 @@ class PEPAParser(object):
     def _create_sync_set(self,string, loc, tok):
         if tok[0] != "||" and tok[0] != "<>":
             self.log_pa.debug("Non empty synset: " + str(tok))
-            n = SyncsetNode("<>", "syncset")
+            n = SyncsetNode("<>")
             n.actionset = tok
         else:
             self.log_pa.debug("Parallel")
-            n = SyncsetNode("||", "syncset")
+            n = SyncsetNode("||")
             n.actionset = None
         return n
 
     def _create_subtree_aggregation(self, num, procname):
         """ Transforms Process[num] into AST subtree """
-        first = CoopNode("||", "coop")
+        first = CoopNode("||")
         first.cooptype = "par"
         last = first
         for i in range(2, num+1):
-            nl = ProcdefNode(procname, "procdef")
+            nl = ProcdefNode(procname)
             if i == num:
-                nr = ProcdefNode(procname, "procdef")
+                nr = ProcdefNode(procname)
                 last.right = nr
             else:
-                nr = CoopNode("||", "coop")
+                nr = CoopNode("||")
                 nr.cooptype = "par"
                 last.right = nr
             last.left = nl
@@ -145,8 +145,8 @@ class PEPAParser(object):
             self.log_pa.debug("Non terminal - passing")
             return tok[0]
         else:
-            if tok[0].asttype == "procdef":
-                n = ProcdefNode(tok[0].data, tok[0].asttype)
+            if tok[0].asttype == ProcdefNode.asttype:
+                n = ProcdefNode(tok[0].data)
                 if tok[0].aggregation == True and n.aggr_num > 1:
                     n.aggregation = True
                     n.aggr_num = tok[0].aggr_num
@@ -155,8 +155,8 @@ class PEPAParser(object):
                     n.data = "||"
                     n.cooptype = "par"
                     n.actionset = None
-            elif tok[0].asttype == "activity":
-                n = ActivityNode(tok[0].data, tok[0].asttype)
+            elif tok[0].asttype == ActivityNode.asttype:
+                n = ActivityNode(tok[0].data)
                 n.rate = tok[0].rate
                 n.action = tok[0].action
             else:
