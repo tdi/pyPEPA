@@ -66,7 +66,7 @@ class PEPATreeWalker():
             Operators are added to operators list, whereas components to
             components.
         """
-        if node.asttype == "procdef":
+        if node.asttype == pepa_ast.ProcdefNode.asttype:
             c = Component(self.graph.ss, node.data, len(self.components))
             c.length = 1
             if self.ss.max_length < c.length:
@@ -76,7 +76,7 @@ class PEPATreeWalker():
             node.length = 1
             node.offset = len(self.components)
             self.components.append(c)
-        if node.asttype != "procdef":
+        if node.asttype != pepa_ast.ProcdefNode.asttype:
             c = Operator()
             c.actionset = list(node.actionset) if node.actionset is not None else []
             self.operators.append(c)
@@ -86,7 +86,7 @@ class PEPATreeWalker():
         if node.right is not None:
             r = self._visit_systemeq(node.right)
             c.rhs = r
-        if node.asttype != "procdef":
+        if node.asttype != pepa_ast.ProcdefNode.asttype:
             c.length = l.length + r.length
             if self.ss.max_length < c.length:
                 self.ss.max_length = c.length
@@ -113,16 +113,16 @@ class PEPATreeWalker():
                 node.rate = node.left.rate
             node.resolved = self._name_subtree(node.right)
             node.left = None
-            if node.right.asttype == "procdef":
+            if node.right.asttype == pepa_ast.ProcdefNode.asttype:
                 #  the end of the tree
                 node.right = None
         elif node.data == "+":
             node.resolved = self._name_subtree(node)
             node.lhs = self._name_subtree(node.left)
             node.rhs = self._name_subtree(node.right)
-        elif node.asttype == "procdef":
+        elif node.asttype == pepa_ast.ProcdefNode.asttype:
             pass
-        elif node.asttype == "activity":
+        elif node.asttype == pepa_ast.ActivityNode.asttype:
             pass
         if node.left is not None:
             self._visit_tree1(node.left)
