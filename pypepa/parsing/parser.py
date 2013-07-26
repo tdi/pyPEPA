@@ -2,7 +2,8 @@
 from pyparsing import Word, Literal, alphas, alphanums, Combine, Optional,\
                       ZeroOrMore, Forward, restOfLine, nums, lineno, col, \
                       ParseException
-from pypepa.parsing.pepa_ast import *
+from pypepa.parsing.pepa_ast import ActivityNode, ProcdefNode, DefNode, CoopNode, \
+                                    PrefixNode, SyncsetNode
 from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
 from pypepa.exceptions import VariableNotDefinedError, VariableAlreadyDefinedError, \
@@ -56,30 +57,27 @@ class PEPAParser(object):
         return n
 
     def _create_prefix(self,string, loc, tok):
-        self.log_pa.debug("Tokens: "+str( len(tok) ))
+        self.log_pa.debug("Tokens: " + str(len(tok)))
         if len(tok) > 1:
-            self.log_pa.debug("Left token: "+tok[0].data)
-            self.log_pa.debug("Right token: "+tok[2].data)
+            self.log_pa.debug("Left token: " + tok[0].data)
+            self.log_pa.debug("Right token: "+ tok[2].data)
             n = PrefixNode(".")
-            lhs = tok[0]
-            rhs = tok[2]
-            n.left = lhs
-            n.right = rhs
+            n.left = tok[0]
+            n.right = tok[2]
             return n
         else:
-            self.log_pa.debug("Token: "+tok[0].data)
+            self.log_pa.debug("Token: " + tok[0].data)
             return tok[0]
 
     def _create_choice(self,string,loc,tok):
-        self.log_pa.debug("Tokens: "+str( len(tok) ))
+        self.log_pa.debug("Tokens: " + str(len(tok)))
         if not tok[0] is None:
             if len(tok) <3:
-                self.log_pa.debug("Token: "+tok[0].data)
+                self.log_pa.debug("Token: "+ tok[0].data)
                 return tok[0]
             else:
-                self.log_pa.debug("Left token: "+tok[0].data)
-                self.log_pa.debug("Right token: "+tok[2].data)
-
+                self.log_pa.debug("Left token: " + tok[0].data)
+                self.log_pa.debug("Right token: " + tok[2].data)
                 n = ChoiceNode("+")
                 n.left = tok[0]
                 n.right = tok[2]
