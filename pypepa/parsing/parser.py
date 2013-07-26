@@ -48,11 +48,11 @@ class PEPAParser(object):
         n.left = tok[0]
         n.right = tok[2]
         n.process = tok[0].data
-        for key in self._processes.keys():
-            if self._processes[key].process == tok[0].data:
-                self.log_pa.error("Process "+tok[0].data+" already defined")
-                raise ProcessAlreadyDefinedError("Process {} already defined".format(tok[0].data))
-        self._processes[tok[0]] = n
+        if n.process in self._processes:
+            message = "Process "+n.process+" already defined"
+            self.log_pa.error(message)
+            raise ProcessAlreadyDefinedError(message)
+        self._processes[n.process] = n
         return n
 
     def _create_prefix(self,string, loc, tok):
@@ -239,12 +239,12 @@ class PEPAParser(object):
             self.gramma().parseString(string, parseAll=True)
         except ParseException as e:
             raise
-        seen_procs = [str(x) for x in self._processes]
-        for seen in self._seen:
-            if seen not in seen_procs:
-                line = lineno(self._seen[seen][0], self._seen[seen][1])
-                column =col(self._seen[seen][0], self._seen[seen][1])
-                raise ProcessNotDefinedError("{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column))
+        for seen, location_info in self._seen.items():
+            if seen not in self._processes:
+                line = lineno(*location_info)
+                column = col(*location_info)
+                message = "{} process not defined - possible deadlock, line {}, col {}".format(seen,line, column)
+                raise ProcessNotDefinedError(message)
         return (self._processes, self._var_stack, self._systemeq, self._actions)
 
 
