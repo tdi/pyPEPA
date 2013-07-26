@@ -2,7 +2,7 @@
 
 from pypepa.parsing.comp_state_space_graph import Transition, ModelSSGraph, ComponentState
 from pypepa.derivation.state_space import StateSpace, Operator, Component
-from pypepa.parsing.pepa_ast import *
+import pypepa.parsing.pepa_ast as pepa_ast
 from pypepa.logger import init_log
 
 
@@ -34,24 +34,18 @@ class PEPATreeWalker():
     def _name_subtree(self,node):
         """ Names the subtree
         """
-        lcurrent,rcurrent = "",""
-
-        if node.left is not None:
-            if node.left.asttype in ("choice", "prefixx"):
-                lcurrent += "("
-                lcurrent +=  self._name_subtree(node.left)
-                lcurrent += ")"
+        paren_types = [ pepa_ast.ChoiceNode.asttype,
+                        pepa_ast.PrefixNode.asttype]
+        def name_branch(branch):
+            if branch is not None:
+                branch_name = self._name_subtree(branch)
+                if branch.asttype in paren_types:
+                   return "(" + branch_name + ")"
+                else:
+                   return branch_name
             else:
-                lcurrent +=  self._name_subtree(node.left)
-        if node.right is not None:
-            if node.right.asttype in ("choice", "prefixx"):
-                rcurrent += "("
-                rcurrent += self._name_subtree(node.right)
-                rcurrent += ")"
-            else:
-                rcurrent += self._name_subtree(node.right)
-        return lcurrent + node.data + rcurrent
-
+                return ""
+        return name_branch(node.left) + node.data + name_branch(node.right)
 
     def derive_systemeq(self, node):
         """ API function for generating state space of a process (node)"""
