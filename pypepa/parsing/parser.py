@@ -8,7 +8,8 @@ from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
 from pypepa.exceptions import VariableNotDefinedError, VariableAlreadyDefinedError, \
                                ProcessNotDefinedError, ProcessNotDefinedError, \
-                               ProcessAlreadyDefinedError
+                               ProcessAlreadyDefinedError, InvalidActionTypeError
+import pprint
 
 class PEPAParser(object):
 
@@ -111,7 +112,10 @@ class PEPAParser(object):
         if tok[0] != "||" and tok[0] != "<>":
             self.log_pa.debug("Non empty synset: " + str(tok))
             n = SyncsetNode("<>")
-            n.actionset = tok
+            if "tau" in tok[0]:
+                 message = "tau present in the cooperation set"
+                 raise InvalidActionTypeError(message)
+            n.actionset = tok[0]
         else:
             self.log_pa.debug("Parallel")
             n = SyncsetNode("||")
@@ -191,7 +195,8 @@ class PEPAParser(object):
         prefix_op = Literal('.')
         choice_op = Literal('+')
         parallel = Literal("||") | Literal("<>")
-        ratename = Word(alphas.lower(),alphanums+"_")
+        tau = Literal('tau')
+        actiontype = tau | Word(alphas.lower(),alphanums+"_")
         lpar = Literal('(').suppress()
         rpar = Literal(')').suppress()
         lsqpar = Literal('[').suppress()
@@ -200,16 +205,15 @@ class PEPAParser(object):
         define = Literal('=')
         semicol = Literal(';').suppress()
         col = Literal(',').suppress()
-        number = Word(nums)
-        integer = number
-        floatnumber = Combine( integer + Optional( point + Optional(number)))
+        integer = Word(nums)
+        floatnumber = Combine( integer + Optional( point + Optional(integer)))
         passiverate = Word('infty') | Word('T')
         pound = Literal('#').suppress()
         percent = Literal('%').suppress()
-        peparate = (ratename | floatnumber | passiverate).setParseAction(self._check_var)
-        sync = Word('<').suppress() + ratename + ZeroOrMore(col + ratename) + Word('>').suppress()
+        peparate = (actiontype | floatnumber | passiverate).setParseAction(self._check_var)
+        sync = Word('<').suppress() + actiontype+ ZeroOrMore(col +actiontype) + Word('>').suppress()
         coop_op = (parallel | sync).setParseAction(self._create_sync_set)
-        activity = (ratename + col + peparate).setParseAction(self._create_activity)
+        activity = (actiontype + col + peparate).setParseAction(self._create_activity)
         procdef = (Word(alphas.upper(), alphanums+"_"+"`"+"'") + Optional(lsqpar + peparate + rsqpar)).setParseAction(self._create_procdef)
 ## RATES Definitions
         ratedef = Optional(percent)+(self.rate_parser.grammar()).setParseAction(self._assign_var) + semicol

@@ -83,8 +83,6 @@ class StateSpace():
                     queue.append(news.to_s)
         return (resulting_states, actions_to_state)
 
-        
-
     def derive_bu(self,dotdir=None):
         """ Derives the whole state space using Bottom-up algorithm""" 
         initial_state = []
@@ -154,7 +152,7 @@ class StateSpace():
         if (action,state_num) not in actions_to_state:
             actions_to_state[ (action, state_num) ] = float(rate)
         else:
-            #check if the same stateand action, so we add rates
+            #check if the same state and action, so we add rates
             actions_to_state[ (action, state_num) ] += float(rate)
 
     def _gs_to_string(self, gs_list):
@@ -169,7 +167,7 @@ class Component():
         arates = {}
         for der in self.ss[self.name].transitions:
             if der.action not in arates:
-                if der.rate == "infty":
+                if der.rate  in ("infty", "T"):
                     arates[der.action] = float(-1)
                 else:
                     arates[der.action] = float(der.rate)
@@ -177,7 +175,7 @@ class Component():
                 arates[der.action] += float(der.rate)
 
         for der in self.ss[self.name].transitions:
-            if der.rate == "infty":
+            if der.rate in ("infty", "T"):
                 der.rate = -1
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, der.rate, aprates=arates))
 
@@ -192,7 +190,7 @@ class Component():
         arates = {}
         for der in self.ss[self.name].transitions:
             if der.action not in arates:
-                if der.rate == "infty":
+                if der.rate in ("infty", "T"):
                     arates[der.action] = float(-1)
                 else:
                     arates[der.action] = float(der.rate)
@@ -200,7 +198,7 @@ class Component():
                 arates[der.action] += float(der.rate)
         for der in self.ss[self.name].transitions:
             # print("self.name:%s der.action:%s der.rate:%s de.to:%s" % (self.name, der.action, der.rate, der.to))
-            if der.rate == "infty":
+            if der.rate in ("infty", "T"):
                 der.rate = -1
             self.derivatives.append(Derivative(self.name, [der.to], der.action, der.rate, self.offset, arates[der.action], aprates=arates))
 
@@ -264,8 +262,7 @@ class Operator():
         lR = float(left) * float(right)
         new_rate = lR * float(self._min(tran_r.arate, tran_l.arate))
         # print("%s %s %s %s"% (left, right, lR, new_rate))
-        ddd = Derivative(state, to_state,tran_l.action,new_rate,self.offset, new_rate,True, {})
-        return ddd
+        return  Derivative(state, to_state,tran_l.action,new_rate,self.offset, new_rate,True, {})
 
     def _create_left_transition(self, state, tran_l):
         new_state = state[:]
@@ -330,6 +327,7 @@ class Operator():
 
 
     def _min2(self,rate1, rate2):
+        """ Deprecated """
         if rate1 == "infty":
             if rate2 == "infty":
                 return "infty"

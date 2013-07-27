@@ -18,4 +18,6 @@ class ProcessNotDefinedError(PyPEPAException):
 class DeadlockError(PyPEPAException):
     """ Deadlock found """
 
+class InvalidActionTypeError(PyPEPAException):
+    """ Tau in syncset """
 
