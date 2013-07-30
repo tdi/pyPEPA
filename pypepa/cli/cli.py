@@ -43,10 +43,10 @@ def main():
                           default="BU")
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
-    output_args.add_argument("-gd", "--generate_dots",
+    output_args.add_argument("-gd", "--generate_dots", nargs='?', default='dots',
                              help="generate a graphviz dot file for every"
                                   "sequential component in a GENDOTS folder and"
-                                  "for the whole state space",
+                                  "for the whole state space", const='dots',
                              action="store", dest="gendots", type=str)
     output_args.add_argument("-st", "--steady",
                              help="print steady state probability vector",
@@ -78,7 +78,6 @@ def main():
     logger = init_log(log_level=args.loglevel)
     pargs = {"file": args.file, "solver" : args.solver,
              "derive_algorithm": args.derive_algorithm}
-
     if args.gendots:
         try:
             pm = PEPAModel(**pargs)
