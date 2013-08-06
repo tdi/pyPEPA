@@ -14,6 +14,17 @@ def decode_variables(variables):
         varlist.append(_vartup(split[0], split[1], split[2], split[3]))
     return varlist
 
+class Bunch:
+    """The bunch recipe, this allows you to create simple objects with
+       named attributes, eg. "Bunch(x=1, y=2)" or you could do:
+       point = Bunch()
+       point.x = 1
+       point.y = 2
+    """
+    def __init__(self, **kwds):
+        self.__dict__.update(kwds)
+
+
 class OutputFile(object):
    """A simple output file class to allow us to use the 'with' syntax for all
       pretty print methods below, even when outputting to the console.
