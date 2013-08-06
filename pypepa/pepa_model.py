@@ -129,15 +129,15 @@ class PEPAModel():
         self._solver.solve_steady()
 
     def _prepare_components(self, rateDef=None):
-        """ Here ss graphs of every process is derived from AST trees
+        """ Here ss graphs of every process are derived from AST trees
             as well as state space of components is derived
         """
         if rateDef is None:
-            self.tw = PEPATreeWalker(self.rate_definitions)
+            rateDef = self.rate_definitions
         else:
             self.log.info("Deriving model with changed rates {}"
                           .format(rateDef))
-            self.tw = PEPATreeWalker(rateDef)
+        self.tw = PEPATreeWalker(rateDef)
         for node in self.processes.values():
             self.tw.derive_process_state_space(node, self.rate_definitions)
         self.ss = self.tw.derive_systemeq(self.systemeq)
