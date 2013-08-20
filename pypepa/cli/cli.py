@@ -43,7 +43,7 @@ def main():
                           default="BU")
     output_args = parser.add_argument_group("Output", "Output based options")
     parser.add_argument("file", help="path to the model file")
-    output_args.add_argument("-gd", "--generate_dots", nargs='?', default='dots',
+    output_args.add_argument("-gd", "--generate_dots", nargs='?', default="",
                              help="generate a graphviz dot file for every"
                                   "sequential component in a GENDOTS folder and"
                                   "for the whole state space", const='dots',
