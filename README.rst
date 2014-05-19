@@ -21,6 +21,8 @@ More docs can be found on `readthedocs <https://pypepa.readthedocs.org/en/latest
 
 News
 ----
+(19.05.2014) Switched completely to python > 3.3
+
 (22.07.2013) Docs added, pypepa has now docs on rtd.org
 
 (18.07.2013) pypepa can now calculate utilisations of components' states, output argument works
@@ -208,6 +210,7 @@ Functional
 7. Add model manipulation language for reducers
 8. Add stochastic probes
 9. Add distributed version of BU algorithm
+10. Add importing of models and components from external files (and namespaces)
 
 Non functional
 ~~~~~~~~~~~~~~
