@@ -9,7 +9,7 @@ except ImportError:
 
 setup (
         name = "pypepa",
-        version = "0.4.11dev2",
+        version = "0.4.12",
         description = "pypepa is a PEPA library and a toolset for PEPA.",
         long_description = open("README.rst").read(),
         author = "Dariusz Dwornikowski", 
@@ -26,10 +26,10 @@ setup (
         requires = [
            'numpy (>=1.6.7)',
             'scipy (>=0.10)', 
-            'pyparsing (==1.5.7)',
+            'pyparsing (>=2.0.0)',
             'matplotlib (>=1.2.0)',
             ],
-        install_requires = ['numpy>=1.6.7', 'scipy>=0.11', 'pyparsing==1.5.6',
+        install_requires = ['numpy>=1.6.7', 'scipy>=0.11', 'pyparsing>=2.0.0',
                              'matplotlib>=1.2.1'],
         license = "Apache Common 2.0",
         zip_safe = False,
@@ -42,7 +42,6 @@ setup (
             'Development Status :: 4 - Beta',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3.3',
-            'Programming Language :: Python :: 2.7',
             'License :: OSI Approved :: Apache Software License',
             'Intended Audience :: Science/Research',
             'Operating System :: POSIX',
