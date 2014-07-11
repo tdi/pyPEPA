@@ -3,7 +3,7 @@ from pyparsing import Word, Literal, alphas, alphanums, Combine, Optional,\
                       ZeroOrMore, Forward, restOfLine, nums, lineno, col, \
                       ParseException
 from pypepa.parsing.pepa_ast import ActivityNode, ProcdefNode, DefNode, CoopNode, \
-                                    PrefixNode, SyncsetNode
+                                    PrefixNode, SyncsetNode, ChoiceNode
 from pypepa.parsing.rate_parser import RateParser
 from pypepa.logger import init_log
 from pypepa.exceptions import VariableNotDefinedError, VariableAlreadyDefinedError, \
