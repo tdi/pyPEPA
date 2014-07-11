@@ -11,6 +11,7 @@ class BaseNode(object):
         self.length = None
         self.data = data
         self.asttype = asttype
+        self.var_rate = None
 
     def __str__(self):
         return self.data
