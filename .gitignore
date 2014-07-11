@@ -1,4 +1,7 @@
 *.pyc
+ren.pepa
+docs/_build/
+cli.sh
 todo.txt
 *.orig
 .idea/
